@@ -9,13 +9,14 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ActivosService } from './activos.service.js';
 import { ActivosController } from './activos.controller.js';
 import { Activo } from './entities/activo.entity.js';
+import { Intervencion } from './entities/intervencion.entity.js';
 import { GamificacionModule } from '../gamificacion/gamificacion.module.js';
 let ActivosModule = class ActivosModule {
 };
 ActivosModule = __decorate([
     Module({
         imports: [
-            TypeOrmModule.forFeature([Activo]),
+            TypeOrmModule.forFeature([Activo, Intervencion]),
             GamificacionModule,
         ],
         controllers: [ActivosController],

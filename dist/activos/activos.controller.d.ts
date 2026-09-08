@@ -6,7 +6,11 @@ export declare class ActivosController {
     constructor(activosService: ActivosService);
     create(createActivoDto: CreateActivoDto): Promise<import("./entities/activo.entity.js").Activo>;
     findAll(): Promise<import("./entities/activo.entity.js").Activo[]>;
-    findOne(id: string): Promise<import("./entities/activo.entity.js").Activo>;
-    update(id: string, updateActivoDto: UpdateActivoDto): Promise<import("./entities/activo.entity.js").Activo>;
+    findOne(id: string): Promise<any>;
+    update(id: string, updateActivoDto: UpdateActivoDto): Promise<any>;
+    addIntervencion(id: string, body: {
+        descripcion: string;
+        tecnicoId?: string;
+    }): Promise<import("./entities/intervencion.entity.js").Intervencion>;
     remove(id: string): Promise<void>;
 }

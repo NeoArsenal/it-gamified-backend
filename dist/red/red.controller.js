@@ -10,8 +10,9 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-import { Controller, Get, Post, Patch, Param, Body } from '@nestjs/common';
+import { Controller, Get, Post, Patch, Param, Body, UseGuards } from '@nestjs/common';
 import { RedService } from './red.service.js';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard.js';
 let RedController = class RedController {
     redService;
     constructor(redService) {
@@ -21,7 +22,10 @@ let RedController = class RedController {
     findDispositivo(id) { return this.redService.findDispositivo(id); }
     createDispositivo(data) { return this.redService.createDispositivo(data); }
     updateDispositivo(id, data) { return this.redService.updateDispositivo(id, data); }
+    simularCaida() { return this.redService.simularCaida(); }
+    restaurarDispositivo(id, tecnicoId) { return this.redService.restaurarDispositivo(id, tecnicoId); }
     findAllIPs() { return this.redService.findAllIPs(); }
+    registrarIP(data) { return this.redService.registrarIP(data); }
     asignarIP(ip, dispositivoId) { return this.redService.asignarIP(ip, dispositivoId); }
     liberarIP(ip) { return this.redService.liberarIP(ip); }
 };
@@ -54,11 +58,32 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], RedController.prototype, "updateDispositivo", null);
 __decorate([
+    Post('dispositivos/simular-caida'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", void 0)
+], RedController.prototype, "simularCaida", null);
+__decorate([
+    Patch('dispositivos/:id/restaurar'),
+    __param(0, Param('id')),
+    __param(1, Body('tecnicoId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String]),
+    __metadata("design:returntype", void 0)
+], RedController.prototype, "restaurarDispositivo", null);
+__decorate([
     Get('ips'),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
 ], RedController.prototype, "findAllIPs", null);
+__decorate([
+    Post('ips'),
+    __param(0, Body()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], RedController.prototype, "registrarIP", null);
 __decorate([
     Patch('ips/:ip/asignar'),
     __param(0, Param('ip')),
@@ -75,6 +100,7 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], RedController.prototype, "liberarIP", null);
 RedController = __decorate([
+    UseGuards(JwtAuthGuard),
     Controller('red'),
     __metadata("design:paramtypes", [RedService])
 ], RedController);

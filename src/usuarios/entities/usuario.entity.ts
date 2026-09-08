@@ -36,6 +36,15 @@ export class Usuario {
   @Column({ default: '' })
   avatar: string;
 
+  @Column({ nullable: true })
+  tituloRPG: string;
+
+  @Column({ type: 'json', nullable: true })
+  preferencias: any;
+
+  @Column({ type: 'simple-array', nullable: true })
+  modulosAccesibles: string[];
+
   @OneToMany('Ticket', (ticket: any) => ticket.asignadoA)
   tickets: Relation<Ticket[]>;
 

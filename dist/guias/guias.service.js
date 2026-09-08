@@ -24,6 +24,16 @@ let GuiasService = class GuiasService {
         this.gamificacionService = gamificacionService;
     }
     async findAll() { return this.guiaRepo.find({ order: { fechaSubida: 'DESC' } }); }
+    async search(query) {
+        if (!query)
+            return this.findAll();
+        return this.guiaRepo.createQueryBuilder('guia')
+            .leftJoinAndSelect('guia.autor', 'autor')
+            .where('LOWER(guia.titulo) LIKE LOWER(:q)', { q: `%${query}%` })
+            .orWhere('LOWER(guia.contenidoRichText) LIKE LOWER(:q)', { q: `%${query}%` })
+            .orderBy('guia.fechaSubida', 'DESC')
+            .getMany();
+    }
     async findOne(id) {
         const g = await this.guiaRepo.findOneBy({ id });
         if (!g)

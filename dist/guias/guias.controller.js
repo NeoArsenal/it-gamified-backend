@@ -10,14 +10,16 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-import { Controller, Get, Post, Delete, Param, Body } from '@nestjs/common';
+import { Controller, Get, Post, Delete, Param, Body, Query, UseGuards } from '@nestjs/common';
 import { GuiasService } from './guias.service.js';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard.js';
 let GuiasController = class GuiasController {
     guiasService;
     constructor(guiasService) {
         this.guiasService = guiasService;
     }
     findAll() { return this.guiasService.findAll(); }
+    search(q) { return this.guiasService.search(q); }
     findOne(id) { return this.guiasService.findOne(id); }
     create(data) { return this.guiasService.create(data); }
     remove(id) { return this.guiasService.remove(id); }
@@ -28,6 +30,13 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
 ], GuiasController.prototype, "findAll", null);
+__decorate([
+    Get('search'),
+    __param(0, Query('q')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", void 0)
+], GuiasController.prototype, "search", null);
 __decorate([
     Get(':id'),
     __param(0, Param('id')),
@@ -50,6 +59,7 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], GuiasController.prototype, "remove", null);
 GuiasController = __decorate([
+    UseGuards(JwtAuthGuard),
     Controller('guias'),
     __metadata("design:paramtypes", [GuiasService])
 ], GuiasController);

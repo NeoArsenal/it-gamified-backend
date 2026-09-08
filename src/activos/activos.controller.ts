@@ -1,8 +1,10 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
 import { ActivosService } from './activos.service.js';
 import { CreateActivoDto } from './dto/create-activo.dto.js';
 import { UpdateActivoDto } from './dto/update-activo.dto.js';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard.js';
 
+@UseGuards(JwtAuthGuard)
 @Controller('activos')
 export class ActivosController {
   constructor(private readonly activosService: ActivosService) {}
@@ -25,6 +27,14 @@ export class ActivosController {
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateActivoDto: UpdateActivoDto) {
     return this.activosService.update(id, updateActivoDto);
+  }
+
+  @Post(':id/intervenciones')
+  addIntervencion(
+    @Param('id') id: string,
+    @Body() body: { descripcion: string; tecnicoId?: string }
+  ) {
+    return this.activosService.addIntervencion(id, body.descripcion, body.tecnicoId);
   }
 
   @Delete(':id')

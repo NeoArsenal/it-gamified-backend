@@ -7,6 +7,8 @@ export declare enum EstadoIP {
 }
 export declare class DireccionIP {
     ip: string;
+    sede: string;
+    area: string;
     vlan: string;
     estado: EstadoIP;
     dispositivo: Relation<DispositivoRed>;

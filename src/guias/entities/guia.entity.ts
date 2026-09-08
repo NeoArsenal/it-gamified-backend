@@ -13,6 +13,9 @@ export class Guia {
   @Column({ nullable: true })
   urlPdf: string;
 
+  @Column({ type: 'text', nullable: true })
+  contenidoRichText: string;
+
   @Column({ nullable: true })
   peso: string;
 

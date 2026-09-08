@@ -31,6 +31,9 @@ export declare class GamificacionService {
         nivel: number;
         xpActual: number;
         avatar: string;
+        tituloRPG: string;
+        preferencias: any;
+        modulosAccesibles: string[];
         tickets: import("typeorm").Relation<import("../tickets/entities/ticket.entity.js").Ticket[]>;
         historialXP: import("typeorm").Relation<HistorialXP[]>;
         guias: import("typeorm").Relation<import("../guias/entities/guia.entity.js").Guia[]>;

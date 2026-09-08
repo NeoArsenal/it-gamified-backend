@@ -1,0 +1,239 @@
+// 100 preguntas educativas: 10 por nivel, 10 niveles
+// Cada pregunta tiene 4 opciones, respuesta correcta (índice 0-3) y explicación
+
+export interface PreguntaSeed {
+  texto: string;
+  opciones: string[];
+  respuestaCorrecta: number;
+  explicacion: string;
+}
+
+export interface NivelSeed {
+  titulo: string;
+  descripcion: string;
+  orden: number;
+  xpRecompensa: number;
+  preguntas: PreguntaSeed[];
+}
+
+export const NIVELES_SEED: NivelSeed[] = [
+  // ═══════════════════════════════════════════════════════════
+  // NIVEL 1 — ¿Qué es una Red?
+  // ═══════════════════════════════════════════════════════════
+  {
+    titulo: '¿Qué es una Red?',
+    descripcion: 'Aprende qué es una red de computadoras y por qué existen.',
+    orden: 1,
+    xpRecompensa: 50,
+    preguntas: [
+      { texto: '¿Qué es una red de computadoras?', opciones: ['Un programa para navegar en internet', 'Un conjunto de dispositivos conectados entre sí para compartir recursos', 'Un tipo de cable especial', 'Un sistema operativo'], respuestaCorrecta: 1, explicacion: 'Una red es un grupo de dispositivos conectados que pueden compartir datos, impresoras, internet y otros recursos entre sí.' },
+      { texto: '¿Cuál es la diferencia principal entre LAN y WAN?', opciones: ['LAN es inalámbrica y WAN usa cables', 'LAN cubre un área pequeña (oficina) y WAN cubre áreas geográficas grandes', 'No hay diferencia', 'WAN es más lenta que LAN siempre'], respuestaCorrecta: 1, explicacion: 'LAN (Local Area Network) cubre un edificio u oficina. WAN (Wide Area Network) conecta redes a grandes distancias, como Internet.' },
+      { texto: '¿Qué significa la sigla MAN?', opciones: ['Maximum Area Network', 'Metropolitan Area Network', 'Main Access Node', 'Media Application Network'], respuestaCorrecta: 1, explicacion: 'MAN (Metropolitan Area Network) cubre una ciudad o campus grande. Es más grande que una LAN pero más pequeña que una WAN.' },
+      { texto: '¿Cuál de estos es un ejemplo de WAN?', opciones: ['La red WiFi de tu casa', 'Internet', 'Un cable entre dos PCs', 'Un switch conectando impresoras'], respuestaCorrecta: 1, explicacion: 'Internet es la WAN más grande del mundo. Conecta millones de redes locales (LANs) a nivel global.' },
+      { texto: '¿Qué recurso NO se puede compartir típicamente en una red?', opciones: ['Impresoras', 'Archivos', 'Conexión a Internet', 'El monitor físico de otra PC'], respuestaCorrecta: 3, explicacion: 'En una red se comparten recursos lógicos: archivos, impresoras, internet, bases de datos. Los monitores son hardware local de cada equipo.' },
+      { texto: '¿Qué tipo de red usarías para conectar 10 PCs en una sola oficina?', opciones: ['WAN', 'LAN', 'Internet', 'Satélite'], respuestaCorrecta: 1, explicacion: 'Una LAN es ideal para conectar dispositivos en un espacio reducido como una oficina, piso o edificio.' },
+      { texto: '¿Qué es una topología de red?', opciones: ['La velocidad de internet', 'La forma en que los dispositivos están conectados entre sí', 'El tipo de cable usado', 'La marca del router'], respuestaCorrecta: 1, explicacion: 'La topología describe la disposición física o lógica de los dispositivos: estrella, bus, anillo, malla, etc.' },
+      { texto: '¿Cuál es la topología más común en redes LAN modernas?', opciones: ['Bus', 'Anillo', 'Estrella', 'Malla completa'], respuestaCorrecta: 2, explicacion: 'En topología estrella, todos los dispositivos se conectan a un switch central. Es la más usada porque si un cable falla, solo afecta a ese dispositivo.' },
+      { texto: '¿Qué es un protocolo de red?', opciones: ['Un cable de red especial', 'Un conjunto de reglas que definen cómo se comunican los dispositivos', 'Un programa antivirus', 'Una marca de router'], respuestaCorrecta: 1, explicacion: 'Un protocolo es un conjunto de reglas y estándares que permiten que los dispositivos se entiendan entre sí (ej. TCP/IP, HTTP, DNS).' },
+      { texto: '¿Qué modelo define las 7 capas de comunicación de red?', opciones: ['Modelo TCP/IP', 'Modelo OSI', 'Modelo HTTP', 'Modelo LAN'], respuestaCorrecta: 1, explicacion: 'El modelo OSI (Open Systems Interconnection) tiene 7 capas: Física, Enlace, Red, Transporte, Sesión, Presentación y Aplicación.' },
+    ]
+  },
+
+  // ═══════════════════════════════════════════════════════════
+  // NIVEL 2 — Dispositivos de Red
+  // ═══════════════════════════════════════════════════════════
+  {
+    titulo: 'Dispositivos de Red',
+    descripcion: 'Conoce los equipos físicos que hacen funcionar una red: switch, router, AP.',
+    orden: 2,
+    xpRecompensa: 75,
+    preguntas: [
+      { texto: '¿Cuál es la función principal de un Switch?', opciones: ['Conectar la red a Internet', 'Conectar múltiples dispositivos dentro de una misma red local', 'Proteger contra virus', 'Almacenar archivos en la nube'], respuestaCorrecta: 1, explicacion: 'Un Switch recibe los datos y los envía solo al dispositivo correcto dentro de la red local, usando direcciones MAC.' },
+      { texto: '¿Qué dispositivo conecta dos redes diferentes (ej. tu oficina con Internet)?', opciones: ['Switch', 'Hub', 'Router', 'Repetidor'], respuestaCorrecta: 2, explicacion: 'El Router conecta redes distintas entre sí. En una clínica, conecta la red interna (LAN) con el proveedor de Internet (WAN).' },
+      { texto: '¿Cuál es la diferencia entre un Hub y un Switch?', opciones: ['Son exactamente iguales', 'El Hub envía datos a todos los puertos; el Switch solo al destino correcto', 'El Hub es más rápido', 'El Switch no usa cables'], respuestaCorrecta: 1, explicacion: 'El Hub reenvía todo el tráfico a todos los puertos (ineficiente). El Switch aprende las direcciones MAC y envía datos solo al puerto correcto.' },
+      { texto: '¿Qué es un Access Point (AP)?', opciones: ['Un tipo de firewall', 'Un dispositivo que crea una red WiFi conectándose al switch por cable', 'Un servidor de correo', 'Un programa antivirus'], respuestaCorrecta: 1, explicacion: 'Un AP se conecta a la red cableada y emite señal WiFi. En hospitales se instalan múltiples APs para cubrir todas las áreas.' },
+      { texto: '¿Qué hace un Modem?', opciones: ['Conecta dispositivos en la red local', 'Convierte la señal del proveedor de Internet a una señal que tu router puede usar', 'Bloquea virus', 'Almacena contraseñas'], respuestaCorrecta: 1, explicacion: 'El Modem (Modulador-Demodulador) convierte señales analógicas (teléfono/cable) a digitales y viceversa para conectarte a tu ISP.' },
+      { texto: '¿Qué es un Patch Panel?', opciones: ['Un panel de control del servidor', 'Un organizador donde terminan todos los cables de red de un edificio', 'Un tipo de switch inalámbrico', 'Un software de monitoreo'], respuestaCorrecta: 1, explicacion: 'El Patch Panel organiza las terminaciones de cables de red en un rack. Cada punto de red del edificio llega aquí y se conecta al switch con cables cortos (patch cords).' },
+      { texto: '¿Para qué sirve un Firewall de hardware?', opciones: ['Para enfriar los servidores', 'Para filtrar y controlar el tráfico de red entrante y saliente', 'Para acelerar la velocidad de internet', 'Para conectar impresoras'], respuestaCorrecta: 1, explicacion: 'Un Firewall de hardware es un equipo dedicado que inspecciona todo el tráfico y aplica reglas de seguridad para proteger la red interna.' },
+      { texto: '¿Qué es un UPS y por qué es importante para la red?', opciones: ['Un tipo de cable', 'Un sistema de alimentación ininterrumpida que mantiene los equipos encendidos si se corta la luz', 'Un protocolo de red', 'Un servidor web'], respuestaCorrecta: 1, explicacion: 'El UPS (Uninterruptible Power Supply) proporciona energía de respaldo. Si se va la luz, el UPS mantiene encendidos switches, routers y servidores críticos.' },
+      { texto: '¿Qué dispositivo usarías para extender la señal de red a un edificio a 500 metros?', opciones: ['Un cable UTP más largo', 'Un Media Converter con fibra óptica', 'Un hub', 'Un cable HDMI'], respuestaCorrecta: 1, explicacion: 'El cable UTP solo llega a 100m. Para distancias mayores se usa fibra óptica con Media Converters que convierten la señal de cobre a luz.' },
+      { texto: '¿Qué es un servidor en el contexto de redes?', opciones: ['Cualquier computadora con internet', 'Un equipo dedicado a proveer servicios (archivos, web, email) a otros dispositivos de la red', 'Un tipo de impresora', 'Un cable especial'], respuestaCorrecta: 1, explicacion: 'Un servidor es una computadora potente que ofrece servicios a los demás equipos (clientes): almacenamiento, bases de datos, aplicaciones, etc.' },
+    ]
+  },
+
+  // ═══════════════════════════════════════════════════════════
+  // NIVEL 3 — Cables y Conectores
+  // ═══════════════════════════════════════════════════════════
+  {
+    titulo: 'Cables y Conectores',
+    descripcion: 'Identifica los tipos de cable de red y cuándo usar cada uno.',
+    orden: 3,
+    xpRecompensa: 75,
+    preguntas: [
+      { texto: '¿Qué tipo de cable es el más común en redes de oficina?', opciones: ['Coaxial', 'Fibra óptica', 'UTP Cat 5e/6 (cable Ethernet)', 'Cable telefónico RJ-11'], respuestaCorrecta: 2, explicacion: 'El cable UTP con conector RJ-45 es el estándar en redes LAN. Cat 5e soporta hasta 1 Gbps y Cat 6 hasta 10 Gbps en tramos cortos.' },
+      { texto: '¿Cuál es la distancia máxima recomendada para un cable Ethernet UTP?', opciones: ['10 metros', '50 metros', '100 metros', '500 metros'], respuestaCorrecta: 2, explicacion: 'La norma establece un máximo de 100 metros para cable UTP. Más allá de eso se necesita un switch intermedio o fibra óptica.' },
+      { texto: '¿Qué conector usa un cable de red Ethernet?', opciones: ['RJ-11', 'RJ-45', 'USB-C', 'HDMI'], respuestaCorrecta: 1, explicacion: 'El conector RJ-45 tiene 8 pines y es el estándar para cables de red Ethernet. El RJ-11 (más pequeño, 4 pines) es para teléfonos.' },
+      { texto: '¿Cuál es la ventaja principal de la fibra óptica sobre el cable UTP?', opciones: ['Es más barata', 'Soporta mayores distancias y velocidades, y es inmune a interferencias electromagnéticas', 'Es más fácil de instalar', 'No necesita conectores'], respuestaCorrecta: 1, explicacion: 'La fibra óptica transmite datos con pulsos de luz. Llega a kilómetros de distancia, velocidades de 10-100 Gbps, y no le afectan las interferencias eléctricas.' },
+      { texto: '¿Qué significa Cat 6A en un cable de red?', opciones: ['Cable de 6 metros', 'Categoría 6 Aumentada: soporta 10 Gbps hasta 100 metros', 'Cable con 6 hilos', 'Cable para 6 dispositivos'], respuestaCorrecta: 1, explicacion: 'Cat 6A es una mejora del Cat 6 que soporta 10 Gbps a la distancia completa de 100m, ideal para infraestructura moderna.' },
+      { texto: '¿Qué es un cable crossover (cruzado)?', opciones: ['Un cable defectuoso', 'Un cable con los pines invertidos en un extremo, usado para conectar dos dispositivos iguales directamente', 'Un cable de fibra óptica', 'Un cable con más de 100 metros'], respuestaCorrecta: 1, explicacion: 'El cable cruzado invierte TX/RX en un extremo para conectar directamente dos PCs o dos switches. Los equipos modernos tienen Auto-MDIX y ya no lo necesitan.' },
+      { texto: '¿Qué herramienta se usa para colocar conectores RJ-45 en un cable UTP?', opciones: ['Destornillador', 'Crimpeadora (ponchadora)', 'Soldador', 'Martillo'], respuestaCorrecta: 1, explicacion: 'La crimpeadora o ponchadora presiona los pines del conector RJ-45 contra los hilos del cable UTP, creando una conexión segura.' },
+      { texto: '¿Qué estándar de cableado define el orden de colores de los hilos en un cable Ethernet?', opciones: ['IEEE 802.11', 'T-568A y T-568B', 'ISO 9001', 'HTTP/2'], respuestaCorrecta: 1, explicacion: 'T-568A y T-568B definen el orden de los 8 hilos de colores. T-568B es el más usado: Naranja-blanco, Naranja, Verde-blanco, Azul, Azul-blanco, Verde, Marrón-blanco, Marrón.' },
+      { texto: '¿Cuántos hilos (conductores) tiene un cable UTP Cat 6?', opciones: ['4', '6', '8', '12'], respuestaCorrecta: 2, explicacion: 'Todos los cables UTP de red tienen 8 hilos (4 pares trenzados). Gigabit Ethernet usa los 8 hilos para transmitir datos.' },
+      { texto: '¿Qué herramienta se usa para verificar si un cable de red está correctamente armado?', opciones: ['Multímetro', 'Tester de cables de red (cable tester)', 'Osciloscopio', 'Termómetro'], respuestaCorrecta: 1, explicacion: 'El cable tester envía señales por cada uno de los 8 hilos y verifica continuidad y orden correcto. Es indispensable para un técnico de redes.' },
+    ]
+  },
+
+  // ═══════════════════════════════════════════════════════════
+  // NIVEL 4 — Direcciones IP
+  // ═══════════════════════════════════════════════════════════
+  {
+    titulo: 'Direcciones IP',
+    descripcion: 'Entiende IPv4, IPs privadas vs públicas y máscaras de subred.',
+    orden: 4,
+    xpRecompensa: 100,
+    preguntas: [
+      { texto: '¿Cuál de las siguientes es una dirección IP privada?', opciones: ['8.8.8.8', '200.48.225.130', '192.168.1.100', '172.217.14.206'], respuestaCorrecta: 2, explicacion: 'Las IPs privadas son: 10.0.0.0/8, 172.16.0.0/12 y 192.168.0.0/16. No salen directamente a Internet; necesitan NAT.' },
+      { texto: '¿Qué indica la máscara de subred 255.255.255.0 (/24)?', opciones: ['Que hay 255 redes', 'Que los primeros 3 octetos identifican la red y el último identifica al host', 'Que la red es muy lenta', 'Que solo hay un dispositivo'], respuestaCorrecta: 1, explicacion: 'Con /24 los primeros 24 bits son la red. El último octeto permite 254 hosts utilizables (del .1 al .254).' },
+      { texto: '¿Cuántos hosts utilizables hay en una red /24?', opciones: ['256', '254', '255', '128'], respuestaCorrecta: 1, explicacion: '2^8 = 256 direcciones, menos la dirección de red (.0) y la de broadcast (.255), quedan 254 hosts utilizables.' },
+      { texto: '¿Qué es una dirección IP de broadcast?', opciones: ['La IP del router', 'Una IP especial que envía datos a TODOS los dispositivos de la red', 'La IP del servidor DNS', 'Una IP que no se puede usar'], respuestaCorrecta: 1, explicacion: 'La dirección de broadcast (ej. 192.168.1.255 en una red /24) envía paquetes a todos los dispositivos de esa subred simultáneamente.' },
+      { texto: '¿Qué hace NAT (Network Address Translation)?', opciones: ['Cifra los datos', 'Traduce IPs privadas a una IP pública para salir a Internet', 'Bloquea virus', 'Asigna IPs automáticamente'], respuestaCorrecta: 1, explicacion: 'NAT permite que múltiples dispositivos con IPs privadas compartan una sola IP pública para acceder a Internet. Lo hace el router.' },
+      { texto: '¿Qué es el Gateway (puerta de enlace) predeterminado?', opciones: ['La contraseña del WiFi', 'La dirección IP del router que conecta tu red local con otras redes o Internet', 'El nombre de la red', 'La velocidad de Internet'], respuestaCorrecta: 1, explicacion: 'El gateway es la IP del router. Cuando un PC quiere comunicarse con un dispositivo fuera de su red, envía los datos al gateway.' },
+      { texto: '¿Qué versión de IP usa direcciones de 128 bits?', opciones: ['IPv4', 'IPv6', 'IPv3', 'IPv5'], respuestaCorrecta: 1, explicacion: 'IPv6 usa direcciones de 128 bits (ej. 2001:0db8::1), permitiendo un número prácticamente ilimitado de direcciones. IPv4 usa solo 32 bits.' },
+      { texto: 'Si un PC tiene IP 10.0.50.12 y máscara 255.255.255.0, ¿puede comunicarse directamente con 10.0.51.20?', opciones: ['Sí, están en la misma red', 'No, están en subredes diferentes y necesitan un router', 'Solo si usan WiFi', 'Solo los fines de semana'], respuestaCorrecta: 1, explicacion: 'Con /24, la red de 10.0.50.x es diferente a 10.0.51.x. Necesitan un router (o switch L3) para comunicarse entre sí.' },
+      { texto: '¿Qué comando muestra la configuración IP de tu PC en Windows?', opciones: ['ping', 'ipconfig', 'netstat', 'tracert'], respuestaCorrecta: 1, explicacion: 'ipconfig muestra IP, máscara, gateway y DNS de cada interfaz de red. Con el parámetro /all muestra información extendida como MAC y DHCP.' },
+      { texto: '¿Qué rango de IPs privadas empieza con 172.16.x.x?', opciones: ['172.16.0.0 - 172.31.255.255', '172.16.0.0 - 172.16.255.255', '172.0.0.0 - 172.255.255.255', '172.16.0.0 - 172.17.0.0'], respuestaCorrecta: 0, explicacion: 'El rango privado clase B va de 172.16.0.0 a 172.31.255.255 (/12). Es común en redes empresariales medianas y grandes.' },
+    ]
+  },
+
+  // ═══════════════════════════════════════════════════════════
+  // NIVEL 5 — DHCP y DNS
+  // ═══════════════════════════════════════════════════════════
+  {
+    titulo: 'DHCP y DNS',
+    descripcion: 'Los servicios que asignan IPs automáticamente y traducen nombres de dominio.',
+    orden: 5,
+    xpRecompensa: 100,
+    preguntas: [
+      { texto: '¿Qué hace un servidor DHCP?', opciones: ['Bloquea virus', 'Asigna direcciones IP automáticamente a los dispositivos que se conectan', 'Traduce nombres de dominio', 'Almacena correos'], respuestaCorrecta: 1, explicacion: 'DHCP asigna IP, máscara, gateway y DNS automáticamente al conectar un dispositivo, evitando configuración manual.' },
+      { texto: '¿Qué pasa si el servidor DNS falla?', opciones: ['Las PCs se apagan', 'No puedes acceder a sitios web por nombre, pero sí por IP directa', 'Se pierden archivos', 'Las impresoras fallan'], respuestaCorrecta: 1, explicacion: 'Sin DNS no se resuelven nombres a IPs. Podrías escribir la IP directamente (ej. 142.250.185.14 para Google) y funcionaría.' },
+      { texto: '¿Qué información entrega un servidor DHCP a un dispositivo?', opciones: ['Solo la dirección IP', 'IP, máscara de subred, gateway y servidores DNS', 'Solo la contraseña WiFi', 'Solo el nombre de la red'], respuestaCorrecta: 1, explicacion: 'DHCP entrega un paquete completo: IP, máscara, puerta de enlace (gateway), servidores DNS primario y secundario, y el tiempo de concesión (lease).' },
+      { texto: '¿Qué es un "lease" (concesión) de DHCP?', opciones: ['Un contrato de alquiler del router', 'El tiempo que una IP asignada es válida antes de que el dispositivo deba renovarla', 'El precio del servicio', 'La velocidad de asignación'], respuestaCorrecta: 1, explicacion: 'El lease define cuánto tiempo un dispositivo puede usar esa IP. Al vencer, el dispositivo solicita renovación. Típicamente dura entre 8 y 24 horas.' },
+      { texto: '¿Qué comando libera y renueva la IP obtenida por DHCP en Windows?', opciones: ['ping /refresh', 'ipconfig /release seguido de ipconfig /renew', 'netstat /reset', 'tracert /new'], respuestaCorrecta: 1, explicacion: 'ipconfig /release libera la IP actual. ipconfig /renew solicita una nueva al servidor DHCP. Es el primer paso cuando un equipo no tiene IP.' },
+      { texto: '¿Qué son los DNS 8.8.8.8 y 8.8.4.4?', opciones: ['Servidores de correo de Gmail', 'Los servidores DNS públicos de Google', 'Las IPs de Facebook', 'Servidores DHCP gratuitos'], respuestaCorrecta: 1, explicacion: 'Google ofrece DNS públicos gratuitos. Son muy rápidos y confiables. Cloudflare ofrece 1.1.1.1 como alternativa aún más rápida.' },
+      { texto: '¿Qué tipo de registro DNS asocia un nombre de dominio con una dirección IP?', opciones: ['Registro MX', 'Registro A', 'Registro CNAME', 'Registro PTR'], respuestaCorrecta: 1, explicacion: 'El registro A (Address) mapea un nombre como "www.clinica.com" a una IP como "192.168.1.50". El MX es para correo, CNAME para alias.' },
+      { texto: '¿Qué pasa si dos dispositivos en la misma red tienen la misma IP?', opciones: ['Funcionan normalmente', 'Se produce un conflicto de IP y uno o ambos pierden conectividad', 'La red se vuelve más rápida', 'Se comparten los datos automáticamente'], respuestaCorrecta: 1, explicacion: 'Un conflicto de IP causa que los paquetes no sepan a quién dirigirse. DHCP evita esto al llevar un registro de IPs asignadas.' },
+      { texto: '¿Qué es una reserva de DHCP?', opciones: ['Bloquear una IP para que nadie la use', 'Asignar siempre la misma IP a un dispositivo específico basándose en su dirección MAC', 'Reservar ancho de banda', 'Guardar una copia del servidor'], respuestaCorrecta: 1, explicacion: 'Con una reserva DHCP, asocias una MAC a una IP fija. Ideal para servidores e impresoras que necesitan siempre la misma IP pero sin configurarla manualmente.' },
+      { texto: '¿Qué comando muestra la caché DNS local en Windows?', opciones: ['ipconfig /displaydns', 'ping /dns', 'netstat /dns', 'tracert /cache'], respuestaCorrecta: 0, explicacion: 'ipconfig /displaydns muestra todos los nombres resueltos recientemente. ipconfig /flushdns limpia esa caché cuando hay problemas de DNS.' },
+    ]
+  },
+
+  // ═══════════════════════════════════════════════════════════
+  // NIVEL 6 — VLANs y Segmentación
+  // ═══════════════════════════════════════════════════════════
+  {
+    titulo: 'VLANs y Segmentación',
+    descripcion: 'Aprende a dividir una red física en redes lógicas independientes.',
+    orden: 6,
+    xpRecompensa: 150,
+    preguntas: [
+      { texto: '¿Por qué se usan VLANs en un hospital?', opciones: ['Para que internet sea más rápido', 'Para separar el tráfico de áreas (Urgencias, Administración, Invitados) por seguridad y rendimiento', 'Para ahorrar cables', 'Son obligatorias por ley'], respuestaCorrecta: 1, explicacion: 'Las VLANs separan el tráfico lógicamente. Ej: VLAN 10 para equipos médicos, VLAN 20 para administración, VLAN 99 para WiFi invitados.' },
+      { texto: '¿Qué se necesita para que dos VLANs se comuniquen?', opciones: ['Nada, se comunican solas', 'Un cable especial', 'Un Router o Switch L3 con enrutamiento inter-VLAN', 'Desactivar el firewall'], respuestaCorrecta: 2, explicacion: 'Las VLANs están aisladas por defecto. Se necesita un router o switch L3 con enrutamiento inter-VLAN (router-on-a-stick o SVI).' },
+      { texto: '¿Qué es un puerto trunk en un switch?', opciones: ['Un puerto roto', 'Un puerto que transporta tráfico de múltiples VLANs simultáneamente usando etiquetas 802.1Q', 'Un puerto solo para servidores', 'Un puerto más rápido'], respuestaCorrecta: 1, explicacion: 'Un trunk lleva tráfico de varias VLANs entre switches. Cada trama se etiqueta con su VLAN ID usando el estándar IEEE 802.1Q.' },
+      { texto: '¿Qué es un puerto de acceso (access port)?', opciones: ['Un puerto que conecta con Internet', 'Un puerto asignado a una sola VLAN, donde se conectan dispositivos finales como PCs', 'Un puerto de administración', 'Un puerto de respaldo'], respuestaCorrecta: 1, explicacion: 'Los puertos de acceso pertenecen a una sola VLAN y no envían etiquetas 802.1Q. Cada PC, impresora o teléfono se conecta a un access port.' },
+      { texto: '¿Qué es la VLAN nativa?', opciones: ['La primera VLAN creada', 'La VLAN que maneja tráfico sin etiquetar en un enlace trunk', 'La VLAN más rápida', 'La VLAN para invitados'], respuestaCorrecta: 1, explicacion: 'Por defecto es la VLAN 1. El tráfico de la VLAN nativa viaja sin etiqueta por el trunk. Es buena práctica cambiarla por seguridad.' },
+      { texto: '¿Cuántas VLANs se pueden crear en un switch estándar?', opciones: ['10', '100', 'Hasta 4094', 'Ilimitadas'], respuestaCorrecta: 2, explicacion: 'El estándar 802.1Q permite IDs de VLAN del 1 al 4094. Las VLANs 1 y 4095 están reservadas. En la práctica, raramente se usan más de 50-100.' },
+      { texto: '¿Qué beneficio de seguridad ofrecen las VLANs?', opciones: ['Cifran todo el tráfico', 'Aíslan el tráfico entre departamentos, evitando que un virus en Administración afecte a Equipos Médicos', 'Eliminan la necesidad de contraseñas', 'Hacen invisible la red a los hackers'], respuestaCorrecta: 1, explicacion: 'El aislamiento entre VLANs es como tener redes físicas separadas. Un ataque en la VLAN de invitados no puede llegar a la VLAN médica sin pasar por el firewall.' },
+      { texto: '¿Qué es 802.1Q?', opciones: ['Un tipo de cable', 'El estándar IEEE que define cómo etiquetar tramas con información de VLAN', 'Un protocolo de WiFi', 'Una norma de seguridad eléctrica'], respuestaCorrecta: 1, explicacion: '802.1Q agrega 4 bytes a cada trama Ethernet con el VLAN ID. Esto permite que los switches sepan a qué VLAN pertenece cada paquete en un trunk.' },
+      { texto: '¿Qué es una VLAN de voz?', opciones: ['Una VLAN solo para videollamadas', 'Una VLAN dedicada al tráfico de telefonía IP (VoIP) para darle prioridad QoS', 'Una VLAN que solo permite comandos de voz', 'Una VLAN secreta'], respuestaCorrecta: 1, explicacion: 'Los teléfonos IP necesitan baja latencia. La VLAN de voz asegura que el tráfico VoIP tenga prioridad sobre los datos normales usando QoS.' },
+      { texto: '¿Qué pasa si un técnico conecta un PC a un puerto asignado a la VLAN equivocada?', opciones: ['El PC explota', 'El PC no podrá comunicarse con los dispositivos de su departamento correcto', 'No pasa nada', 'El switch se reinicia'], respuestaCorrecta: 1, explicacion: 'Si pones un PC de Administración en la VLAN de Urgencias, ese PC obtendrá una IP del rango equivocado y no accederá a los recursos de su área.' },
+    ]
+  },
+
+  // ═══════════════════════════════════════════════════════════
+  // NIVEL 7 — WiFi y Redes Inalámbricas
+  // ═══════════════════════════════════════════════════════════
+  {
+    titulo: 'WiFi y Redes Inalámbricas',
+    descripcion: 'Domina los estándares WiFi, canales, interferencias y buenas prácticas.',
+    orden: 7,
+    xpRecompensa: 150,
+    preguntas: [
+      { texto: '¿Cuál es la diferencia entre 2.4 GHz y 5 GHz en WiFi?', opciones: ['No hay diferencia', '2.4 GHz tiene mayor alcance pero menor velocidad; 5 GHz mayor velocidad pero menor alcance', '5 GHz solo funciona con cables', '2.4 GHz es más segura'], respuestaCorrecta: 1, explicacion: '2.4 GHz atraviesa mejor las paredes pero tiene más interferencia. 5 GHz ofrece más velocidad pero menor cobertura.' },
+      { texto: '¿Qué estándar WiFi se conoce como "WiFi 6"?', opciones: ['802.11n', '802.11ac', '802.11ax', '802.11g'], respuestaCorrecta: 2, explicacion: 'WiFi 6 (802.11ax) ofrece mayor velocidad, menor latencia y mejor rendimiento en ambientes con muchos dispositivos conectados.' },
+      { texto: '¿Cuántos canales no superpuestos hay en la banda de 2.4 GHz?', opciones: ['11', '3 (canales 1, 6 y 11)', '6', '13'], respuestaCorrecta: 1, explicacion: 'Aunque hay 11-13 canales disponibles, solo 1, 6 y 11 no se superponen entre sí. Usar otros causa interferencia con redes vecinas.' },
+      { texto: '¿Qué protocolo de seguridad WiFi es el más seguro actualmente?', opciones: ['WEP', 'WPA', 'WPA2', 'WPA3'], respuestaCorrecta: 3, explicacion: 'WPA3 es el más seguro. WEP está obsoleto y se puede hackear en minutos. WPA2 es aceptable pero WPA3 añade cifrado individualizado por dispositivo.' },
+      { texto: '¿Qué causa interferencia en redes WiFi de 2.4 GHz?', opciones: ['Los cables Ethernet', 'Microondas, teléfonos inalámbricos, Bluetooth y otras redes WiFi cercanas', 'Los monitores LCD', 'Las impresoras láser'], respuestaCorrecta: 1, explicacion: 'Muchos dispositivos usan 2.4 GHz: microondas, Bluetooth, teléfonos DECT. Por eso en hospitales densos se recomienda usar 5 GHz cuando sea posible.' },
+      { texto: '¿Qué es un SSID?', opciones: ['El tipo de cifrado', 'El nombre de la red WiFi que los usuarios ven al buscar redes', 'La contraseña de la red', 'La velocidad del router'], respuestaCorrecta: 1, explicacion: 'SSID (Service Set Identifier) es el nombre visible de la red. Se puede ocultar, pero eso no mejora mucho la seguridad.' },
+      { texto: '¿Qué es un controlador WiFi (Wireless Controller)?', opciones: ['Un mando a distancia para el router', 'Un equipo o software centralizado que gestiona y configura todos los Access Points de la red', 'Un tipo de antena', 'Un programa antivirus'], respuestaCorrecta: 1, explicacion: 'En redes empresariales con muchos APs, el controlador permite gestionar configuración, seguridad y roaming desde un solo punto.' },
+      { texto: '¿Qué es el roaming WiFi?', opciones: ['Usar WiFi en el extranjero', 'Cuando un dispositivo se mueve y cambia de un AP a otro sin perder la conexión', 'Cuando se cambia la contraseña', 'Cuando se reinicia el router'], respuestaCorrecta: 1, explicacion: 'En un hospital grande con múltiples APs, un médico con tablet puede caminar entre pisos y el roaming lo cambia de AP automáticamente sin desconectarse.' },
+      { texto: '¿Qué potencia de transmisión (dBm) se recomienda para un AP en interior?', opciones: ['Lo máximo posible siempre', 'La mínima necesaria para cubrir el área; típicamente entre 15-20 dBm', '0 dBm', '100 dBm'], respuestaCorrecta: 1, explicacion: 'Más potencia no es mejor. Causa interferencia con otros APs. Se debe ajustar para que cada AP cubra su zona sin invadir la zona del vecino.' },
+      { texto: '¿Por qué una red WiFi para invitados debe estar en una VLAN separada?', opciones: ['Para que sea más rápida', 'Para aislar a los invitados de la red interna y proteger datos sensibles del hospital', 'Por estética', 'No es necesario separarla'], respuestaCorrecta: 1, explicacion: 'Los invitados no deben acceder a servidores internos, expedientes médicos ni equipos de red. Una VLAN separada + firewall los aísla completamente.' },
+    ]
+  },
+
+  // ═══════════════════════════════════════════════════════════
+  // NIVEL 8 — Seguridad de Red
+  // ═══════════════════════════════════════════════════════════
+  {
+    titulo: 'Seguridad de Red',
+    descripcion: 'Firewall, ACLs, cifrado y las mejores prácticas para proteger la infraestructura.',
+    orden: 8,
+    xpRecompensa: 200,
+    preguntas: [
+      { texto: '¿Cuál es la función principal de un Firewall?', opciones: ['Acelerar la red', 'Filtrar y controlar el tráfico según reglas de seguridad', 'Asignar IPs', 'Hacer backups'], respuestaCorrecta: 1, explicacion: 'El Firewall inspecciona paquetes y decide si permitirlos o bloquearlos según las reglas. Es la primera línea de defensa de la red.' },
+      { texto: '¿Qué protocolo se debe usar para administrar switches de forma segura?', opciones: ['Telnet', 'HTTP', 'SSH (Secure Shell)', 'FTP'], respuestaCorrecta: 2, explicacion: 'SSH cifra toda la comunicación. Telnet envía contraseñas en texto plano visible por cualquiera en la red.' },
+      { texto: '¿Qué es una ACL (Access Control List)?', opciones: ['Una lista de contactos', 'Un conjunto de reglas que permiten o deniegan tráfico específico en un router o switch', 'Un tipo de cable', 'Un antivirus'], respuestaCorrecta: 1, explicacion: 'Las ACLs filtran tráfico por IP origen/destino, puerto o protocolo. Ej: permitir solo HTTP/HTTPS desde la VLAN de invitados.' },
+      { texto: '¿Qué es un ataque de "Man-in-the-Middle"?', opciones: ['Cuando alguien se para entre dos servidores', 'Cuando un atacante intercepta la comunicación entre dos dispositivos sin que lo sepan', 'Cuando se cae internet', 'Cuando se llena el disco duro'], respuestaCorrecta: 1, explicacion: 'En un MITM, el atacante captura y puede modificar los datos entre víctima y destino. HTTPS y VPN protegen contra esto cifrando la comunicación.' },
+      { texto: '¿Qué es Port Security en un switch?', opciones: ['Cerrar los puertos con llave', 'Una función que limita cuántas y cuáles MACs pueden conectarse a un puerto del switch', 'Un tipo de firewall', 'Un protocolo de cifrado'], respuestaCorrecta: 1, explicacion: 'Port Security previene que alguien conecte un switch no autorizado o robe datos. Si se detecta una MAC no permitida, el puerto se desactiva.' },
+      { texto: '¿Qué es una VPN y para qué sirve?', opciones: ['Un antivirus premium', 'Una red privada virtual que cifra la conexión para acceder de forma segura a la red interna desde fuera', 'Un tipo de cable', 'Un servidor DNS'], respuestaCorrecta: 1, explicacion: 'VPN (Virtual Private Network) crea un túnel cifrado. Un técnico puede acceder a la red del hospital desde su casa como si estuviera físicamente ahí.' },
+      { texto: '¿Qué significa el principio de "menor privilegio" en seguridad?', opciones: ['Dar acceso de administrador a todos', 'Dar a cada usuario solo los permisos mínimos necesarios para su trabajo', 'No dar acceso a nadie', 'Cambiar contraseñas cada hora'], respuestaCorrecta: 1, explicacion: 'Un recepcionista no necesita acceso al servidor de base de datos. Dar solo los permisos necesarios reduce el impacto si una cuenta se compromete.' },
+      { texto: '¿Qué es un IDS/IPS?', opciones: ['Un tipo de cable', 'Sistemas que detectan (IDS) o previenen (IPS) intrusiones y ataques en la red', 'Un servidor de correo', 'Un protocolo de WiFi'], respuestaCorrecta: 1, explicacion: 'IDS (Intrusion Detection System) detecta y alerta. IPS (Intrusion Prevention System) detecta Y bloquea automáticamente. Son complementarios al firewall.' },
+      { texto: '¿Por qué es peligroso dejar la contraseña por defecto en un switch o router?', opciones: ['No es peligroso', 'Las contraseñas por defecto son públicas y cualquiera podría tomar control del equipo', 'Solo afecta la velocidad', 'Solo es un problema estético'], respuestaCorrecta: 1, explicacion: 'Las contraseñas por defecto (admin/admin, cisco/cisco) están documentadas públicamente. Un atacante las prueba primero. Siempre cámbialas al instalar.' },
+      { texto: '¿Qué es 802.1X?', opciones: ['Un tipo de cable', 'Un estándar de autenticación que verifica la identidad de cada dispositivo antes de darle acceso a la red', 'Un protocolo de WiFi', 'Una versión de Windows'], respuestaCorrecta: 1, explicacion: '802.1X requiere que cada dispositivo se autentique (con usuario/contraseña o certificado) antes de acceder a la red. Si no se autentica, el puerto queda bloqueado.' },
+    ]
+  },
+
+  // ═══════════════════════════════════════════════════════════
+  // NIVEL 9 — Monitoreo y Troubleshooting
+  // ═══════════════════════════════════════════════════════════
+  {
+    titulo: 'Monitoreo y Troubleshooting',
+    descripcion: 'Herramientas y metodología para diagnosticar y resolver problemas de red.',
+    orden: 9,
+    xpRecompensa: 200,
+    preguntas: [
+      { texto: '¿Qué comando verificas primero cuando un equipo no tiene internet?', opciones: ['ipconfig /release', 'ping 8.8.8.8', 'format C:', 'netstat -a'], respuestaCorrecta: 1, explicacion: 'Ping envía paquetes ICMP y mide si responde. Ping a 8.8.8.8 verifica conectividad a Internet rápidamente.' },
+      { texto: '¿Cuál es el orden correcto de diagnóstico si un usuario reporta "no tengo internet"?', opciones: ['Reinstalar Windows', 'Cable → IP (ipconfig) → Ping gateway → Ping Internet → DNS', 'Llamar al ISP inmediatamente', 'Cambiar la PC'], respuestaCorrecta: 1, explicacion: 'El troubleshooting sigue las capas: capa física (cable), capa 3 (IP/gateway), y servicios (DNS). Esto te ahorra horas.' },
+      { texto: '¿Qué hace el comando tracert (traceroute)?', opciones: ['Borra archivos temporales', 'Muestra cada salto (router) que recorre un paquete hasta llegar al destino', 'Instala actualizaciones', 'Reinicia el router'], respuestaCorrecta: 1, explicacion: 'Tracert muestra la ruta completa. Si un salto tiene latencia alta o no responde, sabes exactamente dónde está el cuello de botella.' },
+      { texto: '¿Qué significa "Request timed out" en un ping?', opciones: ['El destino respondió correctamente', 'El paquete no recibió respuesta: el destino está caído, bloqueado o inalcanzable', 'La red es muy rápida', 'El comando está mal escrito'], respuestaCorrecta: 1, explicacion: 'Timeout significa que el paquete ICMP no obtuvo respuesta. Puede ser que el equipo esté apagado, el firewall lo bloquee, o haya un problema de ruta.' },
+      { texto: '¿Qué herramienta te permite capturar y analizar paquetes de red en tiempo real?', opciones: ['Microsoft Word', 'Wireshark', 'Paint', 'Calculadora'], respuestaCorrecta: 1, explicacion: 'Wireshark captura cada paquete que pasa por tu interfaz de red y permite inspeccionarlo en detalle. Es la herramienta #1 de diagnóstico avanzado.' },
+      { texto: '¿Qué es SNMP y para qué se usa?', opciones: ['Un tipo de cable', 'Un protocolo para monitorear y gestionar dispositivos de red remotamente', 'Un sistema operativo', 'Un antivirus'], respuestaCorrecta: 1, explicacion: 'SNMP (Simple Network Management Protocol) permite que herramientas como PRTG o Zabbix recopilen datos de switches, routers y servidores: CPU, tráfico, errores.' },
+      { texto: '¿Qué indica un LED ámbar/naranja en el puerto de un switch?', opciones: ['Todo funciona bien', 'Hay un problema: puede ser error de velocidad, duplex mismatch o fallo de enlace', 'El switch se está actualizando', 'Es solo decoración'], respuestaCorrecta: 1, explicacion: 'LED verde = enlace activo OK. LED ámbar = problema (error, colisiones, mismatch). LED apagado = sin enlace. Siempre revisa los LEDs primero.' },
+      { texto: '¿Qué comando muestra las conexiones activas y puertos en uso en Windows?', opciones: ['ipconfig', 'ping', 'netstat -an', 'tracert'], respuestaCorrecta: 2, explicacion: 'netstat -an muestra todas las conexiones TCP/UDP activas, sus estados y los puertos que están escuchando. Útil para detectar conexiones sospechosas.' },
+      { texto: '¿Qué es un "loop" de red y cómo se previene?', opciones: ['Un cable enrollado', 'Cuando dos switches se conectan en bucle causando una tormenta de broadcast; se previene con STP', 'Cuando internet da vueltas', 'Un tipo de topología'], respuestaCorrecta: 1, explicacion: 'Un loop crea una tormenta de broadcast que puede tumbar toda la red en segundos. STP (Spanning Tree Protocol) bloquea automáticamente los enlaces redundantes.' },
+      { texto: '¿Qué debes documentar después de resolver un problema de red?', opciones: ['Nada, ya se resolvió', 'El problema encontrado, los pasos de diagnóstico, la solución aplicada y cómo prevenirlo', 'Solo la hora de salida', 'Solo si fue un problema grave'], respuestaCorrecta: 1, explicacion: 'La documentación es crucial. Si otro técnico tiene el mismo problema a las 3am, tu documentación le ahorra horas. Registra síntomas, causa raíz y solución.' },
+    ]
+  },
+
+  // ═══════════════════════════════════════════════════════════
+  // NIVEL 10 — Arquitectura de Red Empresarial
+  // ═══════════════════════════════════════════════════════════
+  {
+    titulo: 'Arquitectura de Red Empresarial',
+    descripcion: 'Diseña redes escalables con modelo de 3 capas: Core, Distribución y Acceso.',
+    orden: 10,
+    xpRecompensa: 300,
+    preguntas: [
+      { texto: '¿Cuáles son las 3 capas del modelo jerárquico de red de Cisco?', opciones: ['Internet, Intranet y Extranet', 'Core (Núcleo), Distribución y Acceso', 'Hardware, Software y Firmware', 'LAN, MAN y WAN'], respuestaCorrecta: 1, explicacion: 'Core: backbone de alta velocidad. Distribución: aplica políticas, VLANs y enrutamiento. Acceso: conecta los dispositivos finales.' },
+      { texto: '¿Qué es la redundancia en una red y por qué importa?', opciones: ['Tener equipos de sobra en almacén', 'Duplicar enlaces y equipos para que si uno falla, otro tome el relevo sin caída', 'Usar un solo proveedor', 'Desactivar VLANs'], respuestaCorrecta: 1, explicacion: 'La redundancia garantiza alta disponibilidad. En un hospital, una caída de red puede afectar sistemas críticos de vida.' },
+      { texto: '¿Qué protocolo proporciona redundancia de gateway (puerta de enlace)?', opciones: ['DNS', 'HSRP/VRRP', 'DHCP', 'FTP'], respuestaCorrecta: 1, explicacion: 'HSRP (Cisco) y VRRP (estándar) permiten que dos routers compartan una IP virtual. Si el principal falla, el secundario asume automáticamente.' },
+      { texto: '¿Qué es EtherChannel (Link Aggregation)?', opciones: ['Un canal de YouTube sobre redes', 'Agrupar múltiples enlaces físicos entre switches para funcionar como uno solo con más ancho de banda', 'Un tipo de cable especial', 'Un protocolo de seguridad'], respuestaCorrecta: 1, explicacion: 'EtherChannel combina 2-8 enlaces en uno lógico. Si un enlace falla, los demás siguen funcionando. Multiplica el ancho de banda disponible.' },
+      { texto: '¿Qué es un stack de switches?', opciones: ['Apilar switches sin conectarlos', 'Conectar varios switches para que funcionen como una sola unidad lógica con gestión centralizada', 'Un switch muy alto', 'Una marca de switches'], respuestaCorrecta: 1, explicacion: 'El stacking permite gestionar múltiples switches como uno solo, simplificando la administración. Si un switch del stack falla, los demás continúan.' },
+      { texto: '¿Qué es QoS (Quality of Service)?', opciones: ['La calidad de los cables', 'Mecanismos para priorizar ciertos tipos de tráfico sobre otros en la red', 'La velocidad del internet', 'El servicio al cliente del ISP'], respuestaCorrecta: 1, explicacion: 'QoS prioriza tráfico crítico (VoIP, videoconferencia, sistemas clínicos) sobre tráfico menos urgente (descargas, navegación). Esencial en hospitales.' },
+      { texto: '¿Qué es un diagrama de red y por qué es fundamental?', opciones: ['Un dibujo decorativo', 'Un mapa visual de toda la infraestructura que documenta cómo están conectados los equipos', 'Un tipo de gráfico de Excel', 'Un requisito solo para auditorías'], respuestaCorrecta: 1, explicacion: 'Sin un diagrama actualizado, diagnosticar problemas es como trabajar a ciegas. Debe incluir equipos, IPs, VLANs, enlaces y ubicaciones físicas.' },
+      { texto: '¿Qué consideración es clave al diseñar una sala de servidores?', opciones: ['Que tenga ventanas grandes', 'Climatización adecuada, UPS, control de acceso, y cableado estructurado organizado', 'Que esté cerca de la cafetería', 'Que tenga muebles bonitos'], respuestaCorrecta: 1, explicacion: 'Los equipos generan mucho calor. Sin aire acondicionado adecuado se sobrecalientan. UPS protege de cortes eléctricos. El acceso debe ser restringido.' },
+      { texto: '¿Qué es un SLA (Service Level Agreement)?', opciones: ['Un tipo de cable', 'Un acuerdo que define los niveles de disponibilidad y rendimiento garantizados de un servicio', 'Un protocolo de red', 'Una marca de switches'], respuestaCorrecta: 1, explicacion: 'Un SLA de 99.9% significa máximo ~8.7 horas de caída al año. Define tiempo de respuesta, disponibilidad y penalizaciones si no se cumple.' },
+      { texto: '¿Qué es la segmentación en capas (defense in depth)?', opciones: ['Tener muchos cables', 'Aplicar múltiples capas de seguridad (firewall, VLANs, ACLs, 802.1X, IPS) para que si una falla, las demás protejan', 'Usar solo un antivirus muy bueno', 'Cambiar contraseñas frecuentemente'], respuestaCorrecta: 1, explicacion: 'Defense in depth: no confíes en una sola medida. Combina firewall perimetral + segmentación VLAN + control de acceso 802.1X + IPS + monitoreo continuo.' },
+    ]
+  },
+];

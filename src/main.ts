@@ -11,8 +11,8 @@ async function bootstrap() {
   // Prefijo global: todas las rutas empiezan con /api
   app.setGlobalPrefix('api');
 
-  // CORS para que el Frontend (Next.js en :3000) pueda conectarse
-  app.enableCors({ origin: ['http://localhost:3000', 'http://localhost:3001'], credentials: true });
+  // CORS para que el Frontend (Next.js en :3000, 3002, etc) pueda conectarse
+  app.enableCors({ origin: true, credentials: true });
 
   // Validación automática de DTOs con class-validator
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));

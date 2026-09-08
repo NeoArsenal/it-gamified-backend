@@ -10,8 +10,9 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-import { Controller, Get, Param } from '@nestjs/common';
+import { Controller, Get, Param, UseGuards } from '@nestjs/common';
 import { GamificacionService } from './gamificacion.service.js';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard.js';
 let GamificacionController = class GamificacionController {
     gamificacionService;
     constructor(gamificacionService) {
@@ -58,6 +59,7 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], GamificacionController.prototype, "getMedallas", null);
 GamificacionController = __decorate([
+    UseGuards(JwtAuthGuard),
     Controller('gamificacion'),
     __metadata("design:paramtypes", [GamificacionService])
 ], GamificacionController);

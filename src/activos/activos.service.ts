@@ -2,6 +2,7 @@ import { Injectable, NotFoundException, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Activo, EstadoActivo } from './entities/activo.entity.js';
+import { Intervencion } from './entities/intervencion.entity.js';
 import { CreateActivoDto } from './dto/create-activo.dto.js';
 import { UpdateActivoDto } from './dto/update-activo.dto.js';
 import { GamificacionService } from '../gamificacion/gamificacion.service.js';
@@ -14,6 +15,8 @@ export class ActivosService {
   constructor(
     @InjectRepository(Activo)
     private readonly activoRepo: Repository<Activo>,
+    @InjectRepository(Intervencion)
+    private readonly intervencionRepo: Repository<Intervencion>,
     private readonly gamificacionService: GamificacionService,
   ) {}
 
@@ -22,7 +25,21 @@ export class ActivosService {
   }
 
   async findOne(id: string) {
-    const activo = await this.activoRepo.findOneBy({ id });
+    let activo;
+    if (id.length < 36) {
+      // Soportar short IDs (ej. escaneos parciales o ingresos manuales) o búsqueda por código
+      activo = await this.activoRepo.createQueryBuilder('activo')
+        .leftJoinAndSelect('activo.intervenciones', 'intervenciones')
+        .where('activo.id LIKE :id', { id: `${id}%` })
+        .orWhere('activo.codigo = :codigo', { codigo: id })
+        .getOne();
+    } else {
+      activo = await this.activoRepo.findOne({
+        where: { id },
+        relations: { intervenciones: true }
+      });
+    }
+
     if (!activo) throw new NotFoundException(`Activo ${id} no encontrado`);
     return activo;
   }
@@ -60,5 +77,15 @@ export class ActivosService {
   async remove(id: string) {
     const activo = await this.findOne(id);
     await this.activoRepo.remove(activo);
+  }
+
+  async addIntervencion(id: string, descripcion: string, tecnicoId?: string) {
+    const activo = await this.findOne(id);
+    const intervencion = this.intervencionRepo.create({
+      descripcion,
+      tecnicoId,
+      activo
+    });
+    return this.intervencionRepo.save(intervencion);
   }
 }

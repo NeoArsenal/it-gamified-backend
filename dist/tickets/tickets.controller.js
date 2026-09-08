@@ -10,10 +10,11 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-import { Controller, Get, Post, Patch, Delete, Param, Body } from '@nestjs/common';
+import { Controller, Get, Post, Patch, Delete, Param, Body, UseGuards } from '@nestjs/common';
 import { TicketsService } from './tickets.service.js';
 import { CreateTicketDto } from './dto/create-ticket.dto.js';
 import { UpdateTicketDto } from './dto/update-ticket.dto.js';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard.js';
 let TicketsController = class TicketsController {
     ticketsService;
     constructor(ticketsService) {
@@ -75,6 +76,7 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], TicketsController.prototype, "remove", null);
 TicketsController = __decorate([
+    UseGuards(JwtAuthGuard),
     Controller('tickets'),
     __metadata("design:paramtypes", [TicketsService])
 ], TicketsController);

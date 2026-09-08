@@ -14,6 +14,12 @@ export class DireccionIP {
   ip: string;
 
   @Column({ nullable: true })
+  sede: string;
+
+  @Column({ nullable: true })
+  area: string;
+
+  @Column({ nullable: true })
   vlan: string;
 
   @Column({ type: 'varchar', default: EstadoIP.LIBRE })

@@ -7,12 +7,16 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Usuario } from './entities/usuario.entity.js';
+import { UsuariosController } from './usuarios.controller.js';
+import { UsuariosService } from './usuarios.service.js';
 let UsuariosModule = class UsuariosModule {
 };
 UsuariosModule = __decorate([
     Module({
         imports: [TypeOrmModule.forFeature([Usuario])],
-        exports: [TypeOrmModule],
+        controllers: [UsuariosController],
+        providers: [UsuariosService],
+        exports: [TypeOrmModule, UsuariosService],
     })
 ], UsuariosModule);
 export { UsuariosModule };

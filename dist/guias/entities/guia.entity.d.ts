@@ -4,6 +4,7 @@ export declare class Guia {
     id: string;
     titulo: string;
     urlPdf: string;
+    contenidoRichText: string;
     peso: string;
     autor: Relation<Usuario>;
     autorId: string;

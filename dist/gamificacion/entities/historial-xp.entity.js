@@ -14,6 +14,8 @@ export var AccionXP;
     AccionXP["GUIA_SUBIDA"] = "GUIA_SUBIDA";
     AccionXP["MISION_COMPLETADA"] = "MISION_COMPLETADA";
     AccionXP["BONUS_ADMIN"] = "BONUS_ADMIN";
+    AccionXP["EQUIPO_RESTAURADO"] = "EQUIPO_RESTAURADO";
+    AccionXP["CURSO_COMPLETADO"] = "CURSO_COMPLETADO";
 })(AccionXP || (AccionXP = {}));
 let HistorialXP = class HistorialXP {
     id;

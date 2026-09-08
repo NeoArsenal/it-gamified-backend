@@ -1,4 +1,6 @@
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, OneToMany } from 'typeorm';
+import type { Intervencion } from './intervencion.entity.js';
+import type { Relation } from 'typeorm';
 
 export enum EstadoActivo {
   REPARACION = 'REPARACION',
@@ -26,6 +28,9 @@ export class Activo {
 
   @Column({ type: 'text', nullable: true })
   observaciones: string;
+
+  @OneToMany('Intervencion', (i: any) => i.activo, { eager: true })
+  intervenciones: Relation<Intervencion[]>;
 
   @CreateDateColumn()
   fechaRegistro: Date;

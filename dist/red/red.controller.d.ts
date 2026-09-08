@@ -6,7 +6,12 @@ export declare class RedController {
     findDispositivo(id: string): Promise<import("./entities/dispositivo-red.entity.js").DispositivoRed>;
     createDispositivo(data: any): Promise<import("./entities/dispositivo-red.entity.js").DispositivoRed>;
     updateDispositivo(id: string, data: any): Promise<import("./entities/dispositivo-red.entity.js").DispositivoRed>;
+    simularCaida(): Promise<import("./entities/dispositivo-red.entity.js").DispositivoRed | {
+        message: string;
+    }>;
+    restaurarDispositivo(id: string, tecnicoId: string): Promise<import("./entities/dispositivo-red.entity.js").DispositivoRed>;
     findAllIPs(): Promise<import("./entities/direccion-ip.entity.js").DireccionIP[]>;
+    registrarIP(data: any): Promise<import("./entities/direccion-ip.entity.js").DireccionIP>;
     asignarIP(ip: string, dispositivoId: string): Promise<import("./entities/direccion-ip.entity.js").DireccionIP>;
     liberarIP(ip: string): Promise<import("./entities/direccion-ip.entity.js").DireccionIP>;
 }

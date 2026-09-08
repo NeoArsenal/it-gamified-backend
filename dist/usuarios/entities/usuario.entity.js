@@ -22,6 +22,9 @@ let Usuario = class Usuario {
     nivel;
     xpActual;
     avatar;
+    tituloRPG;
+    preferencias;
+    modulosAccesibles;
     tickets;
     historialXP;
     medallas;
@@ -61,6 +64,18 @@ __decorate([
     Column({ default: '' }),
     __metadata("design:type", String)
 ], Usuario.prototype, "avatar", void 0);
+__decorate([
+    Column({ nullable: true }),
+    __metadata("design:type", String)
+], Usuario.prototype, "tituloRPG", void 0);
+__decorate([
+    Column({ type: 'json', nullable: true }),
+    __metadata("design:type", Object)
+], Usuario.prototype, "preferencias", void 0);
+__decorate([
+    Column({ type: 'simple-array', nullable: true }),
+    __metadata("design:type", Array)
+], Usuario.prototype, "modulosAccesibles", void 0);
 __decorate([
     OneToMany('Ticket', (ticket) => ticket.asignadoA),
     __metadata("design:type", Object)

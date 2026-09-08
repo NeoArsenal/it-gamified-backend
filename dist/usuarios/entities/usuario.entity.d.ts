@@ -16,6 +16,9 @@ export declare class Usuario {
     nivel: number;
     xpActual: number;
     avatar: string;
+    tituloRPG: string;
+    preferencias: any;
+    modulosAccesibles: string[];
     tickets: Relation<Ticket[]>;
     historialXP: Relation<HistorialXP[]>;
     medallas: Relation<UsuarioMedalla[]>;

@@ -40,14 +40,17 @@ export class SeedService implements OnModuleInit {
     const juan = await this.usuarioRepo.save(this.usuarioRepo.create({
       nombre: 'Juan Dev', email: 'juan@clinica.com', password: hash,
       rol: RolUsuario.ADMIN, nivel: 15, xpActual: 4500, avatar: 'JD',
+      modulosAccesibles: ['dashboard', 'tickets', 'network', 'knowledge', 'academy', 'inventory', 'analytics', 'settings', 'users']
     }));
     const carlos = await this.usuarioRepo.save(this.usuarioRepo.create({
       nombre: 'Carlos Mendoza', email: 'carlos@clinica.com', password: hash,
       rol: RolUsuario.TECNICO, nivel: 18, xpActual: 7200, avatar: 'CM',
+      modulosAccesibles: ['dashboard', 'tickets', 'knowledge', 'academy', 'settings']
     }));
     const ana = await this.usuarioRepo.save(this.usuarioRepo.create({
       nombre: 'Ana Gómez', email: 'ana@clinica.com', password: hash,
       rol: RolUsuario.TECNICO, nivel: 14, xpActual: 3800, avatar: 'AG',
+      modulosAccesibles: ['dashboard', 'tickets', 'knowledge', 'academy', 'settings']
     }));
 
     // ── Medallas ──────────────────────────────────────────────

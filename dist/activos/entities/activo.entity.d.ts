@@ -1,3 +1,5 @@
+import type { Intervencion } from './intervencion.entity.js';
+import type { Relation } from 'typeorm';
 export declare enum EstadoActivo {
     REPARACION = "REPARACION",
     BAJA = "BAJA",
@@ -9,6 +11,7 @@ export declare class Activo {
     tipo: string;
     estado: EstadoActivo;
     observaciones: string;
+    intervenciones: Relation<Intervencion[]>;
     fechaRegistro: Date;
     fechaActualizacion: Date;
 }

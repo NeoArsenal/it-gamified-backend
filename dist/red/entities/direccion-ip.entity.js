@@ -16,6 +16,8 @@ export var EstadoIP;
 })(EstadoIP || (EstadoIP = {}));
 let DireccionIP = class DireccionIP {
     ip;
+    sede;
+    area;
     vlan;
     estado;
     dispositivo;
@@ -25,6 +27,14 @@ __decorate([
     PrimaryColumn(),
     __metadata("design:type", String)
 ], DireccionIP.prototype, "ip", void 0);
+__decorate([
+    Column({ nullable: true }),
+    __metadata("design:type", String)
+], DireccionIP.prototype, "sede", void 0);
+__decorate([
+    Column({ nullable: true }),
+    __metadata("design:type", String)
+], DireccionIP.prototype, "area", void 0);
 __decorate([
     Column({ nullable: true }),
     __metadata("design:type", String)

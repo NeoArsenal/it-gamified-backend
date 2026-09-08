@@ -15,6 +15,9 @@ export declare class GamificacionController {
         nivel: number;
         xpActual: number;
         avatar: string;
+        tituloRPG: string;
+        preferencias: any;
+        modulosAccesibles: string[];
         tickets: import("typeorm").Relation<import("../tickets/entities/ticket.entity.js").Ticket[]>;
         historialXP: import("typeorm").Relation<import("./entities/historial-xp.entity.js").HistorialXP[]>;
         guias: import("typeorm").Relation<import("../guias/entities/guia.entity.js").Guia[]>;

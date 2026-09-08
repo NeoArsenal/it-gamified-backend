@@ -15,21 +15,37 @@ import { Injectable, NotFoundException, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Activo, EstadoActivo } from './entities/activo.entity.js';
+import { Intervencion } from './entities/intervencion.entity.js';
 import { GamificacionService } from '../gamificacion/gamificacion.service.js';
 import { AccionXP } from '../gamificacion/entities/historial-xp.entity.js';
 let ActivosService = ActivosService_1 = class ActivosService {
     activoRepo;
+    intervencionRepo;
     gamificacionService;
     logger = new Logger(ActivosService_1.name);
-    constructor(activoRepo, gamificacionService) {
+    constructor(activoRepo, intervencionRepo, gamificacionService) {
         this.activoRepo = activoRepo;
+        this.intervencionRepo = intervencionRepo;
         this.gamificacionService = gamificacionService;
     }
     async findAll() {
         return this.activoRepo.find({ order: { fechaRegistro: 'DESC' } });
     }
     async findOne(id) {
-        const activo = await this.activoRepo.findOneBy({ id });
+        let activo;
+        if (id.length < 36) {
+            activo = await this.activoRepo.createQueryBuilder('activo')
+                .leftJoinAndSelect('activo.intervenciones', 'intervenciones')
+                .where('activo.id LIKE :id', { id: `${id}%` })
+                .orWhere('activo.codigo = :codigo', { codigo: id })
+                .getOne();
+        }
+        else {
+            activo = await this.activoRepo.findOne({
+                where: { id },
+                relations: { intervenciones: true }
+            });
+        }
         if (!activo)
             throw new NotFoundException(`Activo ${id} no encontrado`);
         return activo;
@@ -57,11 +73,22 @@ let ActivosService = ActivosService_1 = class ActivosService {
         const activo = await this.findOne(id);
         await this.activoRepo.remove(activo);
     }
+    async addIntervencion(id, descripcion, tecnicoId) {
+        const activo = await this.findOne(id);
+        const intervencion = this.intervencionRepo.create({
+            descripcion,
+            tecnicoId,
+            activo
+        });
+        return this.intervencionRepo.save(intervencion);
+    }
 };
 ActivosService = ActivosService_1 = __decorate([
     Injectable(),
     __param(0, InjectRepository(Activo)),
+    __param(1, InjectRepository(Intervencion)),
     __metadata("design:paramtypes", [Repository,
+        Repository,
         GamificacionService])
 ], ActivosService);
 export { ActivosService };

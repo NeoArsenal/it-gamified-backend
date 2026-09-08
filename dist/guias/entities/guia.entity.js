@@ -12,6 +12,7 @@ let Guia = class Guia {
     id;
     titulo;
     urlPdf;
+    contenidoRichText;
     peso;
     autor;
     autorId;
@@ -29,6 +30,10 @@ __decorate([
     Column({ nullable: true }),
     __metadata("design:type", String)
 ], Guia.prototype, "urlPdf", void 0);
+__decorate([
+    Column({ type: 'text', nullable: true }),
+    __metadata("design:type", String)
+], Guia.prototype, "contenidoRichText", void 0);
 __decorate([
     Column({ nullable: true }),
     __metadata("design:type", String)
