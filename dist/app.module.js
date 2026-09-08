@@ -6,6 +6,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AppController } from './app.controller.js';
 import { AppService } from './app.service.js';
 import { Usuario } from './usuarios/entities/usuario.entity.js';
@@ -31,16 +32,35 @@ import { GuiasModule } from './guias/guias.module.js';
 import { SeedModule } from './seed/seed.module.js';
 import { ActivosModule } from './activos/activos.module.js';
 import { AcademiaModule } from './academia/academia.module.js';
+import { StorageModule } from './storage/storage.module.js';
 let AppModule = class AppModule {
 };
 AppModule = __decorate([
     Module({
         imports: [
-            TypeOrmModule.forRoot({
-                type: 'better-sqlite3',
-                database: 'data/it-helpdesk.db',
-                entities: [Usuario, Ticket, HistorialXP, Medalla, UsuarioMedalla, DispositivoRed, DireccionIP, Guia, Activo, Intervencion, Curso, NivelAcademia, Pregunta, ProgresoUsuario],
-                synchronize: true,
+            ConfigModule.forRoot({ isGlobal: true }),
+            TypeOrmModule.forRootAsync({
+                imports: [ConfigModule],
+                inject: [ConfigService],
+                useFactory: (config) => {
+                    const isProd = config.get('NODE_ENV') === 'production';
+                    const dbUrl = config.get('DATABASE_URL');
+                    if (dbUrl) {
+                        return {
+                            type: 'postgres',
+                            url: dbUrl,
+                            entities: [Usuario, Ticket, HistorialXP, Medalla, UsuarioMedalla, DispositivoRed, DireccionIP, Guia, Activo, Intervencion, Curso, NivelAcademia, Pregunta, ProgresoUsuario],
+                            synchronize: !isProd,
+                            ssl: isProd ? { rejectUnauthorized: false } : false,
+                        };
+                    }
+                    return {
+                        type: 'better-sqlite3',
+                        database: 'data/it-helpdesk.db',
+                        entities: [Usuario, Ticket, HistorialXP, Medalla, UsuarioMedalla, DispositivoRed, DireccionIP, Guia, Activo, Intervencion, Curso, NivelAcademia, Pregunta, ProgresoUsuario],
+                        synchronize: true,
+                    };
+                }
             }),
             AuthModule,
             UsuariosModule,
@@ -51,6 +71,7 @@ AppModule = __decorate([
             SeedModule,
             ActivosModule,
             AcademiaModule,
+            StorageModule,
         ],
         controllers: [AppController],
         providers: [AppService],

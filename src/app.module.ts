@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AppController } from './app.controller.js';
 import { AppService } from './app.service.js';
 
@@ -29,14 +30,37 @@ import { GuiasModule } from './guias/guias.module.js';
 import { SeedModule } from './seed/seed.module.js';
 import { ActivosModule } from './activos/activos.module.js';
 import { AcademiaModule } from './academia/academia.module.js';
+import { StorageModule } from './storage/storage.module.js';
 
 @Module({
   imports: [
-    TypeOrmModule.forRoot({
-      type: 'better-sqlite3',
-      database: 'data/it-helpdesk.db',
-      entities: [Usuario, Ticket, HistorialXP, Medalla, UsuarioMedalla, DispositivoRed, DireccionIP, Guia, Activo, Intervencion, Curso, NivelAcademia, Pregunta, ProgresoUsuario],
-      synchronize: true, // Auto-crear tablas (solo para desarrollo)
+    ConfigModule.forRoot({ isGlobal: true }),
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (config: ConfigService) => {
+        const isProd = config.get('NODE_ENV') === 'production';
+        const dbUrl = config.get('DATABASE_URL');
+        
+        // Si hay una URL de DB, asumimos Postgres (para prod o supabase local)
+        if (dbUrl) {
+          return {
+            type: 'postgres',
+            url: dbUrl,
+            entities: [Usuario, Ticket, HistorialXP, Medalla, UsuarioMedalla, DispositivoRed, DireccionIP, Guia, Activo, Intervencion, Curso, NivelAcademia, Pregunta, ProgresoUsuario],
+            synchronize: !isProd, // En producción se usan migraciones
+            ssl: isProd ? { rejectUnauthorized: false } : false,
+          };
+        }
+
+        // Fallback a SQLite local si no hay DATABASE_URL configurada
+        return {
+          type: 'better-sqlite3',
+          database: 'data/it-helpdesk.db',
+          entities: [Usuario, Ticket, HistorialXP, Medalla, UsuarioMedalla, DispositivoRed, DireccionIP, Guia, Activo, Intervencion, Curso, NivelAcademia, Pregunta, ProgresoUsuario],
+          synchronize: true,
+        };
+      }
     }),
     AuthModule,
     UsuariosModule,
@@ -47,6 +71,7 @@ import { AcademiaModule } from './academia/academia.module.js';
     SeedModule,
     ActivosModule,
     AcademiaModule,
+    StorageModule,
   ],
   controllers: [AppController],
   providers: [AppService],
