@@ -7,7 +7,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, OneToMany } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, OneToMany, ManyToOne, JoinColumn } from 'typeorm';
 export var TipoDispositivo;
 (function (TipoDispositivo) {
     TipoDispositivo["SWITCH"] = "SWITCH";
@@ -30,6 +30,8 @@ let DispositivoRed = class DispositivoRed {
     ipAdministracion;
     direccionesIP;
     ultimoPing;
+    registradoPor;
+    registradoPorId;
     creadoEn;
     actualizadoEn;
 };
@@ -62,9 +64,18 @@ __decorate([
     __metadata("design:type", Object)
 ], DispositivoRed.prototype, "direccionesIP", void 0);
 __decorate([
-    Column({ type: 'datetime', nullable: true }),
+    Column({ nullable: true }),
     __metadata("design:type", Date)
 ], DispositivoRed.prototype, "ultimoPing", void 0);
+__decorate([
+    ManyToOne('Usuario', { nullable: true }),
+    JoinColumn({ name: 'registradoPorId' }),
+    __metadata("design:type", Object)
+], DispositivoRed.prototype, "registradoPor", void 0);
+__decorate([
+    Column({ nullable: true }),
+    __metadata("design:type", String)
+], DispositivoRed.prototype, "registradoPorId", void 0);
 __decorate([
     CreateDateColumn(),
     __metadata("design:type", Date)

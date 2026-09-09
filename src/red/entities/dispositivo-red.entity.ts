@@ -1,4 +1,4 @@
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, OneToMany } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, OneToMany, ManyToOne, JoinColumn } from 'typeorm';
 import type { DireccionIP } from './direccion-ip.entity.js';
 import type { Relation } from 'typeorm';
 
@@ -38,8 +38,15 @@ export class DispositivoRed {
   @OneToMany('DireccionIP', (ip: any) => ip.dispositivo)
   direccionesIP: Relation<DireccionIP[]>;
 
-  @Column({ type: 'datetime', nullable: true })
+  @Column({ nullable: true })
   ultimoPing: Date;
+
+  @ManyToOne('Usuario', { nullable: true })
+  @JoinColumn({ name: 'registradoPorId' })
+  registradoPor: Relation<any>;
+
+  @Column({ nullable: true })
+  registradoPorId: string;
 
   @CreateDateColumn()
   creadoEn: Date;
