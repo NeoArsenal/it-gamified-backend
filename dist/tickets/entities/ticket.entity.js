@@ -89,7 +89,7 @@ __decorate([
     __metadata("design:type", Date)
 ], Ticket.prototype, "creadoEn", void 0);
 __decorate([
-    Column({ type: 'datetime', nullable: true }),
+    Column({ nullable: true }),
     __metadata("design:type", Date)
 ], Ticket.prototype, "resueltoEn", void 0);
 __decorate([

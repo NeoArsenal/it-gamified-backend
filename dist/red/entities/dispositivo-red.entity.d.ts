@@ -20,6 +20,8 @@ export declare class DispositivoRed {
     ipAdministracion: string;
     direccionesIP: Relation<DireccionIP[]>;
     ultimoPing: Date;
+    registradoPor: Relation<any>;
+    registradoPorId: string;
     creadoEn: Date;
     actualizadoEn: Date;
 }

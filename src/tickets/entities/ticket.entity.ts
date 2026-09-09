@@ -60,7 +60,7 @@ export class Ticket {
   @CreateDateColumn()
   creadoEn: Date;
 
-  @Column({ type: 'datetime', nullable: true })
+  @Column({ nullable: true })
   resueltoEn: Date;
 
   @UpdateDateColumn()

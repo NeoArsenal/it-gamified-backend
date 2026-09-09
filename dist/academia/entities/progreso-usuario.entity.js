@@ -7,10 +7,12 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
 let ProgresoUsuario = class ProgresoUsuario {
     id;
+    usuario;
     usuarioId;
+    nivel;
     nivelId;
     completado;
     puntajeMaximo;
@@ -21,9 +23,19 @@ __decorate([
     __metadata("design:type", String)
 ], ProgresoUsuario.prototype, "id", void 0);
 __decorate([
+    ManyToOne('Usuario', { onDelete: 'CASCADE' }),
+    JoinColumn({ name: 'usuarioId' }),
+    __metadata("design:type", Object)
+], ProgresoUsuario.prototype, "usuario", void 0);
+__decorate([
     Column(),
     __metadata("design:type", String)
 ], ProgresoUsuario.prototype, "usuarioId", void 0);
+__decorate([
+    ManyToOne('NivelAcademia', { onDelete: 'CASCADE' }),
+    JoinColumn({ name: 'nivelId' }),
+    __metadata("design:type", Object)
+], ProgresoUsuario.prototype, "nivel", void 0);
 __decorate([
     Column(),
     __metadata("design:type", String)

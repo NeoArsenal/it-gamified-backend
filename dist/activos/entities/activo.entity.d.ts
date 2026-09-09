@@ -11,6 +11,8 @@ export declare class Activo {
     tipo: string;
     estado: EstadoActivo;
     observaciones: string;
+    registradoPor: Relation<any>;
+    registradoPorId: string;
     intervenciones: Relation<Intervencion[]>;
     fechaRegistro: Date;
     fechaActualizacion: Date;

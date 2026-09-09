@@ -10,6 +10,10 @@ export class Intervencion {
   @Column({ type: 'text' })
   descripcion: string;
 
+  @ManyToOne('Usuario', { nullable: true })
+  @JoinColumn({ name: 'tecnicoId' })
+  tecnico: Relation<any>;
+
   @Column({ nullable: true })
   tecnicoId: string;
 

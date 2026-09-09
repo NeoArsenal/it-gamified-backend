@@ -1,4 +1,5 @@
 import { ConfigService } from '@nestjs/config';
+import 'multer';
 export declare class StorageService {
     private configService;
     private supabase;

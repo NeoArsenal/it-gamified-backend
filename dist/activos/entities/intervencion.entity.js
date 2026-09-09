@@ -11,6 +11,7 @@ import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, ManyToOne, Jo
 let Intervencion = class Intervencion {
     id;
     descripcion;
+    tecnico;
     tecnicoId;
     activo;
     activoId;
@@ -24,6 +25,11 @@ __decorate([
     Column({ type: 'text' }),
     __metadata("design:type", String)
 ], Intervencion.prototype, "descripcion", void 0);
+__decorate([
+    ManyToOne('Usuario', { nullable: true }),
+    JoinColumn({ name: 'tecnicoId' }),
+    __metadata("design:type", Object)
+], Intervencion.prototype, "tecnico", void 0);
 __decorate([
     Column({ nullable: true }),
     __metadata("design:type", String)

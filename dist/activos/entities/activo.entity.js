@@ -7,7 +7,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, OneToMany } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, OneToMany, ManyToOne, JoinColumn } from 'typeorm';
 export var EstadoActivo;
 (function (EstadoActivo) {
     EstadoActivo["REPARACION"] = "REPARACION";
@@ -20,6 +20,8 @@ let Activo = class Activo {
     tipo;
     estado;
     observaciones;
+    registradoPor;
+    registradoPorId;
     intervenciones;
     fechaRegistro;
     fechaActualizacion;
@@ -49,7 +51,16 @@ __decorate([
     __metadata("design:type", String)
 ], Activo.prototype, "observaciones", void 0);
 __decorate([
-    OneToMany('Intervencion', (i) => i.activo, { eager: true }),
+    ManyToOne('Usuario', { nullable: true }),
+    JoinColumn({ name: 'registradoPorId' }),
+    __metadata("design:type", Object)
+], Activo.prototype, "registradoPor", void 0);
+__decorate([
+    Column({ nullable: true }),
+    __metadata("design:type", String)
+], Activo.prototype, "registradoPorId", void 0);
+__decorate([
+    OneToMany('Intervencion', (intervencion) => intervencion.activo, { eager: true }),
     __metadata("design:type", Object)
 ], Activo.prototype, "intervenciones", void 0);
 __decorate([
