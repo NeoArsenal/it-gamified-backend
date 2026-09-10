@@ -7,9 +7,10 @@ import { Ticket } from '../tickets/entities/ticket.entity.js';
 import { DispositivoRed } from '../red/entities/dispositivo-red.entity.js';
 import { DireccionIP } from '../red/entities/direccion-ip.entity.js';
 import { Guia } from '../guias/entities/guia.entity.js';
+import { Ubicacion } from '../ubicaciones/entities/ubicacion.entity.js';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Usuario, Medalla, Ticket, DispositivoRed, DireccionIP, Guia])],
+  imports: [TypeOrmModule.forFeature([Usuario, Medalla, Ticket, DispositivoRed, DireccionIP, Guia, Ubicacion])],
   providers: [SeedService],
 })
 export class SeedModule {}

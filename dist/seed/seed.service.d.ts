@@ -6,6 +6,7 @@ import { Ticket } from '../tickets/entities/ticket.entity.js';
 import { DispositivoRed } from '../red/entities/dispositivo-red.entity.js';
 import { DireccionIP } from '../red/entities/direccion-ip.entity.js';
 import { Guia } from '../guias/entities/guia.entity.js';
+import { Ubicacion } from '../ubicaciones/entities/ubicacion.entity.js';
 export declare class SeedService implements OnModuleInit {
     private readonly usuarioRepo;
     private readonly medallaRepo;
@@ -13,8 +14,10 @@ export declare class SeedService implements OnModuleInit {
     private readonly dispositivoRepo;
     private readonly ipRepo;
     private readonly guiaRepo;
+    private readonly ubicacionRepo;
     private readonly logger;
-    constructor(usuarioRepo: Repository<Usuario>, medallaRepo: Repository<Medalla>, ticketRepo: Repository<Ticket>, dispositivoRepo: Repository<DispositivoRed>, ipRepo: Repository<DireccionIP>, guiaRepo: Repository<Guia>);
+    constructor(usuarioRepo: Repository<Usuario>, medallaRepo: Repository<Medalla>, ticketRepo: Repository<Ticket>, dispositivoRepo: Repository<DispositivoRed>, ipRepo: Repository<DireccionIP>, guiaRepo: Repository<Guia>, ubicacionRepo: Repository<Ubicacion>);
     onModuleInit(): Promise<void>;
     private seed;
+    private seedUbicaciones;
 }

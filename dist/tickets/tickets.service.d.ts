@@ -3,11 +3,13 @@ import { Ticket } from './entities/ticket.entity.js';
 import { CreateTicketDto } from './dto/create-ticket.dto.js';
 import { UpdateTicketDto } from './dto/update-ticket.dto.js';
 import { GamificacionService } from '../gamificacion/gamificacion.service.js';
+import { NotificacionesGateway } from '../notificaciones/notificaciones.gateway.js';
 export declare class TicketsService {
     private readonly ticketRepo;
     private readonly gamificacionService;
+    private readonly notificacionesGateway;
     private readonly logger;
-    constructor(ticketRepo: Repository<Ticket>, gamificacionService: GamificacionService);
+    constructor(ticketRepo: Repository<Ticket>, gamificacionService: GamificacionService, notificacionesGateway: NotificacionesGateway);
     findAll(): Promise<Ticket[]>;
     findOne(id: string): Promise<Ticket>;
     create(dto: CreateTicketDto): Promise<Ticket>;

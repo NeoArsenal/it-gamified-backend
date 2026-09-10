@@ -57,6 +57,19 @@ export class Ticket {
   @Column({ nullable: true, default: 'General' })
   departamento: string;
 
+  @Column({ nullable: true })
+  sede: string;
+
+  @Column({ nullable: true })
+  ubicacionEspecifica: string;
+
+  // Nuevos campos para Kiosco/Portal de auto-servicio
+  @Column({ nullable: true })
+  solicitanteNombre: string;
+
+  @Column({ nullable: true })
+  solicitanteContacto: string;
+
   @CreateDateColumn()
   creadoEn: Date;
 

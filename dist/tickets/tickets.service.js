@@ -17,13 +17,16 @@ import { Repository } from 'typeorm';
 import { Ticket, EstadoTicket, PrioridadTicket, XP_POR_PRIORIDAD } from './entities/ticket.entity.js';
 import { GamificacionService } from '../gamificacion/gamificacion.service.js';
 import { AccionXP } from '../gamificacion/entities/historial-xp.entity.js';
+import { NotificacionesGateway } from '../notificaciones/notificaciones.gateway.js';
 let TicketsService = TicketsService_1 = class TicketsService {
     ticketRepo;
     gamificacionService;
+    notificacionesGateway;
     logger = new Logger(TicketsService_1.name);
-    constructor(ticketRepo, gamificacionService) {
+    constructor(ticketRepo, gamificacionService, notificacionesGateway) {
         this.ticketRepo = ticketRepo;
         this.gamificacionService = gamificacionService;
+        this.notificacionesGateway = notificacionesGateway;
     }
     async findAll() {
         return this.ticketRepo.find({ order: { creadoEn: 'DESC' } });
@@ -42,6 +45,7 @@ let TicketsService = TicketsService_1 = class TicketsService {
             xpRecompensa: XP_POR_PRIORIDAD[prioridad],
         });
         const saved = await this.ticketRepo.save(ticket);
+        this.notificacionesGateway.emitirNuevoTicket(saved);
         this.logger.log(`🎫 Ticket "${saved.titulo}" creado (${saved.prioridad}) → +${saved.xpRecompensa} XP al resolverlo`);
         return saved;
     }
@@ -59,11 +63,15 @@ let TicketsService = TicketsService_1 = class TicketsService {
                 this.logger.log(`⚡ +${resultado.xpOtorgado} XP → Técnico ahora tiene ${resultado.nuevoXP} XP (Nivel ${resultado.nivel})`);
             }
         }
-        return this.ticketRepo.save(ticket);
+        const updated = await this.ticketRepo.save(ticket);
+        this.notificacionesGateway.emitirTicketActualizado(updated);
+        return updated;
     }
     async remove(id) {
         const ticket = await this.findOne(id);
         await this.ticketRepo.remove(ticket);
+        this.notificacionesGateway.emitirTicketEliminado(id);
+        this.logger.log(`🗑️ Ticket "${ticket.titulo}" eliminado`);
     }
     async getEstadisticas() {
         const total = await this.ticketRepo.count();
@@ -117,7 +125,8 @@ TicketsService = TicketsService_1 = __decorate([
     Injectable(),
     __param(0, InjectRepository(Ticket)),
     __metadata("design:paramtypes", [Repository,
-        GamificacionService])
+        GamificacionService,
+        NotificacionesGateway])
 ], TicketsService);
 export { TicketsService };
 //# sourceMappingURL=tickets.service.js.map

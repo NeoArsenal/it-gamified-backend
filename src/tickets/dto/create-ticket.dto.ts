@@ -25,4 +25,20 @@ export class CreateTicketDto {
   @IsString()
   @IsOptional()
   departamento?: string;
+
+  @IsString()
+  @IsOptional()
+  sede?: string;
+
+  @IsString()
+  @IsOptional()
+  ubicacionEspecifica?: string;
+
+  @IsString()
+  @IsOptional()
+  solicitanteNombre?: string;
+
+  @IsString()
+  @IsOptional()
+  solicitanteContacto?: string;
 }

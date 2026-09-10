@@ -20,33 +20,47 @@ let TicketsController = class TicketsController {
     constructor(ticketsService) {
         this.ticketsService = ticketsService;
     }
+    findAllPublic() { return this.ticketsService.findAll(); }
     findAll() { return this.ticketsService.findAll(); }
     getStats() { return this.ticketsService.getEstadisticas(); }
     getAnalytics() { return this.ticketsService.getAnalytics(); }
     findOne(id) { return this.ticketsService.findOne(id); }
     create(dto) { return this.ticketsService.create(dto); }
     update(id, dto) { return this.ticketsService.update(id, dto); }
-    remove(id) { return this.ticketsService.remove(id); }
+    remove(id) {
+        console.log(`[TicketsController] Attempting to delete ticket: ${id}`);
+        return this.ticketsService.remove(id);
+    }
 };
 __decorate([
+    Get('public'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", void 0)
+], TicketsController.prototype, "findAllPublic", null);
+__decorate([
+    UseGuards(JwtAuthGuard),
     Get(),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
 ], TicketsController.prototype, "findAll", null);
 __decorate([
+    UseGuards(JwtAuthGuard),
     Get('stats'),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
 ], TicketsController.prototype, "getStats", null);
 __decorate([
+    UseGuards(JwtAuthGuard),
     Get('analytics'),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
 ], TicketsController.prototype, "getAnalytics", null);
 __decorate([
+    UseGuards(JwtAuthGuard),
     Get(':id'),
     __param(0, Param('id')),
     __metadata("design:type", Function),
@@ -61,6 +75,7 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], TicketsController.prototype, "create", null);
 __decorate([
+    UseGuards(JwtAuthGuard),
     Patch(':id'),
     __param(0, Param('id')),
     __param(1, Body()),
@@ -69,6 +84,7 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], TicketsController.prototype, "update", null);
 __decorate([
+    UseGuards(JwtAuthGuard),
     Delete(':id'),
     __param(0, Param('id')),
     __metadata("design:type", Function),
@@ -76,7 +92,6 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], TicketsController.prototype, "remove", null);
 TicketsController = __decorate([
-    UseGuards(JwtAuthGuard),
     Controller('tickets'),
     __metadata("design:paramtypes", [TicketsService])
 ], TicketsController);

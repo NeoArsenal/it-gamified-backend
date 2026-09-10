@@ -20,6 +20,7 @@ import { Ticket, PrioridadTicket, EstadoTicket, XP_POR_PRIORIDAD } from '../tick
 import { DispositivoRed, TipoDispositivo, EstadoDispositivo } from '../red/entities/dispositivo-red.entity.js';
 import { DireccionIP, EstadoIP } from '../red/entities/direccion-ip.entity.js';
 import { Guia } from '../guias/entities/guia.entity.js';
+import { Ubicacion } from '../ubicaciones/entities/ubicacion.entity.js';
 import * as bcrypt from 'bcrypt';
 let SeedService = SeedService_1 = class SeedService {
     usuarioRepo;
@@ -28,24 +29,29 @@ let SeedService = SeedService_1 = class SeedService {
     dispositivoRepo;
     ipRepo;
     guiaRepo;
+    ubicacionRepo;
     logger = new Logger(SeedService_1.name);
-    constructor(usuarioRepo, medallaRepo, ticketRepo, dispositivoRepo, ipRepo, guiaRepo) {
+    constructor(usuarioRepo, medallaRepo, ticketRepo, dispositivoRepo, ipRepo, guiaRepo, ubicacionRepo) {
         this.usuarioRepo = usuarioRepo;
         this.medallaRepo = medallaRepo;
         this.ticketRepo = ticketRepo;
         this.dispositivoRepo = dispositivoRepo;
         this.ipRepo = ipRepo;
         this.guiaRepo = guiaRepo;
+        this.ubicacionRepo = ubicacionRepo;
     }
     async onModuleInit() {
         const count = await this.usuarioRepo.count();
-        if (count > 0) {
-            this.logger.log('✅ BD ya tiene datos, omitiendo semilla');
-            return;
+        if (count === 0) {
+            this.logger.log('🌱 Ejecutando semilla principal de datos...');
+            await this.seed();
         }
-        this.logger.log('🌱 Ejecutando semilla de datos...');
-        await this.seed();
-        this.logger.log('🌱 ¡Semilla completada!');
+        const ubiCount = await this.ubicacionRepo.count();
+        if (ubiCount === 0) {
+            this.logger.log('🌱 Ejecutando semilla de ubicaciones...');
+            await this.seedUbicaciones();
+        }
+        this.logger.log('🌱 ¡Semilla completada o actualizada!');
     }
     async seed() {
         const hash = await bcrypt.hash('admin123', 10);
@@ -95,6 +101,39 @@ let SeedService = SeedService_1 = class SeedService {
             { titulo: 'Checklist de Mantenimiento Preventivo', urlPdf: '/docs/mantenimiento.pdf', peso: '3.2 MB', autorId: carlos.id },
         ]);
     }
+    async seedUbicaciones() {
+        await this.ubicacionRepo.save([
+            { sede: 'Tower 1', departamento: 'Secretaría', area: 'Recepción' },
+            { sede: 'Tower 1', departamento: 'Secretaría', area: 'Archivo' },
+            { sede: 'Tower 1', departamento: 'Piso 5', area: 'Oficina 501' },
+            { sede: 'Tower 1', departamento: 'Piso 5', area: 'Oficina 502' },
+            { sede: 'Tower 1', departamento: 'Piso 5', area: 'Sala Reuniones 5' },
+            { sede: 'Tower 1', departamento: 'Piso 6', area: 'Oficina 601' },
+            { sede: 'Tower 1', departamento: 'Piso 6', area: 'Oficina 602' },
+            { sede: 'Tower 1', departamento: 'Piso 6', area: 'Sala Reuniones 6' },
+            { sede: 'Tower 1', departamento: 'Piso 7', area: 'Oficina 701' },
+            { sede: 'Tower 1', departamento: 'Piso 7', area: 'Oficina 702' },
+            { sede: 'Tower 1', departamento: 'Piso 7', area: 'Sala Reuniones 7' },
+            { sede: 'Tower 1', departamento: 'Piso 8', area: 'Oficina 801' },
+            { sede: 'Tower 1', departamento: 'Piso 8', area: 'Oficina 802' },
+            { sede: 'Tower 1', departamento: 'Piso 8', area: 'Sala Reuniones 8' },
+            { sede: 'Tower 1', departamento: 'Gerencia', area: 'Despacho Principal' },
+            { sede: 'Tower 1', departamento: 'Gerencia', area: 'Sala de Juntas' },
+            { sede: 'Clínica', departamento: 'Consultorios', area: 'Consultorio 1' },
+            { sede: 'Clínica', departamento: 'Consultorios', area: 'Consultorio 2' },
+            { sede: 'Clínica', departamento: 'Consultorios', area: 'Consultorio 3' },
+            { sede: 'Clínica', departamento: 'Consultorios', area: 'Consultorio 4' },
+            { sede: 'Clínica', departamento: 'Farmacia', area: 'Despacho' },
+            { sede: 'Clínica', departamento: 'Farmacia', area: 'Almacén' },
+            { sede: 'Clínica', departamento: 'Admisión', area: 'Ventanilla 1' },
+            { sede: 'Clínica', departamento: 'Admisión', area: 'Ventanilla 2' },
+            { sede: 'Clínica', departamento: 'Admisión', area: 'Back Office' },
+            { sede: 'Clínica', departamento: 'Urgencias', area: 'Triage' },
+            { sede: 'Clínica', departamento: 'Urgencias', area: 'Box 1' },
+            { sede: 'Clínica', departamento: 'Urgencias', area: 'Box 2' },
+            { sede: 'Clínica', departamento: 'Urgencias', area: 'Box 3' },
+        ]);
+    }
 };
 SeedService = SeedService_1 = __decorate([
     Injectable(),
@@ -104,7 +143,9 @@ SeedService = SeedService_1 = __decorate([
     __param(3, InjectRepository(DispositivoRed)),
     __param(4, InjectRepository(DireccionIP)),
     __param(5, InjectRepository(Guia)),
+    __param(6, InjectRepository(Ubicacion)),
     __metadata("design:paramtypes", [Repository,
+        Repository,
         Repository,
         Repository,
         Repository,

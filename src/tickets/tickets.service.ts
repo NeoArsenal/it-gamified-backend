@@ -6,6 +6,7 @@ import { CreateTicketDto } from './dto/create-ticket.dto.js';
 import { UpdateTicketDto } from './dto/update-ticket.dto.js';
 import { GamificacionService } from '../gamificacion/gamificacion.service.js';
 import { AccionXP } from '../gamificacion/entities/historial-xp.entity.js';
+import { NotificacionesGateway } from '../notificaciones/notificaciones.gateway.js';
 
 @Injectable()
 export class TicketsService {
@@ -14,6 +15,7 @@ export class TicketsService {
   constructor(
     @InjectRepository(Ticket) private readonly ticketRepo: Repository<Ticket>,
     private readonly gamificacionService: GamificacionService,
+    private readonly notificacionesGateway: NotificacionesGateway,
   ) {}
 
   async findAll(): Promise<Ticket[]> {
@@ -34,6 +36,7 @@ export class TicketsService {
       xpRecompensa: XP_POR_PRIORIDAD[prioridad],
     });
     const saved = await this.ticketRepo.save(ticket);
+    this.notificacionesGateway.emitirNuevoTicket(saved);
     this.logger.log(`🎫 Ticket "${saved.titulo}" creado (${saved.prioridad}) → +${saved.xpRecompensa} XP al resolverlo`);
     return saved;
   }
@@ -64,12 +67,16 @@ export class TicketsService {
       }
     }
 
-    return this.ticketRepo.save(ticket);
+    const updated = await this.ticketRepo.save(ticket);
+    this.notificacionesGateway.emitirTicketActualizado(updated);
+    return updated;
   }
 
   async remove(id: string): Promise<void> {
     const ticket = await this.findOne(id);
     await this.ticketRepo.remove(ticket);
+    this.notificacionesGateway.emitirTicketEliminado(id);
+    this.logger.log(`🗑️ Ticket "${ticket.titulo}" eliminado`);
   }
 
   /** Estadísticas rápidas para el dashboard */

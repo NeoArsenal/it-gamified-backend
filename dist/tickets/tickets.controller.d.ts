@@ -4,6 +4,7 @@ import { UpdateTicketDto } from './dto/update-ticket.dto.js';
 export declare class TicketsController {
     private readonly ticketsService;
     constructor(ticketsService: TicketsService);
+    findAllPublic(): Promise<import("./entities/ticket.entity.js").Ticket[]>;
     findAll(): Promise<import("./entities/ticket.entity.js").Ticket[]>;
     getStats(): Promise<{
         total: number;

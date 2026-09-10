@@ -39,6 +39,10 @@ let Ticket = class Ticket {
     asignadoAId;
     solicitante;
     departamento;
+    sede;
+    ubicacionEspecifica;
+    solicitanteNombre;
+    solicitanteContacto;
     creadoEn;
     resueltoEn;
     actualizadoEn;
@@ -84,6 +88,22 @@ __decorate([
     Column({ nullable: true, default: 'General' }),
     __metadata("design:type", String)
 ], Ticket.prototype, "departamento", void 0);
+__decorate([
+    Column({ nullable: true }),
+    __metadata("design:type", String)
+], Ticket.prototype, "sede", void 0);
+__decorate([
+    Column({ nullable: true }),
+    __metadata("design:type", String)
+], Ticket.prototype, "ubicacionEspecifica", void 0);
+__decorate([
+    Column({ nullable: true }),
+    __metadata("design:type", String)
+], Ticket.prototype, "solicitanteNombre", void 0);
+__decorate([
+    Column({ nullable: true }),
+    __metadata("design:type", String)
+], Ticket.prototype, "solicitanteContacto", void 0);
 __decorate([
     CreateDateColumn(),
     __metadata("design:type", Date)
