@@ -6,4 +6,8 @@ export declare class CreateTicketDto {
     asignadoAId?: string;
     solicitante?: string;
     departamento?: string;
+    sede?: string;
+    ubicacionEspecifica?: string;
+    solicitanteNombre?: string;
+    solicitanteContacto?: string;
 }

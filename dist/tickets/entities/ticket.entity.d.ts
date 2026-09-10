@@ -24,6 +24,10 @@ export declare class Ticket {
     asignadoAId: string;
     solicitante: string;
     departamento: string;
+    sede: string;
+    ubicacionEspecifica: string;
+    solicitanteNombre: string;
+    solicitanteContacto: string;
     creadoEn: Date;
     resueltoEn: Date;
     actualizadoEn: Date;

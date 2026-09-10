@@ -7,6 +7,7 @@ import { Ticket, PrioridadTicket, EstadoTicket, XP_POR_PRIORIDAD } from '../tick
 import { DispositivoRed, TipoDispositivo, EstadoDispositivo } from '../red/entities/dispositivo-red.entity.js';
 import { DireccionIP, EstadoIP } from '../red/entities/direccion-ip.entity.js';
 import { Guia } from '../guias/entities/guia.entity.js';
+import { Ubicacion } from '../ubicaciones/entities/ubicacion.entity.js';
 import * as bcrypt from 'bcrypt';
 
 @Injectable()
@@ -20,17 +21,23 @@ export class SeedService implements OnModuleInit {
     @InjectRepository(DispositivoRed) private readonly dispositivoRepo: Repository<DispositivoRed>,
     @InjectRepository(DireccionIP) private readonly ipRepo: Repository<DireccionIP>,
     @InjectRepository(Guia) private readonly guiaRepo: Repository<Guia>,
+    @InjectRepository(Ubicacion) private readonly ubicacionRepo: Repository<Ubicacion>,
   ) {}
 
   async onModuleInit() {
     const count = await this.usuarioRepo.count();
-    if (count > 0) {
-      this.logger.log('✅ BD ya tiene datos, omitiendo semilla');
-      return;
+    if (count === 0) {
+      this.logger.log('🌱 Ejecutando semilla principal de datos...');
+      await this.seed();
     }
-    this.logger.log('🌱 Ejecutando semilla de datos...');
-    await this.seed();
-    this.logger.log('🌱 ¡Semilla completada!');
+    
+    // Semilla de Ubicaciones independiente
+    const ubiCount = await this.ubicacionRepo.count();
+    if (ubiCount === 0) {
+      this.logger.log('🌱 Ejecutando semilla de ubicaciones...');
+      await this.seedUbicaciones();
+    }
+    this.logger.log('🌱 ¡Semilla completada o actualizada!');
   }
 
   private async seed() {
@@ -91,6 +98,44 @@ export class SeedService implements OnModuleInit {
       { titulo: 'Protocolo de Caída de Servidor HIS', urlPdf: '/docs/caida-servidor.pdf', peso: '1.1 MB', autorId: juan.id },
       { titulo: 'Guía de Creación de Usuarios VPN', urlPdf: '/docs/vpn-users.pdf', peso: '850 KB', autorId: ana.id },
       { titulo: 'Checklist de Mantenimiento Preventivo', urlPdf: '/docs/mantenimiento.pdf', peso: '3.2 MB', autorId: carlos.id },
+    ]);
+  }
+
+  private async seedUbicaciones() {
+    // ── Ubicaciones ──────────────────────────────────────────
+    await this.ubicacionRepo.save([
+      // Tower 1
+      { sede: 'Tower 1', departamento: 'Secretaría', area: 'Recepción' },
+      { sede: 'Tower 1', departamento: 'Secretaría', area: 'Archivo' },
+      { sede: 'Tower 1', departamento: 'Piso 5', area: 'Oficina 501' },
+      { sede: 'Tower 1', departamento: 'Piso 5', area: 'Oficina 502' },
+      { sede: 'Tower 1', departamento: 'Piso 5', area: 'Sala Reuniones 5' },
+      { sede: 'Tower 1', departamento: 'Piso 6', area: 'Oficina 601' },
+      { sede: 'Tower 1', departamento: 'Piso 6', area: 'Oficina 602' },
+      { sede: 'Tower 1', departamento: 'Piso 6', area: 'Sala Reuniones 6' },
+      { sede: 'Tower 1', departamento: 'Piso 7', area: 'Oficina 701' },
+      { sede: 'Tower 1', departamento: 'Piso 7', area: 'Oficina 702' },
+      { sede: 'Tower 1', departamento: 'Piso 7', area: 'Sala Reuniones 7' },
+      { sede: 'Tower 1', departamento: 'Piso 8', area: 'Oficina 801' },
+      { sede: 'Tower 1', departamento: 'Piso 8', area: 'Oficina 802' },
+      { sede: 'Tower 1', departamento: 'Piso 8', area: 'Sala Reuniones 8' },
+      { sede: 'Tower 1', departamento: 'Gerencia', area: 'Despacho Principal' },
+      { sede: 'Tower 1', departamento: 'Gerencia', area: 'Sala de Juntas' },
+
+      // Clínica
+      { sede: 'Clínica', departamento: 'Consultorios', area: 'Consultorio 1' },
+      { sede: 'Clínica', departamento: 'Consultorios', area: 'Consultorio 2' },
+      { sede: 'Clínica', departamento: 'Consultorios', area: 'Consultorio 3' },
+      { sede: 'Clínica', departamento: 'Consultorios', area: 'Consultorio 4' },
+      { sede: 'Clínica', departamento: 'Farmacia', area: 'Despacho' },
+      { sede: 'Clínica', departamento: 'Farmacia', area: 'Almacén' },
+      { sede: 'Clínica', departamento: 'Admisión', area: 'Ventanilla 1' },
+      { sede: 'Clínica', departamento: 'Admisión', area: 'Ventanilla 2' },
+      { sede: 'Clínica', departamento: 'Admisión', area: 'Back Office' },
+      { sede: 'Clínica', departamento: 'Urgencias', area: 'Triage' },
+      { sede: 'Clínica', departamento: 'Urgencias', area: 'Box 1' },
+      { sede: 'Clínica', departamento: 'Urgencias', area: 'Box 2' },
+      { sede: 'Clínica', departamento: 'Urgencias', area: 'Box 3' },
     ]);
   }
 }

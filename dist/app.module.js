@@ -23,6 +23,8 @@ import { Curso } from './academia/entities/curso.entity.js';
 import { NivelAcademia } from './academia/entities/nivel-academia.entity.js';
 import { Pregunta } from './academia/entities/pregunta.entity.js';
 import { ProgresoUsuario } from './academia/entities/progreso-usuario.entity.js';
+import { Ubicacion } from './ubicaciones/entities/ubicacion.entity.js';
+import { Configuracion } from './configuracion/entities/configuracion.entity.js';
 import { AuthModule } from './auth/auth.module.js';
 import { UsuariosModule } from './usuarios/usuarios.module.js';
 import { TicketsModule } from './tickets/tickets.module.js';
@@ -33,6 +35,9 @@ import { SeedModule } from './seed/seed.module.js';
 import { ActivosModule } from './activos/activos.module.js';
 import { AcademiaModule } from './academia/academia.module.js';
 import { StorageModule } from './storage/storage.module.js';
+import { UbicacionesModule } from './ubicaciones/ubicaciones.module.js';
+import { ConfiguracionModule } from './configuracion/configuracion.module.js';
+import { NotificacionesModule } from './notificaciones/notificaciones.module.js';
 let AppModule = class AppModule {
 };
 AppModule = __decorate([
@@ -49,7 +54,7 @@ AppModule = __decorate([
                         return {
                             type: 'postgres',
                             url: dbUrl,
-                            entities: [Usuario, Ticket, HistorialXP, Medalla, UsuarioMedalla, DispositivoRed, DireccionIP, Guia, Activo, Intervencion, Curso, NivelAcademia, Pregunta, ProgresoUsuario],
+                            entities: [Usuario, Ticket, HistorialXP, Medalla, UsuarioMedalla, DispositivoRed, DireccionIP, Guia, Activo, Intervencion, Curso, NivelAcademia, Pregunta, ProgresoUsuario, Ubicacion, Configuracion],
                             synchronize: !isProd,
                             ssl: isProd ? { rejectUnauthorized: false } : false,
                         };
@@ -57,7 +62,7 @@ AppModule = __decorate([
                     return {
                         type: 'better-sqlite3',
                         database: 'data/it-helpdesk.db',
-                        entities: [Usuario, Ticket, HistorialXP, Medalla, UsuarioMedalla, DispositivoRed, DireccionIP, Guia, Activo, Intervencion, Curso, NivelAcademia, Pregunta, ProgresoUsuario],
+                        entities: [Usuario, Ticket, HistorialXP, Medalla, UsuarioMedalla, DispositivoRed, DireccionIP, Guia, Activo, Intervencion, Curso, NivelAcademia, Pregunta, ProgresoUsuario, Ubicacion, Configuracion],
                         synchronize: true,
                     };
                 }
@@ -72,6 +77,9 @@ AppModule = __decorate([
             ActivosModule,
             AcademiaModule,
             StorageModule,
+            UbicacionesModule,
+            ConfiguracionModule,
+            NotificacionesModule
         ],
         controllers: [AppController],
         providers: [AppService],

@@ -16,6 +16,10 @@ export class CreateTicketDto {
     asignadoAId;
     solicitante;
     departamento;
+    sede;
+    ubicacionEspecifica;
+    solicitanteNombre;
+    solicitanteContacto;
 }
 __decorate([
     IsString(),
@@ -47,4 +51,24 @@ __decorate([
     IsOptional(),
     __metadata("design:type", String)
 ], CreateTicketDto.prototype, "departamento", void 0);
+__decorate([
+    IsString(),
+    IsOptional(),
+    __metadata("design:type", String)
+], CreateTicketDto.prototype, "sede", void 0);
+__decorate([
+    IsString(),
+    IsOptional(),
+    __metadata("design:type", String)
+], CreateTicketDto.prototype, "ubicacionEspecifica", void 0);
+__decorate([
+    IsString(),
+    IsOptional(),
+    __metadata("design:type", String)
+], CreateTicketDto.prototype, "solicitanteNombre", void 0);
+__decorate([
+    IsString(),
+    IsOptional(),
+    __metadata("design:type", String)
+], CreateTicketDto.prototype, "solicitanteContacto", void 0);
 //# sourceMappingURL=create-ticket.dto.js.map
