@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Get } from '@nestjs/common';
+import { Controller, Post, Body, Get, Put, Param } from '@nestjs/common';
 import { ConfiguracionService } from './configuracion.service.js';
 
 @Controller('configuracion')
@@ -24,4 +24,18 @@ export class ConfiguracionController {
     await this.configuracionService.setValue('PORTAL_PIN', pin);
     return { success: true };
   }
+
+  @Get('catalogos')
+  async getCatalogos() {
+    return this.configuracionService.getCatalogos();
+  }
+
+  @Put('catalogos/:tipo')
+  async setCatalogo(
+    @Param('tipo') tipo: 'departamentos' | 'categoriasActivos',
+    @Body('items') items: string[]
+  ) {
+    return this.configuracionService.setCatalogo(tipo, items);
+  }
 }
+

@@ -10,7 +10,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-import { Controller, Post, Body, Get } from '@nestjs/common';
+import { Controller, Post, Body, Get, Put, Param } from '@nestjs/common';
 import { ConfiguracionService } from './configuracion.service.js';
 let ConfiguracionController = class ConfiguracionController {
     configuracionService;
@@ -28,6 +28,12 @@ let ConfiguracionController = class ConfiguracionController {
     async setPortalPin(pin) {
         await this.configuracionService.setValue('PORTAL_PIN', pin);
         return { success: true };
+    }
+    async getCatalogos() {
+        return this.configuracionService.getCatalogos();
+    }
+    async setCatalogo(tipo, items) {
+        return this.configuracionService.setCatalogo(tipo, items);
     }
 };
 __decorate([
@@ -50,6 +56,20 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], ConfiguracionController.prototype, "setPortalPin", null);
+__decorate([
+    Get('catalogos'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], ConfiguracionController.prototype, "getCatalogos", null);
+__decorate([
+    Put('catalogos/:tipo'),
+    __param(0, Param('tipo')),
+    __param(1, Body('items')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Array]),
+    __metadata("design:returntype", Promise)
+], ConfiguracionController.prototype, "setCatalogo", null);
 ConfiguracionController = __decorate([
     Controller('configuracion'),
     __metadata("design:paramtypes", [ConfiguracionService])
