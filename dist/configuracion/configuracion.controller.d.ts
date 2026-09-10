@@ -11,4 +11,9 @@ export declare class ConfiguracionController {
     setPortalPin(pin: string): Promise<{
         success: boolean;
     }>;
+    getCatalogos(): Promise<{
+        departamentos: string[];
+        categoriasActivos: string[];
+    }>;
+    setCatalogo(tipo: 'departamentos' | 'categoriasActivos', items: string[]): Promise<string[]>;
 }
