@@ -6,9 +6,13 @@ import { JwtService } from '@nestjs/jwt';
 @Injectable()
 @WebSocketGateway({
   cors: {
-    origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+    origin: (origin, callback) => {
+      // Permitir cualquier origen (Vercel en producción, localhost en desarrollo, etc.)
+      callback(null, true);
+    },
     credentials: true,
   },
+  transports: ['websocket', 'polling'],
 })
 export class NotificacionesGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer()
@@ -20,14 +24,24 @@ export class NotificacionesGateway implements OnGatewayConnection, OnGatewayDisc
 
   async handleConnection(client: Socket) {
     try {
-      const token = client.handshake.auth.token || client.handshake.headers['authorization']?.split(' ')[1];
-      if (!token) throw new Error('No token provided');
-      const payload = this.jwtService.verify(token);
-      client.join('authenticated');
-      this.logger.log(`Client connected: ${client.id} - User ID: ${payload.sub}`);
+      let token = client.handshake.auth?.token 
+        || client.handshake.headers['authorization']?.split(' ')[1]
+        || (client.handshake.query?.token as string);
+
+      if (typeof token === 'string' && token.startsWith('Bearer ')) {
+        token = token.slice(7);
+      }
+
+      if (token) {
+        const payload = this.jwtService.verify(token);
+        client.join('authenticated');
+        this.logger.log(`Cliente autenticado conectado: ${client.id} - Usuario: ${payload.sub || payload.email}`);
+      } else {
+        this.logger.log(`Cliente conectado (sin token o público): ${client.id}`);
+      }
     } catch (error) {
-      this.logger.warn(`Desconectando cliente no autorizado: ${client.id} - Razón: ${error.message}`);
-      client.disconnect(true);
+      this.logger.warn(`Conexión de cliente ${client.id} advertencia de token: ${error.message}`);
+      // Permitir que el cliente permanezca conectado para recibir eventos públicos
     }
   }
 
