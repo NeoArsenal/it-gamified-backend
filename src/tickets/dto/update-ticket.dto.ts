@@ -21,4 +21,8 @@ export class UpdateTicketDto {
   @IsString()
   @IsOptional()
   asignadoAId?: string;
+
+  @IsString()
+  @IsOptional()
+  solucion?: string;
 }

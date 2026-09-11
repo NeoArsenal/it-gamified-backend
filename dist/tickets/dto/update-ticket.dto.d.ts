@@ -5,4 +5,5 @@ export declare class UpdateTicketDto {
     estado?: EstadoTicket;
     prioridad?: PrioridadTicket;
     asignadoAId?: string;
+    solucion?: string;
 }

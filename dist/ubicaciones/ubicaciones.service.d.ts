@@ -8,6 +8,6 @@ export declare class UbicacionesService {
     findSedes(): Promise<string[]>;
     findDepartamentosPorSede(sede: string): Promise<string[]>;
     findAreas(sede: string, departamento: string): Promise<string[]>;
-    create(createUbicacionDto: CreateUbicacionDto): Promise<Ubicacion>;
+    create(createUbicacionDto: CreateUbicacionDto, usuarioId?: string): Promise<Ubicacion>;
     remove(id: string): Promise<void>;
 }

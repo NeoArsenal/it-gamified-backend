@@ -12,7 +12,10 @@ export class UbicacionesService {
   ) {}
 
   async findAll(): Promise<Ubicacion[]> {
-    return this.ubicacionRepo.find();
+    return this.ubicacionRepo.find({
+      relations: { creadoPor: true },
+      order: { creadoEn: 'DESC' },
+    });
   }
 
   async findSedes(): Promise<string[]> {
@@ -42,8 +45,11 @@ export class UbicacionesService {
     return ubicaciones.map(u => u.area);
   }
 
-  async create(createUbicacionDto: CreateUbicacionDto): Promise<Ubicacion> {
-    const ubicacion = this.ubicacionRepo.create(createUbicacionDto);
+  async create(createUbicacionDto: CreateUbicacionDto, usuarioId?: string): Promise<Ubicacion> {
+    const ubicacion = this.ubicacionRepo.create({
+      ...createUbicacionDto,
+      creadoPorId: usuarioId,
+    });
     return this.ubicacionRepo.save(ubicacion);
   }
 

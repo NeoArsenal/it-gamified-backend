@@ -7,10 +7,14 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-import { Entity, PrimaryColumn, Column } from 'typeorm';
+import { Entity, PrimaryColumn, Column, UpdateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
+import { Usuario } from '../../usuarios/entities/usuario.entity.js';
 let Configuracion = class Configuracion {
     clave;
     valor;
+    actualizadoPorId;
+    actualizadoPor;
+    actualizadoEn;
 };
 __decorate([
     PrimaryColumn(),
@@ -20,8 +24,21 @@ __decorate([
     Column(),
     __metadata("design:type", String)
 ], Configuracion.prototype, "valor", void 0);
+__decorate([
+    Column({ nullable: true }),
+    __metadata("design:type", String)
+], Configuracion.prototype, "actualizadoPorId", void 0);
+__decorate([
+    ManyToOne(() => Usuario, { nullable: true, onDelete: 'SET NULL' }),
+    JoinColumn({ name: 'actualizadoPorId' }),
+    __metadata("design:type", Usuario)
+], Configuracion.prototype, "actualizadoPor", void 0);
+__decorate([
+    UpdateDateColumn(),
+    __metadata("design:type", Date)
+], Configuracion.prototype, "actualizadoEn", void 0);
 Configuracion = __decorate([
-    Entity()
+    Entity('configuracion')
 ], Configuracion);
 export { Configuracion };
 //# sourceMappingURL=configuracion.entity.js.map

@@ -76,6 +76,9 @@ export class Ticket {
   @Column({ nullable: true })
   resueltoEn: Date;
 
+  @Column({ type: 'text', nullable: true })
+  solucion: string;
+
   @UpdateDateColumn()
   actualizadoEn: Date;
 }

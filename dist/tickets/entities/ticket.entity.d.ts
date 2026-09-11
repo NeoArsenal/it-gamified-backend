@@ -30,5 +30,6 @@ export declare class Ticket {
     solicitanteContacto: string;
     creadoEn: Date;
     resueltoEn: Date;
+    solucion: string;
     actualizadoEn: Date;
 }

@@ -4,11 +4,11 @@ export declare class ConfiguracionService {
     private configRepo;
     constructor(configRepo: Repository<Configuracion>);
     getValue(clave: string, defaultValue?: string): Promise<string>;
-    setValue(clave: string, valor: string): Promise<Configuracion>;
+    setValue(clave: string, valor: string, usuarioId?: string): Promise<Configuracion>;
     verifyPin(pin: string): Promise<boolean>;
     getCatalogos(): Promise<{
         departamentos: string[];
         categoriasActivos: string[];
     }>;
-    setCatalogo(tipo: 'departamentos' | 'categoriasActivos', items: string[]): Promise<string[]>;
+    setCatalogo(tipo: 'departamentos' | 'categoriasActivos', items: string[], usuarioId?: string): Promise<string[]>;
 }

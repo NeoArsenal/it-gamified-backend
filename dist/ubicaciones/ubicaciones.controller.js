@@ -10,16 +10,17 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-import { Controller, Get, Post, Body, Param, Delete, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, Query, UseGuards, Request } from '@nestjs/common';
 import { UbicacionesService } from './ubicaciones.service.js';
 import { CreateUbicacionDto } from './dto/create-ubicacion.dto.js';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard.js';
 let UbicacionesController = class UbicacionesController {
     ubicacionesService;
     constructor(ubicacionesService) {
         this.ubicacionesService = ubicacionesService;
     }
-    create(createUbicacionDto) {
-        return this.ubicacionesService.create(createUbicacionDto);
+    create(createUbicacionDto, req) {
+        return this.ubicacionesService.create(createUbicacionDto, req.user?.id);
     }
     findAll() {
         return this.ubicacionesService.findAll();
@@ -42,10 +43,12 @@ let UbicacionesController = class UbicacionesController {
     }
 };
 __decorate([
+    UseGuards(JwtAuthGuard),
     Post(),
     __param(0, Body()),
+    __param(1, Request()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [CreateUbicacionDto]),
+    __metadata("design:paramtypes", [CreateUbicacionDto, Object]),
     __metadata("design:returntype", void 0)
 ], UbicacionesController.prototype, "create", null);
 __decorate([
@@ -76,6 +79,7 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], UbicacionesController.prototype, "findAreas", null);
 __decorate([
+    UseGuards(JwtAuthGuard),
     Delete(':id'),
     __param(0, Param('id')),
     __metadata("design:type", Function),
