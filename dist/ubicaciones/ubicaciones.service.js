@@ -20,7 +20,10 @@ let UbicacionesService = class UbicacionesService {
         this.ubicacionRepo = ubicacionRepo;
     }
     async findAll() {
-        return this.ubicacionRepo.find();
+        return this.ubicacionRepo.find({
+            relations: { creadoPor: true },
+            order: { creadoEn: 'DESC' },
+        });
     }
     async findSedes() {
         const ubicaciones = await this.ubicacionRepo
@@ -46,8 +49,11 @@ let UbicacionesService = class UbicacionesService {
             .getRawMany();
         return ubicaciones.map(u => u.area);
     }
-    async create(createUbicacionDto) {
-        const ubicacion = this.ubicacionRepo.create(createUbicacionDto);
+    async create(createUbicacionDto, usuarioId) {
+        const ubicacion = this.ubicacionRepo.create({
+            ...createUbicacionDto,
+            creadoPorId: usuarioId,
+        });
         return this.ubicacionRepo.save(ubicacion);
     }
     async remove(id) {

@@ -23,13 +23,16 @@ let ConfiguracionService = class ConfiguracionService {
         const config = await this.configRepo.findOne({ where: { clave } });
         return config ? config.valor : defaultValue;
     }
-    async setValue(clave, valor) {
+    async setValue(clave, valor, usuarioId) {
         let config = await this.configRepo.findOne({ where: { clave } });
         if (!config) {
-            config = this.configRepo.create({ clave, valor });
+            config = this.configRepo.create({ clave, valor, actualizadoPorId: usuarioId });
         }
         else {
             config.valor = valor;
+            if (usuarioId) {
+                config.actualizadoPorId = usuarioId;
+            }
         }
         return this.configRepo.save(config);
     }
@@ -62,9 +65,9 @@ let ConfiguracionService = class ConfiguracionService {
         }
         return { departamentos, categoriasActivos };
     }
-    async setCatalogo(tipo, items) {
+    async setCatalogo(tipo, items, usuarioId) {
         const clave = tipo === 'departamentos' ? 'CATALOGO_DEPARTAMENTOS' : 'CATALOGO_CATEGORIAS_ACTIVOS';
-        await this.setValue(clave, JSON.stringify(items));
+        await this.setValue(clave, JSON.stringify(items), usuarioId);
         return items;
     }
 };

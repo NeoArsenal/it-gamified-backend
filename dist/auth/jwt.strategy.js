@@ -14,15 +14,16 @@ import { ExtractJwt, Strategy } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { ConfigService } from '@nestjs/config';
 import { Repository } from 'typeorm';
 import { Usuario } from '../usuarios/entities/usuario.entity.js';
 let JwtStrategy = class JwtStrategy extends PassportStrategy(Strategy) {
     usuariosRepository;
-    constructor(usuariosRepository) {
+    constructor(usuariosRepository, configService) {
         super({
             jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
             ignoreExpiration: false,
-            secretOrKey: 'SECRET_GAMIFIED_KEY',
+            secretOrKey: configService.get('JWT_SECRET') || process.env.JWT_SECRET || 'SECRET_GAMIFIED_KEY',
         });
         this.usuariosRepository = usuariosRepository;
     }
@@ -38,7 +39,8 @@ let JwtStrategy = class JwtStrategy extends PassportStrategy(Strategy) {
 JwtStrategy = __decorate([
     Injectable(),
     __param(0, InjectRepository(Usuario)),
-    __metadata("design:paramtypes", [Repository])
+    __metadata("design:paramtypes", [Repository,
+        ConfigService])
 ], JwtStrategy);
 export { JwtStrategy };
 //# sourceMappingURL=jwt.strategy.js.map

@@ -8,12 +8,12 @@ export declare class ConfiguracionController {
     getPortalPin(): Promise<{
         pin: string;
     }>;
-    setPortalPin(pin: string): Promise<{
+    setPortalPin(pin: string, req: any): Promise<{
         success: boolean;
     }>;
     getCatalogos(): Promise<{
         departamentos: string[];
         categoriasActivos: string[];
     }>;
-    setCatalogo(tipo: 'departamentos' | 'categoriasActivos', items: string[]): Promise<string[]>;
+    setCatalogo(tipo: 'departamentos' | 'categoriasActivos', items: string[], req: any): Promise<string[]>;
 }

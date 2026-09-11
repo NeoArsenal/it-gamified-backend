@@ -7,12 +7,15 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
+import { Usuario } from '../../usuarios/entities/usuario.entity.js';
 let Ubicacion = class Ubicacion {
     id;
     sede;
     departamento;
     area;
+    creadoPorId;
+    creadoPor;
     creadoEn;
     actualizadoEn;
 };
@@ -32,6 +35,15 @@ __decorate([
     Column(),
     __metadata("design:type", String)
 ], Ubicacion.prototype, "area", void 0);
+__decorate([
+    Column({ nullable: true }),
+    __metadata("design:type", String)
+], Ubicacion.prototype, "creadoPorId", void 0);
+__decorate([
+    ManyToOne(() => Usuario, { nullable: true, onDelete: 'SET NULL' }),
+    JoinColumn({ name: 'creadoPorId' }),
+    __metadata("design:type", Usuario)
+], Ubicacion.prototype, "creadoPor", void 0);
 __decorate([
     CreateDateColumn(),
     __metadata("design:type", Date)

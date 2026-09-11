@@ -45,6 +45,7 @@ let Ticket = class Ticket {
     solicitanteContacto;
     creadoEn;
     resueltoEn;
+    solucion;
     actualizadoEn;
 };
 __decorate([
@@ -112,6 +113,10 @@ __decorate([
     Column({ nullable: true }),
     __metadata("design:type", Date)
 ], Ticket.prototype, "resueltoEn", void 0);
+__decorate([
+    Column({ type: 'text', nullable: true }),
+    __metadata("design:type", String)
+], Ticket.prototype, "solucion", void 0);
 __decorate([
     UpdateDateColumn(),
     __metadata("design:type", Date)

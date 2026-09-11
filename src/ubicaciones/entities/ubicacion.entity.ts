@@ -1,4 +1,5 @@
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
+import { Usuario } from '../../usuarios/entities/usuario.entity.js';
 
 @Entity('ubicaciones')
 export class Ubicacion {
@@ -13,6 +14,13 @@ export class Ubicacion {
 
   @Column()
   area: string;
+
+  @Column({ nullable: true })
+  creadoPorId?: string;
+
+  @ManyToOne(() => Usuario, { nullable: true, onDelete: 'SET NULL' })
+  @JoinColumn({ name: 'creadoPorId' })
+  creadoPor?: Usuario;
 
   @CreateDateColumn()
   creadoEn: Date;

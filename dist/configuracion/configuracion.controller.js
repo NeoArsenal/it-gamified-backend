@@ -10,8 +10,9 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-import { Controller, Post, Body, Get, Put, Param } from '@nestjs/common';
+import { Controller, Post, Body, Get, Put, Param, UseGuards, Request } from '@nestjs/common';
 import { ConfiguracionService } from './configuracion.service.js';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard.js';
 let ConfiguracionController = class ConfiguracionController {
     configuracionService;
     constructor(configuracionService) {
@@ -25,15 +26,15 @@ let ConfiguracionController = class ConfiguracionController {
         const pin = await this.configuracionService.getValue('PORTAL_PIN', '2026');
         return { pin };
     }
-    async setPortalPin(pin) {
-        await this.configuracionService.setValue('PORTAL_PIN', pin);
+    async setPortalPin(pin, req) {
+        await this.configuracionService.setValue('PORTAL_PIN', pin, req.user?.id);
         return { success: true };
     }
     async getCatalogos() {
         return this.configuracionService.getCatalogos();
     }
-    async setCatalogo(tipo, items) {
-        return this.configuracionService.setCatalogo(tipo, items);
+    async setCatalogo(tipo, items, req) {
+        return this.configuracionService.setCatalogo(tipo, items, req.user?.id);
     }
 };
 __decorate([
@@ -50,10 +51,12 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], ConfiguracionController.prototype, "getPortalPin", null);
 __decorate([
+    UseGuards(JwtAuthGuard),
     Post('portal-pin'),
     __param(0, Body('pin')),
+    __param(1, Request()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [String, Object]),
     __metadata("design:returntype", Promise)
 ], ConfiguracionController.prototype, "setPortalPin", null);
 __decorate([
@@ -63,11 +66,13 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], ConfiguracionController.prototype, "getCatalogos", null);
 __decorate([
+    UseGuards(JwtAuthGuard),
     Put('catalogos/:tipo'),
     __param(0, Param('tipo')),
     __param(1, Body('items')),
+    __param(2, Request()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, Array]),
+    __metadata("design:paramtypes", [String, Array, Object]),
     __metadata("design:returntype", Promise)
 ], ConfiguracionController.prototype, "setCatalogo", null);
 ConfiguracionController = __decorate([

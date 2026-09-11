@@ -3,7 +3,7 @@ import { CreateUbicacionDto } from './dto/create-ubicacion.dto.js';
 export declare class UbicacionesController {
     private readonly ubicacionesService;
     constructor(ubicacionesService: UbicacionesService);
-    create(createUbicacionDto: CreateUbicacionDto): Promise<import("./entities/ubicacion.entity.js").Ubicacion>;
+    create(createUbicacionDto: CreateUbicacionDto, req: any): Promise<import("./entities/ubicacion.entity.js").Ubicacion>;
     findAll(): Promise<import("./entities/ubicacion.entity.js").Ubicacion[]>;
     findSedes(): Promise<string[]>;
     findDepartamentos(sede: string): any[] | Promise<string[]>;

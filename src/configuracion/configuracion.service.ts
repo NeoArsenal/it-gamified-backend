@@ -15,12 +15,15 @@ export class ConfiguracionService {
     return config ? config.valor : defaultValue;
   }
 
-  async setValue(clave: string, valor: string): Promise<Configuracion> {
+  async setValue(clave: string, valor: string, usuarioId?: string): Promise<Configuracion> {
     let config = await this.configRepo.findOne({ where: { clave } });
     if (!config) {
-      config = this.configRepo.create({ clave, valor });
+      config = this.configRepo.create({ clave, valor, actualizadoPorId: usuarioId });
     } else {
       config.valor = valor;
+      if (usuarioId) {
+        config.actualizadoPorId = usuarioId;
+      }
     }
     return this.configRepo.save(config);
   }
@@ -59,9 +62,9 @@ export class ConfiguracionService {
     return { departamentos, categoriasActivos };
   }
 
-  async setCatalogo(tipo: 'departamentos' | 'categoriasActivos', items: string[]): Promise<string[]> {
+  async setCatalogo(tipo: 'departamentos' | 'categoriasActivos', items: string[], usuarioId?: string): Promise<string[]> {
     const clave = tipo === 'departamentos' ? 'CATALOGO_DEPARTAMENTOS' : 'CATALOGO_CATEGORIAS_ACTIVOS';
-    await this.setValue(clave, JSON.stringify(items));
+    await this.setValue(clave, JSON.stringify(items), usuarioId);
     return items;
   }
 }

@@ -15,6 +15,7 @@ export class UpdateTicketDto {
     estado;
     prioridad;
     asignadoAId;
+    solucion;
 }
 __decorate([
     IsString(),
@@ -41,4 +42,9 @@ __decorate([
     IsOptional(),
     __metadata("design:type", String)
 ], UpdateTicketDto.prototype, "asignadoAId", void 0);
+__decorate([
+    IsString(),
+    IsOptional(),
+    __metadata("design:type", String)
+], UpdateTicketDto.prototype, "solucion", void 0);
 //# sourceMappingURL=update-ticket.dto.js.map

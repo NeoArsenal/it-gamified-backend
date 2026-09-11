@@ -6,6 +6,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 import { Module, Global } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { NotificacionesGateway } from './notificaciones.gateway.js';
 let NotificacionesModule = class NotificacionesModule {
 };
@@ -13,9 +14,13 @@ NotificacionesModule = __decorate([
     Global(),
     Module({
         imports: [
-            JwtModule.register({
-                secret: 'SECRET_GAMIFIED_KEY',
-                signOptions: { expiresIn: '12h' },
+            JwtModule.registerAsync({
+                imports: [ConfigModule],
+                inject: [ConfigService],
+                useFactory: (configService) => ({
+                    secret: configService.get('JWT_SECRET') || process.env.JWT_SECRET || 'SECRET_GAMIFIED_KEY',
+                    signOptions: { expiresIn: '12h' },
+                }),
             }),
         ],
         providers: [NotificacionesGateway],
