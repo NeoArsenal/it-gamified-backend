@@ -10,7 +10,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-import { Controller, Get, Post, Patch, Body, Param, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Patch, Delete, Body, Param, UseGuards, Req } from '@nestjs/common';
 import { UsuariosService } from './usuarios.service.js';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard.js';
 import { RolesGuard } from '../auth/guards/roles.guard.js';
@@ -29,6 +29,10 @@ let UsuariosController = class UsuariosController {
     }
     updateUsuario(id, body) {
         return this.usuariosService.updateUsuario(id, body);
+    }
+    deleteUsuario(id, req) {
+        const currentUserId = req.user?.id;
+        return this.usuariosService.deleteUsuario(id, currentUserId);
     }
     findOne(id) {
         return this.usuariosService.findOne(id);
@@ -64,6 +68,16 @@ __decorate([
     __metadata("design:paramtypes", [String, Object]),
     __metadata("design:returntype", void 0)
 ], UsuariosController.prototype, "updateUsuario", null);
+__decorate([
+    UseGuards(RolesGuard),
+    Roles(RolUsuario.ADMIN),
+    Delete(':id'),
+    __param(0, Param('id')),
+    __param(1, Req()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", void 0)
+], UsuariosController.prototype, "deleteUsuario", null);
 __decorate([
     Get(':id'),
     __param(0, Param('id')),

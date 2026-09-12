@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, DataSource } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { Usuario, RolUsuario } from './entities/usuario.entity.js';
 
@@ -9,6 +9,7 @@ export class UsuariosService {
   constructor(
     @InjectRepository(Usuario)
     private readonly usuarioRepository: Repository<Usuario>,
+    private readonly dataSource: DataSource,
   ) {}
 
   async findAll(): Promise<Usuario[]> {
@@ -61,5 +62,26 @@ export class UsuariosService {
     }
 
     return this.usuarioRepository.save(usuario);
+  }
+
+  async deleteUsuario(id: string, currentUserId?: string): Promise<{ success: boolean; message: string }> {
+    if (currentUserId && id === currentUserId) {
+      throw new BadRequestException('No puedes eliminar tu propia cuenta de administrador en sesión');
+    }
+
+    const user = await this.findOne(id);
+
+    await this.dataSource.transaction(async (manager) => {
+      // Desvincular referencias que no tengan CASCADE
+      await manager.query(`UPDATE tickets SET "asignadoAId" = NULL WHERE "asignadoAId" = $1`, [id]).catch(() => {});
+      await manager.query(`UPDATE guias SET "autorId" = NULL WHERE "autorId" = $1`, [id]).catch(() => {});
+      await manager.query(`UPDATE ubicaciones SET "creadoPorId" = NULL WHERE "creadoPorId" = $1`, [id]).catch(() => {});
+      await manager.query(`UPDATE intervenciones SET "tecnicoId" = NULL WHERE "tecnicoId" = $1`, [id]).catch(() => {});
+      await manager.query(`UPDATE activos SET "responsableId" = NULL WHERE "responsableId" = $1`, [id]).catch(() => {});
+
+      await manager.remove(user);
+    });
+
+    return { success: true, message: `Usuario ${user.nombre} eliminado correctamente` };
   }
 }
