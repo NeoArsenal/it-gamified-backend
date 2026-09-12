@@ -7,7 +7,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-import { IsString, IsNotEmpty, IsOptional, IsEnum } from 'class-validator';
+import { IsString, IsNotEmpty, IsOptional, IsEnum, MaxLength } from 'class-validator';
 import { PrioridadTicket } from '../entities/ticket.entity.js';
 export class CreateTicketDto {
     titulo;
@@ -24,11 +24,13 @@ export class CreateTicketDto {
 __decorate([
     IsString(),
     IsNotEmpty({ message: 'El título es obligatorio' }),
+    MaxLength(150, { message: 'El título no puede superar los 150 caracteres' }),
     __metadata("design:type", String)
 ], CreateTicketDto.prototype, "titulo", void 0);
 __decorate([
     IsString(),
     IsOptional(),
+    MaxLength(1000),
     __metadata("design:type", String)
 ], CreateTicketDto.prototype, "descripcion", void 0);
 __decorate([
@@ -64,11 +66,13 @@ __decorate([
 __decorate([
     IsString(),
     IsOptional(),
+    MaxLength(50, { message: 'El nombre del solicitante no puede superar los 50 caracteres' }),
     __metadata("design:type", String)
 ], CreateTicketDto.prototype, "solicitanteNombre", void 0);
 __decorate([
     IsString(),
     IsOptional(),
+    MaxLength(20, { message: 'El teléfono o anexo no puede superar los 20 caracteres' }),
     __metadata("design:type", String)
 ], CreateTicketDto.prototype, "solicitanteContacto", void 0);
 //# sourceMappingURL=create-ticket.dto.js.map
