@@ -31,15 +31,41 @@ let StorageService = class StorageService {
         }
         const fileExt = file.originalname.split('.').pop();
         const fileName = `${path}/${uuidv4()}.${fileExt}`;
-        const { data, error } = await this.supabase.storage
+        let uploadRes = await this.supabase.storage
             .from(this.bucket)
             .upload(fileName, file.buffer, {
             contentType: file.mimetype,
             upsert: false,
         });
-        if (error) {
-            console.error('Error subiendo archivo a Supabase:', error);
-            throw new InternalServerErrorException('Error al subir el archivo');
+        if (uploadRes.error) {
+            console.error('Error subiendo archivo a Supabase:', uploadRes.error);
+            if (uploadRes.error.message?.includes('Bucket not found') ||
+                uploadRes.error.statusCode === '404' ||
+                uploadRes.error.message?.includes('not found')) {
+                try {
+                    const { error: createError } = await this.supabase.storage.createBucket(this.bucket, {
+                        public: true,
+                    });
+                    if (!createError) {
+                        uploadRes = await this.supabase.storage
+                            .from(this.bucket)
+                            .upload(fileName, file.buffer, {
+                            contentType: file.mimetype,
+                            upsert: false,
+                        });
+                    }
+                }
+                catch (e) {
+                    console.error('Error intentando auto-crear bucket:', e);
+                }
+            }
+            if (uploadRes.error) {
+                const msg = uploadRes.error.message || '';
+                if (msg.includes('JWS') || msg.includes('JWT') || uploadRes.error.code === 'AccessDenied') {
+                    throw new InternalServerErrorException('Error de autenticación con Supabase Storage: la clave SUPABASE_SERVICE_KEY no es válida (debe ser el service_role secret JWT que empieza con eyJhbG...).');
+                }
+                throw new InternalServerErrorException(`Error al subir archivo a Supabase: ${uploadRes.error.message}`);
+            }
         }
         const { data: publicUrlData } = this.supabase.storage
             .from(this.bucket)
