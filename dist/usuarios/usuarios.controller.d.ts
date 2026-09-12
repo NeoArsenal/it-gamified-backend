@@ -6,6 +6,10 @@ export declare class UsuariosController {
     findAll(): Promise<Usuario[]>;
     createUsuario(body: Partial<Usuario>): Promise<Usuario>;
     updateUsuario(id: string, body: Partial<Usuario>): Promise<Usuario>;
+    deleteUsuario(id: string, req: any): Promise<{
+        success: boolean;
+        message: string;
+    }>;
     findOne(id: string): Promise<Usuario>;
     updatePreferencias(id: string, body: {
         avatar?: string;
