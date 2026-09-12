@@ -13,6 +13,7 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import * as crypto from 'crypto';
 import { Configuracion } from './entities/configuracion.entity.js';
 let ConfiguracionService = class ConfiguracionService {
     configRepo;
@@ -35,6 +36,31 @@ let ConfiguracionService = class ConfiguracionService {
             }
         }
         return this.configRepo.save(config);
+    }
+    async getPortalToken() {
+        let token = await this.getValue('PORTAL_TOKEN', '');
+        if (!token) {
+            token = crypto.randomBytes(16).toString('hex');
+            await this.setValue('PORTAL_TOKEN', token);
+        }
+        return token;
+    }
+    async regeneratePortalToken(usuarioId) {
+        const newToken = crypto.randomBytes(16).toString('hex');
+        await this.setValue('PORTAL_TOKEN', newToken, usuarioId);
+        return newToken;
+    }
+    async verifyAccess(pin, token) {
+        if (token) {
+            const actualToken = await this.getPortalToken();
+            if (token.trim() === actualToken.trim()) {
+                return true;
+            }
+        }
+        if (pin) {
+            return this.verifyPin(pin);
+        }
+        return false;
     }
     async verifyPin(pin) {
         const actualPin = await this.getValue('PORTAL_PIN', '2026');

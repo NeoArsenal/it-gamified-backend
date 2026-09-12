@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import * as crypto from 'crypto';
 import { Configuracion } from './entities/configuracion.entity.js';
 
 @Injectable()
@@ -26,6 +27,34 @@ export class ConfiguracionService {
       }
     }
     return this.configRepo.save(config);
+  }
+
+  async getPortalToken(): Promise<string> {
+    let token = await this.getValue('PORTAL_TOKEN', '');
+    if (!token) {
+      token = crypto.randomBytes(16).toString('hex');
+      await this.setValue('PORTAL_TOKEN', token);
+    }
+    return token;
+  }
+
+  async regeneratePortalToken(usuarioId?: string): Promise<string> {
+    const newToken = crypto.randomBytes(16).toString('hex');
+    await this.setValue('PORTAL_TOKEN', newToken, usuarioId);
+    return newToken;
+  }
+
+  async verifyAccess(pin?: string, token?: string): Promise<boolean> {
+    if (token) {
+      const actualToken = await this.getPortalToken();
+      if (token.trim() === actualToken.trim()) {
+        return true;
+      }
+    }
+    if (pin) {
+      return this.verifyPin(pin);
+    }
+    return false;
   }
 
   async verifyPin(pin: string): Promise<boolean> {

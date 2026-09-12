@@ -5,6 +5,9 @@ export declare class ConfiguracionService {
     constructor(configRepo: Repository<Configuracion>);
     getValue(clave: string, defaultValue?: string): Promise<string>;
     setValue(clave: string, valor: string, usuarioId?: string): Promise<Configuracion>;
+    getPortalToken(): Promise<string>;
+    regeneratePortalToken(usuarioId?: string): Promise<string>;
+    verifyAccess(pin?: string, token?: string): Promise<boolean>;
     verifyPin(pin: string): Promise<boolean>;
     getCatalogos(): Promise<{
         departamentos: string[];
