@@ -18,9 +18,18 @@ let ConfiguracionController = class ConfiguracionController {
     constructor(configuracionService) {
         this.configuracionService = configuracionService;
     }
+    async verifyAccess(pin, token) {
+        const isValid = await this.configuracionService.verifyAccess(pin, token);
+        return { valid: isValid };
+    }
     async verifyPin(pin) {
         const isValid = await this.configuracionService.verifyPin(pin);
         return { valid: isValid };
+    }
+    async getPortalConfig() {
+        const pin = await this.configuracionService.getValue('PORTAL_PIN', '2026');
+        const token = await this.configuracionService.getPortalToken();
+        return { pin, token };
     }
     async getPortalPin() {
         const pin = await this.configuracionService.getValue('PORTAL_PIN', '2026');
@@ -30,6 +39,10 @@ let ConfiguracionController = class ConfiguracionController {
         await this.configuracionService.setValue('PORTAL_PIN', pin, req.user?.id);
         return { success: true };
     }
+    async regeneratePortalToken(req) {
+        const token = await this.configuracionService.regeneratePortalToken(req.user?.id);
+        return { token };
+    }
     async getCatalogos() {
         return this.configuracionService.getCatalogos();
     }
@@ -38,12 +51,26 @@ let ConfiguracionController = class ConfiguracionController {
     }
 };
 __decorate([
+    Post('verify-access'),
+    __param(0, Body('pin')),
+    __param(1, Body('token')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String]),
+    __metadata("design:returntype", Promise)
+], ConfiguracionController.prototype, "verifyAccess", null);
+__decorate([
     Post('verify-pin'),
     __param(0, Body('pin')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Promise)
 ], ConfiguracionController.prototype, "verifyPin", null);
+__decorate([
+    Get('portal-config'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], ConfiguracionController.prototype, "getPortalConfig", null);
 __decorate([
     Get('portal-pin'),
     __metadata("design:type", Function),
@@ -59,6 +86,14 @@ __decorate([
     __metadata("design:paramtypes", [String, Object]),
     __metadata("design:returntype", Promise)
 ], ConfiguracionController.prototype, "setPortalPin", null);
+__decorate([
+    UseGuards(JwtAuthGuard),
+    Post('portal-token/regenerate'),
+    __param(0, Request()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], ConfiguracionController.prototype, "regeneratePortalToken", null);
 __decorate([
     Get('catalogos'),
     __metadata("design:type", Function),
