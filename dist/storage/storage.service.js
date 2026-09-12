@@ -61,8 +61,11 @@ let StorageService = class StorageService {
             }
             if (uploadRes.error) {
                 const msg = uploadRes.error.message || '';
-                if (msg.includes('JWS') || msg.includes('JWT') || uploadRes.error.code === 'AccessDenied') {
-                    throw new InternalServerErrorException('Error de autenticación con Supabase Storage: la clave SUPABASE_SERVICE_KEY no es válida (debe ser el service_role secret JWT que empieza con eyJhbG...).');
+                if (msg.includes('row-level security') || msg.includes('violates')) {
+                    throw new InternalServerErrorException('Error de permisos (RLS): Has copiado la clave "anon" en lugar de "service_role". En Supabase, copia la clave service_role (secret) para que el servidor pueda guardar archivos.');
+                }
+                if (msg.includes('JWS') || msg.includes('JWT')) {
+                    throw new InternalServerErrorException('Error de formato de clave: la clave SUPABASE_SERVICE_KEY no es válida (debe ser el service_role secret JWT que empieza con eyJhbG...).');
                 }
                 throw new InternalServerErrorException(`Error al subir archivo a Supabase: ${uploadRes.error.message}`);
             }
