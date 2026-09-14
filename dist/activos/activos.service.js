@@ -60,7 +60,11 @@ let ActivosService = ActivosService_1 = class ActivosService {
     async update(id, dto) {
         const activo = await this.findOne(id);
         const estadoAnterior = activo.estado;
-        Object.assign(activo, dto);
+        for (const [key, val] of Object.entries(dto)) {
+            if (val !== undefined) {
+                activo[key] = val;
+            }
+        }
         const saved = await this.activoRepo.save(activo);
         if (dto.estado === EstadoActivo.RESCATADO && estadoAnterior !== EstadoActivo.RESCATADO && dto.tecnicoId) {
             const xpRecompensa = 1000;

@@ -22,6 +22,24 @@ export class TicketsService {
     return this.ticketRepo.find({ order: { creadoEn: 'DESC' } });
   }
 
+  // Ruta pública segura: solo expone campos no sensibles (oculta teléfonos, nombres privados y soluciones)
+  async findAllPublic(): Promise<Partial<Ticket>[]> {
+    return this.ticketRepo.find({
+      select: {
+        id: true,
+        titulo: true,
+        estado: true,
+        prioridad: true,
+        sede: true,
+        departamento: true,
+        ubicacionEspecifica: true,
+        creadoEn: true,
+        xpRecompensa: true,
+      },
+      order: { creadoEn: 'DESC' },
+    });
+  }
+
   async findOne(id: string): Promise<Ticket> {
     const ticket = await this.ticketRepo.findOneBy({ id });
     if (!ticket) throw new NotFoundException(`Ticket ${id} no encontrado`);
@@ -29,6 +47,20 @@ export class TicketsService {
   }
 
   async create(dto: CreateTicketDto): Promise<Ticket> {
+    // 🛡️ Protección Honeypot: si el campo trampa fue rellenado por un bot, se descarta silenciosamente
+    if (dto.website && dto.website.trim().length > 0) {
+      this.logger.warn(`🤖 [Honeypot] Bot detectado intentando spamear ticket: "${dto.titulo}"`);
+      return {
+        id: 'bot-discarded',
+        titulo: dto.titulo,
+        estado: EstadoTicket.ABIERTO,
+        prioridad: PrioridadTicket.BAJA,
+        xpRecompensa: 0,
+        creadoEn: new Date(),
+        actualizadoEn: new Date(),
+      } as Ticket;
+    }
+
     const prioridad = dto.prioridad || PrioridadTicket.MEDIA;
     const ticket = this.ticketRepo.create({
       ...dto,

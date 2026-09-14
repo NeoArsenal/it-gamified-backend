@@ -15,12 +15,13 @@ import { TicketsService } from './tickets.service.js';
 import { CreateTicketDto } from './dto/create-ticket.dto.js';
 import { UpdateTicketDto } from './dto/update-ticket.dto.js';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard.js';
+import { TicketRateLimitGuard } from './guards/ticket-rate-limit.guard.js';
 let TicketsController = class TicketsController {
     ticketsService;
     constructor(ticketsService) {
         this.ticketsService = ticketsService;
     }
-    findAllPublic() { return this.ticketsService.findAll(); }
+    findAllPublic() { return this.ticketsService.findAllPublic(); }
     findAll() { return this.ticketsService.findAll(); }
     getStats() { return this.ticketsService.getEstadisticas(); }
     getAnalytics() { return this.ticketsService.getAnalytics(); }
@@ -33,6 +34,7 @@ let TicketsController = class TicketsController {
     }
 };
 __decorate([
+    UseGuards(TicketRateLimitGuard),
     Get('public'),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
@@ -68,6 +70,7 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], TicketsController.prototype, "findOne", null);
 __decorate([
+    UseGuards(TicketRateLimitGuard),
     Post(),
     __param(0, Body()),
     __metadata("design:type", Function),

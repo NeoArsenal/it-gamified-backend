@@ -10,13 +10,14 @@ import { Ticket } from './entities/ticket.entity.js';
 import { TicketsService } from './tickets.service.js';
 import { TicketsController } from './tickets.controller.js';
 import { GamificacionModule } from '../gamificacion/gamificacion.module.js';
+import { TicketRateLimitGuard } from './guards/ticket-rate-limit.guard.js';
 let TicketsModule = class TicketsModule {
 };
 TicketsModule = __decorate([
     Module({
         imports: [TypeOrmModule.forFeature([Ticket]), GamificacionModule],
         controllers: [TicketsController],
-        providers: [TicketsService],
+        providers: [TicketsService, TicketRateLimitGuard],
         exports: [TicketsService],
     })
 ], TicketsModule);
