@@ -11,6 +11,7 @@ export declare class TicketsService {
     private readonly logger;
     constructor(ticketRepo: Repository<Ticket>, gamificacionService: GamificacionService, notificacionesGateway: NotificacionesGateway);
     findAll(): Promise<Ticket[]>;
+    findAllPublic(): Promise<Partial<Ticket>[]>;
     findOne(id: string): Promise<Ticket>;
     create(dto: CreateTicketDto): Promise<Ticket>;
     update(id: string, dto: UpdateTicketDto): Promise<Ticket>;

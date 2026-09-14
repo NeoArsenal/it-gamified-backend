@@ -31,6 +31,22 @@ let TicketsService = TicketsService_1 = class TicketsService {
     async findAll() {
         return this.ticketRepo.find({ order: { creadoEn: 'DESC' } });
     }
+    async findAllPublic() {
+        return this.ticketRepo.find({
+            select: {
+                id: true,
+                titulo: true,
+                estado: true,
+                prioridad: true,
+                sede: true,
+                departamento: true,
+                ubicacionEspecifica: true,
+                creadoEn: true,
+                xpRecompensa: true,
+            },
+            order: { creadoEn: 'DESC' },
+        });
+    }
     async findOne(id) {
         const ticket = await this.ticketRepo.findOneBy({ id });
         if (!ticket)
@@ -38,6 +54,18 @@ let TicketsService = TicketsService_1 = class TicketsService {
         return ticket;
     }
     async create(dto) {
+        if (dto.website && dto.website.trim().length > 0) {
+            this.logger.warn(`🤖 [Honeypot] Bot detectado intentando spamear ticket: "${dto.titulo}"`);
+            return {
+                id: 'bot-discarded',
+                titulo: dto.titulo,
+                estado: EstadoTicket.ABIERTO,
+                prioridad: PrioridadTicket.BAJA,
+                xpRecompensa: 0,
+                creadoEn: new Date(),
+                actualizadoEn: new Date(),
+            };
+        }
         const prioridad = dto.prioridad || PrioridadTicket.MEDIA;
         const ticket = this.ticketRepo.create({
             ...dto,
@@ -52,7 +80,11 @@ let TicketsService = TicketsService_1 = class TicketsService {
     async update(id, dto) {
         const ticket = await this.findOne(id);
         const estadoAnterior = ticket.estado;
-        Object.assign(ticket, dto);
+        for (const [key, val] of Object.entries(dto)) {
+            if (val !== undefined) {
+                ticket[key] = val;
+            }
+        }
         if (dto.prioridad) {
             ticket.xpRecompensa = XP_POR_PRIORIDAD[dto.prioridad];
         }
@@ -63,7 +95,8 @@ let TicketsService = TicketsService_1 = class TicketsService {
                 this.logger.log(`⚡ +${resultado.xpOtorgado} XP → Técnico ahora tiene ${resultado.nuevoXP} XP (Nivel ${resultado.nivel})`);
             }
         }
-        const updated = await this.ticketRepo.save(ticket);
+        await this.ticketRepo.save(ticket);
+        const updated = await this.findOne(id);
         this.notificacionesGateway.emitirTicketActualizado(updated);
         return updated;
     }

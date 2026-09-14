@@ -3,13 +3,16 @@ import { TicketsService } from './tickets.service.js';
 import { CreateTicketDto } from './dto/create-ticket.dto.js';
 import { UpdateTicketDto } from './dto/update-ticket.dto.js';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard.js';
+import { TicketRateLimitGuard } from './guards/ticket-rate-limit.guard.js';
 
 @Controller('tickets')
 export class TicketsController {
   constructor(private readonly ticketsService: TicketsService) {}
 
+  // Consulta pública sanitizada (sin datos sensibles) con rate limiting
+  @UseGuards(TicketRateLimitGuard)
   @Get('public')
-  findAllPublic() { return this.ticketsService.findAll(); }
+  findAllPublic() { return this.ticketsService.findAllPublic(); }
 
   @UseGuards(JwtAuthGuard)
   @Get()
@@ -27,7 +30,8 @@ export class TicketsController {
   @Get(':id')
   findOne(@Param('id') id: string) { return this.ticketsService.findOne(id); }
 
-  // Abierto para el Portal Kiosco
+  // Abierto para el Portal Kiosco pero protegido contra spam / DoS con Rate Limiting
+  @UseGuards(TicketRateLimitGuard)
   @Post()
   create(@Body() dto: CreateTicketDto) { return this.ticketsService.create(dto); }
 
