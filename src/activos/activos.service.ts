@@ -56,7 +56,11 @@ export class ActivosService {
     const activo = await this.findOne(id);
     const estadoAnterior = activo.estado;
     
-    Object.assign(activo, dto);
+    for (const [key, val] of Object.entries(dto)) {
+      if (val !== undefined) {
+        (activo as any)[key] = val;
+      }
+    }
     const saved = await this.activoRepo.save(activo);
 
     // Gamificacin: Si el estado cambia a RESCATADO, dar XP al tcnico (userId opcional que viene en el DTO para el prototipo)

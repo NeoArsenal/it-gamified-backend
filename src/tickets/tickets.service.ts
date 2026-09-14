@@ -45,7 +45,12 @@ export class TicketsService {
     const ticket = await this.findOne(id);
     const estadoAnterior = ticket.estado;
 
-    Object.assign(ticket, dto);
+    // Solo asignar campos definidos para evitar sobreescribir con undefined
+    for (const [key, val] of Object.entries(dto)) {
+      if (val !== undefined) {
+        (ticket as any)[key] = val;
+      }
+    }
 
     // Recalcular XP si la prioridad cambió
     if (dto.prioridad) {
@@ -67,7 +72,8 @@ export class TicketsService {
       }
     }
 
-    const updated = await this.ticketRepo.save(ticket);
+    await this.ticketRepo.save(ticket);
+    const updated = await this.findOne(id);
     this.notificacionesGateway.emitirTicketActualizado(updated);
     return updated;
   }
