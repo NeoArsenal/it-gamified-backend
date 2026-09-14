@@ -12,6 +12,11 @@ export class CreateActivoDto {
     codigo;
     tipo;
     estado;
+    modelo;
+    sede;
+    departamento;
+    ubicacion;
+    responsable;
     observaciones;
 }
 __decorate([
@@ -27,6 +32,31 @@ __decorate([
     IsString(),
     __metadata("design:type", String)
 ], CreateActivoDto.prototype, "estado", void 0);
+__decorate([
+    IsOptional(),
+    IsString(),
+    __metadata("design:type", String)
+], CreateActivoDto.prototype, "modelo", void 0);
+__decorate([
+    IsOptional(),
+    IsString(),
+    __metadata("design:type", String)
+], CreateActivoDto.prototype, "sede", void 0);
+__decorate([
+    IsOptional(),
+    IsString(),
+    __metadata("design:type", String)
+], CreateActivoDto.prototype, "departamento", void 0);
+__decorate([
+    IsOptional(),
+    IsString(),
+    __metadata("design:type", String)
+], CreateActivoDto.prototype, "ubicacion", void 0);
+__decorate([
+    IsOptional(),
+    IsString(),
+    __metadata("design:type", String)
+], CreateActivoDto.prototype, "responsable", void 0);
 __decorate([
     IsOptional(),
     IsString(),

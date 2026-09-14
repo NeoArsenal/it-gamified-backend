@@ -63,16 +63,28 @@ export class ActivosService {
     }
     const saved = await this.activoRepo.save(activo);
 
-    // Gamificacin: Si el estado cambia a RESCATADO, dar XP al tcnico (userId opcional que viene en el DTO para el prototipo)
+    // Gamificación: Si el estado cambia a RESCATADO, dar XP al técnico
     if (dto.estado === EstadoActivo.RESCATADO && estadoAnterior !== EstadoActivo.RESCATADO && dto.tecnicoId) {
       const xpRecompensa = 1000; // Bonus enorme por ahorrar dinero
-      const res = await this.gamificacionService.otorgarXP(
+      await this.gamificacionService.otorgarXP(
         dto.tecnicoId,
         xpRecompensa,
         AccionXP.BONUS_ADMIN,
         `Rescató el equipo ${activo.codigo} de la chatarra`
       );
-      this.logger.log(`s +${xpRecompensa} XP a ${dto.tecnicoId} por rescatar equipo ${activo.codigo}`);
+      this.logger.log(`♻️ +${xpRecompensa} XP a ${dto.tecnicoId} por rescatar equipo ${activo.codigo}`);
+    }
+
+    // Gamificación: Si el equipo fue reparado y vuelve a OPERATIVO, premiar al técnico
+    if (dto.estado === EstadoActivo.OPERATIVO && estadoAnterior === EstadoActivo.REPARACION && dto.tecnicoId) {
+      const xpRecompensa = 250; // Bonus por reparación exitosa
+      await this.gamificacionService.otorgarXP(
+        dto.tecnicoId,
+        xpRecompensa,
+        AccionXP.BONUS_ADMIN,
+        `Reparó con éxito el equipo ${activo.codigo}`
+      );
+      this.logger.log(`🛠️ +${xpRecompensa} XP a ${dto.tecnicoId} por reparar equipo ${activo.codigo}`);
     }
 
     return saved;

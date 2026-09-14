@@ -10,6 +10,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, OneToMany, ManyToOne, JoinColumn } from 'typeorm';
 export var EstadoActivo;
 (function (EstadoActivo) {
+    EstadoActivo["OPERATIVO"] = "OPERATIVO";
     EstadoActivo["REPARACION"] = "REPARACION";
     EstadoActivo["BAJA"] = "BAJA";
     EstadoActivo["RESCATADO"] = "RESCATADO";
@@ -19,6 +20,11 @@ let Activo = class Activo {
     codigo;
     tipo;
     estado;
+    modelo;
+    sede;
+    departamento;
+    ubicacion;
+    responsable;
     observaciones;
     registradoPor;
     registradoPorId;
@@ -42,10 +48,30 @@ __decorate([
     Column({
         type: 'varchar',
         enum: EstadoActivo,
-        default: EstadoActivo.REPARACION
+        default: EstadoActivo.OPERATIVO
     }),
     __metadata("design:type", String)
 ], Activo.prototype, "estado", void 0);
+__decorate([
+    Column({ nullable: true }),
+    __metadata("design:type", String)
+], Activo.prototype, "modelo", void 0);
+__decorate([
+    Column({ nullable: true }),
+    __metadata("design:type", String)
+], Activo.prototype, "sede", void 0);
+__decorate([
+    Column({ nullable: true }),
+    __metadata("design:type", String)
+], Activo.prototype, "departamento", void 0);
+__decorate([
+    Column({ nullable: true }),
+    __metadata("design:type", String)
+], Activo.prototype, "ubicacion", void 0);
+__decorate([
+    Column({ nullable: true }),
+    __metadata("design:type", String)
+], Activo.prototype, "responsable", void 0);
 __decorate([
     Column({ type: 'text', nullable: true }),
     __metadata("design:type", String)
