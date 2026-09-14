@@ -10,8 +10,29 @@ export class CreateActivoDto {
   @IsOptional()
   @IsString()
   estado?: string;
+
+  @IsOptional()
+  @IsString()
+  modelo?: string;
+
+  @IsOptional()
+  @IsString()
+  sede?: string;
+
+  @IsOptional()
+  @IsString()
+  departamento?: string;
+
+  @IsOptional()
+  @IsString()
+  ubicacion?: string;
+
+  @IsOptional()
+  @IsString()
+  responsable?: string;
   
   @IsOptional()
   @IsString()
   observaciones?: string;
 }
+
