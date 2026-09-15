@@ -62,15 +62,28 @@ export class TicketsService {
     }
 
     const prioridad = dto.prioridad || PrioridadTicket.MEDIA;
+    const xpRecompensa = await this.getXpPorPrioridad(prioridad);
     const ticket = this.ticketRepo.create({
       ...dto,
       prioridad,
-      xpRecompensa: XP_POR_PRIORIDAD[prioridad],
+      xpRecompensa,
     });
     const saved = await this.ticketRepo.save(ticket);
     this.notificacionesGateway.emitirNuevoTicket(saved);
     this.logger.log(`🎫 Ticket "${saved.titulo}" creado (${saved.prioridad}) → +${saved.xpRecompensa} XP al resolverlo`);
     return saved;
+  }
+
+  private async getXpPorPrioridad(prioridad: PrioridadTicket): Promise<number> {
+    try {
+      const reglas = await this.gamificacionService.getReglas();
+      if (prioridad === PrioridadTicket.CRITICA) return reglas.puntosPorArea.ticketCritica;
+      if (prioridad === PrioridadTicket.ALTA) return reglas.puntosPorArea.ticketAlta;
+      if (prioridad === PrioridadTicket.MEDIA) return reglas.puntosPorArea.ticketMedia;
+      return reglas.puntosPorArea.ticketBaja;
+    } catch {
+      return XP_POR_PRIORIDAD[prioridad] || 150;
+    }
   }
 
   async update(id: string, dto: UpdateTicketDto): Promise<Ticket> {
@@ -86,7 +99,7 @@ export class TicketsService {
 
     // Recalcular XP si la prioridad cambió
     if (dto.prioridad) {
-      ticket.xpRecompensa = XP_POR_PRIORIDAD[dto.prioridad];
+      ticket.xpRecompensa = await this.getXpPorPrioridad(dto.prioridad);
     }
 
     // Si el ticket pasó a RESUELTO, otorgar XP al técnico asignado

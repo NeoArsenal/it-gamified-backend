@@ -96,6 +96,40 @@ let ConfiguracionService = class ConfiguracionService {
         await this.setValue(clave, JSON.stringify(items), usuarioId);
         return items;
     }
+    async getReglasGamificacion() {
+        const raw = await this.getValue('REGLAS_GAMIFICACION', '');
+        if (!raw)
+            return REGLAS_GAMIFICACION_DEFAULT;
+        try {
+            const parsed = JSON.parse(raw);
+            return {
+                puntosPorArea: {
+                    ...REGLAS_GAMIFICACION_DEFAULT.puntosPorArea,
+                    ...(parsed.puntosPorArea || {}),
+                },
+                niveles: Array.isArray(parsed.niveles) && parsed.niveles.length > 0
+                    ? parsed.niveles
+                    : REGLAS_GAMIFICACION_DEFAULT.niveles,
+            };
+        }
+        catch {
+            return REGLAS_GAMIFICACION_DEFAULT;
+        }
+    }
+    async setReglasGamificacion(reglas, usuarioId) {
+        const actual = await this.getReglasGamificacion();
+        const merged = {
+            puntosPorArea: {
+                ...actual.puntosPorArea,
+                ...(reglas.puntosPorArea || {}),
+            },
+            niveles: Array.isArray(reglas.niveles) && reglas.niveles.length > 0
+                ? reglas.niveles
+                : actual.niveles,
+        };
+        await this.setValue('REGLAS_GAMIFICACION', JSON.stringify(merged), usuarioId);
+        return merged;
+    }
 };
 ConfiguracionService = __decorate([
     Injectable(),
@@ -103,4 +137,21 @@ ConfiguracionService = __decorate([
     __metadata("design:paramtypes", [Repository])
 ], ConfiguracionService);
 export { ConfiguracionService };
+export const REGLAS_GAMIFICACION_DEFAULT = {
+    puntosPorArea: {
+        ticketBaja: 50,
+        ticketMedia: 150,
+        ticketAlta: 350,
+        ticketCritica: 750,
+        activoReparado: 250,
+        activoRescatado: 600,
+        redRestaurada: 300,
+        guiaCreada: 200,
+        academiaNivel: 100,
+    },
+    niveles: [
+        0, 500, 1200, 2000, 3500, 5000, 7500, 10000, 13000, 17000,
+        22000, 28000, 35000, 43000, 52000, 62000, 73000, 85000, 100000, 120000,
+    ],
+};
 //# sourceMappingURL=configuracion.service.js.map

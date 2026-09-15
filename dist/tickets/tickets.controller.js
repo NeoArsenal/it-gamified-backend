@@ -10,7 +10,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-import { Controller, Get, Post, Patch, Delete, Param, Body, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Patch, Delete, Param, Body, Query, UseGuards } from '@nestjs/common';
 import { TicketsService } from './tickets.service.js';
 import { CreateTicketDto } from './dto/create-ticket.dto.js';
 import { UpdateTicketDto } from './dto/update-ticket.dto.js';
@@ -24,7 +24,7 @@ let TicketsController = class TicketsController {
     findAllPublic() { return this.ticketsService.findAllPublic(); }
     findAll() { return this.ticketsService.findAll(); }
     getStats() { return this.ticketsService.getEstadisticas(); }
-    getAnalytics() { return this.ticketsService.getAnalytics(); }
+    getAnalytics(sede) { return this.ticketsService.getAnalytics(sede); }
     findOne(id) { return this.ticketsService.findOne(id); }
     create(dto) { return this.ticketsService.create(dto); }
     update(id, dto) { return this.ticketsService.update(id, dto); }
@@ -57,8 +57,9 @@ __decorate([
 __decorate([
     UseGuards(JwtAuthGuard),
     Get('analytics'),
+    __param(0, Query('sede')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
 ], TicketsController.prototype, "getAnalytics", null);
 __decorate([

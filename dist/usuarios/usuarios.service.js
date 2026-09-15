@@ -10,14 +10,25 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+var UsuariosService_1;
+import { Injectable, NotFoundException, BadRequestException, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, DataSource } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { Usuario } from './entities/usuario.entity.js';
-let UsuariosService = class UsuariosService {
+import { Ticket } from '../tickets/entities/ticket.entity.js';
+import { Guia } from '../guias/entities/guia.entity.js';
+import { Ubicacion } from '../ubicaciones/entities/ubicacion.entity.js';
+import { Activo } from '../activos/entities/activo.entity.js';
+import { Intervencion } from '../activos/entities/intervencion.entity.js';
+import { Configuracion } from '../configuracion/entities/configuracion.entity.js';
+import { UsuarioMedalla } from '../gamificacion/entities/usuario-medalla.entity.js';
+import { HistorialXP } from '../gamificacion/entities/historial-xp.entity.js';
+import { ProgresoUsuario } from '../academia/entities/progreso-usuario.entity.js';
+let UsuariosService = UsuariosService_1 = class UsuariosService {
     usuarioRepository;
     dataSource;
+    logger = new Logger(UsuariosService_1.name);
     constructor(usuarioRepository, dataSource) {
         this.usuarioRepository = usuarioRepository;
         this.dataSource = dataSource;
@@ -78,18 +89,29 @@ let UsuariosService = class UsuariosService {
             throw new BadRequestException('No puedes eliminar tu propia cuenta de administrador en sesión');
         }
         const user = await this.findOne(id);
-        await this.dataSource.transaction(async (manager) => {
-            await manager.query(`UPDATE tickets SET "asignadoAId" = NULL WHERE "asignadoAId" = $1`, [id]).catch(() => { });
-            await manager.query(`UPDATE guias SET "autorId" = NULL WHERE "autorId" = $1`, [id]).catch(() => { });
-            await manager.query(`UPDATE ubicaciones SET "creadoPorId" = NULL WHERE "creadoPorId" = $1`, [id]).catch(() => { });
-            await manager.query(`UPDATE intervenciones SET "tecnicoId" = NULL WHERE "tecnicoId" = $1`, [id]).catch(() => { });
-            await manager.query(`UPDATE activos SET "responsableId" = NULL WHERE "responsableId" = $1`, [id]).catch(() => { });
-            await manager.remove(user);
-        });
-        return { success: true, message: `Usuario ${user.nombre} eliminado correctamente` };
+        try {
+            await this.dataSource.transaction(async (manager) => {
+                await manager.delete(UsuarioMedalla, { usuarioId: id });
+                await manager.delete(HistorialXP, { usuarioId: id });
+                await manager.delete(ProgresoUsuario, { usuarioId: id });
+                await manager.update(Ticket, { asignadoAId: id }, { asignadoAId: null });
+                await manager.update(Guia, { autorId: id }, { autorId: null });
+                await manager.update(Ubicacion, { creadoPorId: id }, { creadoPorId: null });
+                await manager.update(Intervencion, { tecnicoId: id }, { tecnicoId: null });
+                await manager.update(Activo, { registradoPorId: id }, { registradoPorId: null });
+                await manager.update(Configuracion, { actualizadoPorId: id }, { actualizadoPorId: null });
+                await manager.delete(Usuario, { id });
+            });
+            this.logger.log(`Usuario ${user.nombre} (${user.email}) eliminado exitosamente`);
+            return { success: true, message: `Usuario ${user.nombre} eliminado correctamente` };
+        }
+        catch (error) {
+            this.logger.error(`Error al eliminar usuario ${id}: ${error.message}`, error.stack);
+            throw new BadRequestException(`No se pudo eliminar el usuario: ${error.message}`);
+        }
     }
 };
-UsuariosService = __decorate([
+UsuariosService = UsuariosService_1 = __decorate([
     Injectable(),
     __param(0, InjectRepository(Usuario)),
     __metadata("design:paramtypes", [Repository,

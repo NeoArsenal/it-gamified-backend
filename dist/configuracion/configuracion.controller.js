@@ -49,6 +49,12 @@ let ConfiguracionController = class ConfiguracionController {
     async setCatalogo(tipo, items, req) {
         return this.configuracionService.setCatalogo(tipo, items, req.user?.id);
     }
+    async getGamificacionConfig() {
+        return this.configuracionService.getReglasGamificacion();
+    }
+    async setGamificacionConfig(body, req) {
+        return this.configuracionService.setReglasGamificacion(body, req.user?.id);
+    }
 };
 __decorate([
     Post('verify-access'),
@@ -110,6 +116,21 @@ __decorate([
     __metadata("design:paramtypes", [String, Array, Object]),
     __metadata("design:returntype", Promise)
 ], ConfiguracionController.prototype, "setCatalogo", null);
+__decorate([
+    Get('gamificacion'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", Promise)
+], ConfiguracionController.prototype, "getGamificacionConfig", null);
+__decorate([
+    UseGuards(JwtAuthGuard),
+    Put('gamificacion'),
+    __param(0, Body()),
+    __param(1, Request()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
+], ConfiguracionController.prototype, "setGamificacionConfig", null);
 ConfiguracionController = __decorate([
     Controller('configuracion'),
     __metadata("design:paramtypes", [ConfiguracionService])

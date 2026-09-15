@@ -5,19 +5,7 @@ import { Usuario, RolUsuario } from '../usuarios/entities/usuario.entity.js';
 import { Medalla } from './entities/medalla.entity.js';
 import { HistorialXP, AccionXP } from './entities/historial-xp.entity.js';
 import { UsuarioMedalla } from './entities/usuario-medalla.entity.js';
-
-/** Niveles: XP necesario para alcanzar cada nivel */
-const NIVELES = [
-  0, 500, 1200, 2000, 3500, 5000, 7500, 10000, 13000, 17000,
-  22000, 28000, 35000, 43000, 52000, 62000, 73000, 85000, 100000, 120000,
-];
-
-function calcularNivel(xp: number): number {
-  for (let i = NIVELES.length - 1; i >= 0; i--) {
-    if (xp >= NIVELES[i]) return i + 1;
-  }
-  return 1;
-}
+import { ConfiguracionService, REGLAS_GAMIFICACION_DEFAULT } from '../configuracion/configuracion.service.js';
 
 @Injectable()
 export class GamificacionService {
@@ -28,7 +16,23 @@ export class GamificacionService {
     @InjectRepository(HistorialXP) private readonly historialRepo: Repository<HistorialXP>,
     @InjectRepository(Medalla) private readonly medallaRepo: Repository<Medalla>,
     @InjectRepository(UsuarioMedalla) private readonly umRepo: Repository<UsuarioMedalla>,
+    private readonly configService: ConfiguracionService,
   ) {}
+
+  /** Obtiene las reglas vigentes de puntos y niveles */
+  async getReglas() {
+    return this.configService.getReglasGamificacion();
+  }
+
+  /** Calcula el nivel dinámicamente según la escala configurada */
+  async calcularNivel(xp: number): Promise<number> {
+    const config = await this.configService.getReglasGamificacion();
+    const niveles = config.niveles || REGLAS_GAMIFICACION_DEFAULT.niveles;
+    for (let i = niveles.length - 1; i >= 0; i--) {
+      if (xp >= niveles[i]) return i + 1;
+    }
+    return 1;
+  }
 
   /** Otorga XP a un usuario, recalcula nivel y verifica medallas */
   async otorgarXP(usuarioId: string, xp: number, accion: AccionXP, descripcion?: string) {
@@ -40,8 +44,8 @@ export class GamificacionService {
     const usuario = await this.usuarioRepo.findOneByOrFail({ id: usuarioId });
     usuario.xpActual += xp;
 
-    // 3. Recalcular nivel
-    const nuevoNivel = calcularNivel(usuario.xpActual);
+    // 3. Recalcular nivel con escala dinámica
+    const nuevoNivel = await this.calcularNivel(usuario.xpActual);
     if (nuevoNivel > usuario.nivel) {
       this.logger.log(`🎉 ¡${usuario.nombre} subió al nivel ${nuevoNivel}!`);
     }
@@ -100,8 +104,10 @@ export class GamificacionService {
   async getPerfil(usuarioId: string) {
     const usuario = await this.usuarioRepo.findOneByOrFail({ id: usuarioId });
     const medallas = await this.getMedallasUsuario(usuarioId);
-    const xpParaSiguienteNivel = usuario.nivel < NIVELES.length ? NIVELES[usuario.nivel] : NIVELES[NIVELES.length - 1];
-    const xpNivelActual = NIVELES[usuario.nivel - 1] || 0;
+    const config = await this.configService.getReglasGamificacion();
+    const niveles = config.niveles || REGLAS_GAMIFICACION_DEFAULT.niveles;
+    const xpParaSiguienteNivel = usuario.nivel < niveles.length ? niveles[usuario.nivel] : niveles[niveles.length - 1];
+    const xpNivelActual = niveles[usuario.nivel - 1] || 0;
     const progreso = Math.round(((usuario.xpActual - xpNivelActual) / (xpParaSiguienteNivel - xpNivelActual)) * 100);
 
     return {
