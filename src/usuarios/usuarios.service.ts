@@ -1,11 +1,22 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, DataSource } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { Usuario, RolUsuario } from './entities/usuario.entity.js';
+import { Ticket } from '../tickets/entities/ticket.entity.js';
+import { Guia } from '../guias/entities/guia.entity.js';
+import { Ubicacion } from '../ubicaciones/entities/ubicacion.entity.js';
+import { Activo } from '../activos/entities/activo.entity.js';
+import { Intervencion } from '../activos/entities/intervencion.entity.js';
+import { Configuracion } from '../configuracion/entities/configuracion.entity.js';
+import { UsuarioMedalla } from '../gamificacion/entities/usuario-medalla.entity.js';
+import { HistorialXP } from '../gamificacion/entities/historial-xp.entity.js';
+import { ProgresoUsuario } from '../academia/entities/progreso-usuario.entity.js';
 
 @Injectable()
 export class UsuariosService {
+  private readonly logger = new Logger(UsuariosService.name);
+
   constructor(
     @InjectRepository(Usuario)
     private readonly usuarioRepository: Repository<Usuario>,
@@ -71,17 +82,30 @@ export class UsuariosService {
 
     const user = await this.findOne(id);
 
-    await this.dataSource.transaction(async (manager) => {
-      // Desvincular referencias que no tengan CASCADE
-      await manager.query(`UPDATE tickets SET "asignadoAId" = NULL WHERE "asignadoAId" = $1`, [id]).catch(() => {});
-      await manager.query(`UPDATE guias SET "autorId" = NULL WHERE "autorId" = $1`, [id]).catch(() => {});
-      await manager.query(`UPDATE ubicaciones SET "creadoPorId" = NULL WHERE "creadoPorId" = $1`, [id]).catch(() => {});
-      await manager.query(`UPDATE intervenciones SET "tecnicoId" = NULL WHERE "tecnicoId" = $1`, [id]).catch(() => {});
-      await manager.query(`UPDATE activos SET "responsableId" = NULL WHERE "responsableId" = $1`, [id]).catch(() => {});
+    try {
+      await this.dataSource.transaction(async (manager) => {
+        // 1. Eliminar gamificación y progreso asociados al usuario
+        await manager.delete(UsuarioMedalla, { usuarioId: id });
+        await manager.delete(HistorialXP, { usuarioId: id });
+        await manager.delete(ProgresoUsuario, { usuarioId: id });
 
-      await manager.remove(user);
-    });
+        // 2. Desvincular relaciones laborales/históricas (preservar tickets, guías y registros)
+        await manager.update(Ticket, { asignadoAId: id }, { asignadoAId: null });
+        await manager.update(Guia, { autorId: id }, { autorId: null });
+        await manager.update(Ubicacion, { creadoPorId: id }, { creadoPorId: null });
+        await manager.update(Intervencion, { tecnicoId: id }, { tecnicoId: null });
+        await manager.update(Activo, { registradoPorId: id }, { registradoPorId: null });
+        await manager.update(Configuracion, { actualizadoPorId: id }, { actualizadoPorId: null });
 
-    return { success: true, message: `Usuario ${user.nombre} eliminado correctamente` };
+        // 3. Eliminar el usuario de la base de datos
+        await manager.delete(Usuario, { id });
+      });
+
+      this.logger.log(`Usuario ${user.nombre} (${user.email}) eliminado exitosamente`);
+      return { success: true, message: `Usuario ${user.nombre} eliminado correctamente` };
+    } catch (error: any) {
+      this.logger.error(`Error al eliminar usuario ${id}: ${error.message}`, error.stack);
+      throw new BadRequestException(`No se pudo eliminar el usuario: ${error.message}`);
+    }
   }
 }
