@@ -3,7 +3,7 @@ import { LoginDto } from './dto/login.dto.js';
 export declare class AuthController {
     private readonly authService;
     constructor(authService: AuthService);
-    login(loginDto: LoginDto): Promise<{
+    login(loginDto: LoginDto, req: any): Promise<{
         usuario: import("../usuarios/entities/usuario.entity.js").Usuario;
         access_token: string;
     }>;

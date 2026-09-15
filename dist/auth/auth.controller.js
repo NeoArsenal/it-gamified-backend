@@ -10,28 +10,33 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-import { Controller, Post, Body, HttpCode, HttpStatus, Get, UseGuards, Request } from '@nestjs/common';
+import { Controller, Post, Body, HttpCode, HttpStatus, Get, UseGuards, Request, Req } from '@nestjs/common';
 import { AuthService } from './auth.service.js';
 import { LoginDto } from './dto/login.dto.js';
 import { JwtAuthGuard } from './guards/jwt-auth.guard.js';
+import { LoginThrottlerGuard } from './guards/login-throttler.guard.js';
 let AuthController = class AuthController {
     authService;
     constructor(authService) {
         this.authService = authService;
     }
-    login(loginDto) {
-        return this.authService.login(loginDto);
+    login(loginDto, req) {
+        const forwarded = req.headers?.['x-forwarded-for'];
+        const clientIp = typeof forwarded === 'string' ? forwarded.split(',')[0].trim() : (req.ip || req.socket?.remoteAddress || 'unknown');
+        return this.authService.login(loginDto, clientIp);
     }
     getProfile(req) {
         return req.user;
     }
 };
 __decorate([
+    UseGuards(LoginThrottlerGuard),
     HttpCode(HttpStatus.OK),
     Post('login'),
     __param(0, Body()),
+    __param(1, Req()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [LoginDto]),
+    __metadata("design:paramtypes", [LoginDto, Object]),
     __metadata("design:returntype", void 0)
 ], AuthController.prototype, "login", null);
 __decorate([
