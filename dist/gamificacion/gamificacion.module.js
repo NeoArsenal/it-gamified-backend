@@ -12,11 +12,15 @@ import { UsuarioMedalla } from './entities/usuario-medalla.entity.js';
 import { Usuario } from '../usuarios/entities/usuario.entity.js';
 import { GamificacionService } from './gamificacion.service.js';
 import { GamificacionController } from './gamificacion.controller.js';
+import { ConfiguracionModule } from '../configuracion/configuracion.module.js';
 let GamificacionModule = class GamificacionModule {
 };
 GamificacionModule = __decorate([
     Module({
-        imports: [TypeOrmModule.forFeature([HistorialXP, Medalla, UsuarioMedalla, Usuario])],
+        imports: [
+            TypeOrmModule.forFeature([HistorialXP, Medalla, UsuarioMedalla, Usuario]),
+            ConfiguracionModule,
+        ],
         controllers: [GamificacionController],
         providers: [GamificacionService],
         exports: [GamificacionService],

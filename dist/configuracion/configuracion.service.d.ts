@@ -14,4 +14,21 @@ export declare class ConfiguracionService {
         categoriasActivos: string[];
     }>;
     setCatalogo(tipo: 'departamentos' | 'categoriasActivos', items: string[], usuarioId?: string): Promise<string[]>;
+    getReglasGamificacion(): Promise<ReglasGamificacion>;
+    setReglasGamificacion(reglas: Partial<ReglasGamificacion>, usuarioId?: string): Promise<ReglasGamificacion>;
 }
+export interface ReglasGamificacion {
+    puntosPorArea: {
+        ticketBaja: number;
+        ticketMedia: number;
+        ticketAlta: number;
+        ticketCritica: number;
+        activoReparado: number;
+        activoRescatado: number;
+        redRestaurada: number;
+        guiaCreada: number;
+        academiaNivel: number;
+    };
+    niveles: number[];
+}
+export declare const REGLAS_GAMIFICACION_DEFAULT: ReglasGamificacion;

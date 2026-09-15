@@ -3,13 +3,17 @@ import { Usuario, RolUsuario } from '../usuarios/entities/usuario.entity.js';
 import { Medalla } from './entities/medalla.entity.js';
 import { HistorialXP, AccionXP } from './entities/historial-xp.entity.js';
 import { UsuarioMedalla } from './entities/usuario-medalla.entity.js';
+import { ConfiguracionService } from '../configuracion/configuracion.service.js';
 export declare class GamificacionService {
     private readonly usuarioRepo;
     private readonly historialRepo;
     private readonly medallaRepo;
     private readonly umRepo;
+    private readonly configService;
     private readonly logger;
-    constructor(usuarioRepo: Repository<Usuario>, historialRepo: Repository<HistorialXP>, medallaRepo: Repository<Medalla>, umRepo: Repository<UsuarioMedalla>);
+    constructor(usuarioRepo: Repository<Usuario>, historialRepo: Repository<HistorialXP>, medallaRepo: Repository<Medalla>, umRepo: Repository<UsuarioMedalla>, configService: ConfiguracionService);
+    getReglas(): Promise<import("../configuracion/configuracion.service.js").ReglasGamificacion>;
+    calcularNivel(xp: number): Promise<number>;
     otorgarXP(usuarioId: string, xp: number, accion: AccionXP, descripcion?: string): Promise<{
         xpOtorgado: number;
         nuevoXP: number;

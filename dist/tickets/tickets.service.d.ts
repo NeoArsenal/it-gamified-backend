@@ -14,6 +14,7 @@ export declare class TicketsService {
     findAllPublic(): Promise<Partial<Ticket>[]>;
     findOne(id: string): Promise<Ticket>;
     create(dto: CreateTicketDto): Promise<Ticket>;
+    private getXpPorPrioridad;
     update(id: string, dto: UpdateTicketDto): Promise<Ticket>;
     remove(id: string): Promise<void>;
     getEstadisticas(): Promise<{
@@ -22,7 +23,7 @@ export declare class TicketsService {
         enProgreso: number;
         resueltos: number;
     }>;
-    getAnalytics(): Promise<{
+    getAnalytics(sedeFiltro?: string): Promise<{
         heatmapDept: {
             departamento: string;
             BAJA: number;
@@ -34,5 +35,18 @@ export declare class TicketsService {
         promedioSLADias: number;
         totalTickets: number;
         resueltosCount: number;
+        sedesDisponibles: string[];
+        porSede: {
+            sede: string;
+            total: number;
+            resueltos: number;
+            abiertos: number;
+            criticos: number;
+            promedioSLADias: number;
+            promedioSLAHoras: number;
+            porcentajeResolucion: number;
+        }[];
+        sedeActiva: string;
+        totalTicketsGlobal: number;
     }>;
 }

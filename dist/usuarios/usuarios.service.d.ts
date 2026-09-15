@@ -3,6 +3,7 @@ import { Usuario } from './entities/usuario.entity.js';
 export declare class UsuariosService {
     private readonly usuarioRepository;
     private readonly dataSource;
+    private readonly logger;
     constructor(usuarioRepository: Repository<Usuario>, dataSource: DataSource);
     findAll(): Promise<Usuario[]>;
     findOne(id: string): Promise<Usuario>;

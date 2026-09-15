@@ -18,35 +18,39 @@ import { Usuario } from '../usuarios/entities/usuario.entity.js';
 import { Medalla } from './entities/medalla.entity.js';
 import { HistorialXP } from './entities/historial-xp.entity.js';
 import { UsuarioMedalla } from './entities/usuario-medalla.entity.js';
-const NIVELES = [
-    0, 500, 1200, 2000, 3500, 5000, 7500, 10000, 13000, 17000,
-    22000, 28000, 35000, 43000, 52000, 62000, 73000, 85000, 100000, 120000,
-];
-function calcularNivel(xp) {
-    for (let i = NIVELES.length - 1; i >= 0; i--) {
-        if (xp >= NIVELES[i])
-            return i + 1;
-    }
-    return 1;
-}
+import { ConfiguracionService, REGLAS_GAMIFICACION_DEFAULT } from '../configuracion/configuracion.service.js';
 let GamificacionService = GamificacionService_1 = class GamificacionService {
     usuarioRepo;
     historialRepo;
     medallaRepo;
     umRepo;
+    configService;
     logger = new Logger(GamificacionService_1.name);
-    constructor(usuarioRepo, historialRepo, medallaRepo, umRepo) {
+    constructor(usuarioRepo, historialRepo, medallaRepo, umRepo, configService) {
         this.usuarioRepo = usuarioRepo;
         this.historialRepo = historialRepo;
         this.medallaRepo = medallaRepo;
         this.umRepo = umRepo;
+        this.configService = configService;
+    }
+    async getReglas() {
+        return this.configService.getReglasGamificacion();
+    }
+    async calcularNivel(xp) {
+        const config = await this.configService.getReglasGamificacion();
+        const niveles = config.niveles || REGLAS_GAMIFICACION_DEFAULT.niveles;
+        for (let i = niveles.length - 1; i >= 0; i--) {
+            if (xp >= niveles[i])
+                return i + 1;
+        }
+        return 1;
     }
     async otorgarXP(usuarioId, xp, accion, descripcion) {
         const registro = this.historialRepo.create({ usuarioId, xpOtorgado: xp, accion, descripcion });
         await this.historialRepo.save(registro);
         const usuario = await this.usuarioRepo.findOneByOrFail({ id: usuarioId });
         usuario.xpActual += xp;
-        const nuevoNivel = calcularNivel(usuario.xpActual);
+        const nuevoNivel = await this.calcularNivel(usuario.xpActual);
         if (nuevoNivel > usuario.nivel) {
             this.logger.log(`🎉 ¡${usuario.nombre} subió al nivel ${nuevoNivel}!`);
         }
@@ -90,8 +94,10 @@ let GamificacionService = GamificacionService_1 = class GamificacionService {
     async getPerfil(usuarioId) {
         const usuario = await this.usuarioRepo.findOneByOrFail({ id: usuarioId });
         const medallas = await this.getMedallasUsuario(usuarioId);
-        const xpParaSiguienteNivel = usuario.nivel < NIVELES.length ? NIVELES[usuario.nivel] : NIVELES[NIVELES.length - 1];
-        const xpNivelActual = NIVELES[usuario.nivel - 1] || 0;
+        const config = await this.configService.getReglasGamificacion();
+        const niveles = config.niveles || REGLAS_GAMIFICACION_DEFAULT.niveles;
+        const xpParaSiguienteNivel = usuario.nivel < niveles.length ? niveles[usuario.nivel] : niveles[niveles.length - 1];
+        const xpNivelActual = niveles[usuario.nivel - 1] || 0;
         const progreso = Math.round(((usuario.xpActual - xpNivelActual) / (xpParaSiguienteNivel - xpNivelActual)) * 100);
         return {
             ...usuario,
@@ -110,7 +116,8 @@ GamificacionService = GamificacionService_1 = __decorate([
     __metadata("design:paramtypes", [Repository,
         Repository,
         Repository,
-        Repository])
+        Repository,
+        ConfiguracionService])
 ], GamificacionService);
 export { GamificacionService };
 //# sourceMappingURL=gamificacion.service.js.map

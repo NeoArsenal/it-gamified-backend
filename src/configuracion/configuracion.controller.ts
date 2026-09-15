@@ -64,5 +64,21 @@ export class ConfiguracionController {
   ) {
     return this.configuracionService.setCatalogo(tipo, items, req.user?.id);
   }
+
+  // Consulta de reglas y economía de XP y niveles de gamificación
+  @Get('gamificacion')
+  async getGamificacionConfig() {
+    return this.configuracionService.getReglasGamificacion();
+  }
+
+  // Modificación de reglas y niveles de gamificación por parte del Administrador
+  @UseGuards(JwtAuthGuard)
+  @Put('gamificacion')
+  async setGamificacionConfig(
+    @Body() body: any,
+    @Request() req: any,
+  ) {
+    return this.configuracionService.setReglasGamificacion(body, req.user?.id);
+  }
 }
 

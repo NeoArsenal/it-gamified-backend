@@ -12,7 +12,7 @@ export declare class TicketsController {
         enProgreso: number;
         resueltos: number;
     }>;
-    getAnalytics(): Promise<{
+    getAnalytics(sede?: string): Promise<{
         heatmapDept: {
             departamento: string;
             BAJA: number;
@@ -24,6 +24,19 @@ export declare class TicketsController {
         promedioSLADias: number;
         totalTickets: number;
         resueltosCount: number;
+        sedesDisponibles: string[];
+        porSede: {
+            sede: string;
+            total: number;
+            resueltos: number;
+            abiertos: number;
+            criticos: number;
+            promedioSLADias: number;
+            promedioSLAHoras: number;
+            porcentajeResolucion: number;
+        }[];
+        sedeActiva: string;
+        totalTicketsGlobal: number;
     }>;
     findOne(id: string): Promise<import("./entities/ticket.entity.js").Ticket>;
     create(dto: CreateTicketDto): Promise<import("./entities/ticket.entity.js").Ticket>;

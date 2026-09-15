@@ -26,4 +26,6 @@ export declare class ConfiguracionController {
         categoriasActivos: string[];
     }>;
     setCatalogo(tipo: 'departamentos' | 'categoriasActivos', items: string[], req: any): Promise<string[]>;
+    getGamificacionConfig(): Promise<import("./configuracion.service.js").ReglasGamificacion>;
+    setGamificacionConfig(body: any, req: any): Promise<import("./configuracion.service.js").ReglasGamificacion>;
 }

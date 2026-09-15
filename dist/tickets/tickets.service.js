@@ -67,15 +67,31 @@ let TicketsService = TicketsService_1 = class TicketsService {
             };
         }
         const prioridad = dto.prioridad || PrioridadTicket.MEDIA;
+        const xpRecompensa = await this.getXpPorPrioridad(prioridad);
         const ticket = this.ticketRepo.create({
             ...dto,
             prioridad,
-            xpRecompensa: XP_POR_PRIORIDAD[prioridad],
+            xpRecompensa,
         });
         const saved = await this.ticketRepo.save(ticket);
         this.notificacionesGateway.emitirNuevoTicket(saved);
         this.logger.log(`🎫 Ticket "${saved.titulo}" creado (${saved.prioridad}) → +${saved.xpRecompensa} XP al resolverlo`);
         return saved;
+    }
+    async getXpPorPrioridad(prioridad) {
+        try {
+            const reglas = await this.gamificacionService.getReglas();
+            if (prioridad === PrioridadTicket.CRITICA)
+                return reglas.puntosPorArea.ticketCritica;
+            if (prioridad === PrioridadTicket.ALTA)
+                return reglas.puntosPorArea.ticketAlta;
+            if (prioridad === PrioridadTicket.MEDIA)
+                return reglas.puntosPorArea.ticketMedia;
+            return reglas.puntosPorArea.ticketBaja;
+        }
+        catch {
+            return XP_POR_PRIORIDAD[prioridad] || 150;
+        }
     }
     async update(id, dto) {
         const ticket = await this.findOne(id);
@@ -86,7 +102,7 @@ let TicketsService = TicketsService_1 = class TicketsService {
             }
         }
         if (dto.prioridad) {
-            ticket.xpRecompensa = XP_POR_PRIORIDAD[dto.prioridad];
+            ticket.xpRecompensa = await this.getXpPorPrioridad(dto.prioridad);
         }
         if (dto.estado === EstadoTicket.RESUELTO && estadoAnterior !== EstadoTicket.RESUELTO) {
             ticket.resueltoEn = new Date();
@@ -113,8 +129,60 @@ let TicketsService = TicketsService_1 = class TicketsService {
         const resueltos = await this.ticketRepo.count({ where: { estado: EstadoTicket.RESUELTO } });
         return { total, abiertos, enProgreso, resueltos };
     }
-    async getAnalytics() {
-        const tickets = await this.ticketRepo.find();
+    async getAnalytics(sedeFiltro) {
+        const allTickets = await this.ticketRepo.find();
+        const sedesSet = new Set();
+        for (const t of allTickets) {
+            if (t.sede && t.sede.trim()) {
+                sedesSet.add(t.sede.trim());
+            }
+        }
+        if (sedesSet.size === 0) {
+            sedesSet.add('Clínica');
+            sedesSet.add('Tower 1');
+        }
+        const sedesDisponibles = Array.from(sedesSet);
+        const porSedeMap = {};
+        for (const t of allTickets) {
+            const s = (t.sede && t.sede.trim()) ? t.sede.trim() : 'Sin Asignar';
+            if (!porSedeMap[s]) {
+                porSedeMap[s] = { total: 0, resueltos: 0, sumaSLADias: 0, resueltosConFechas: 0, criticos: 0, abiertos: 0 };
+            }
+            porSedeMap[s].total++;
+            if (t.estado === EstadoTicket.RESUELTO || t.estado === EstadoTicket.CERRADO) {
+                porSedeMap[s].resueltos++;
+            }
+            else {
+                porSedeMap[s].abiertos++;
+            }
+            if (t.prioridad === PrioridadTicket.CRITICA || t.prioridad === PrioridadTicket.ALTA) {
+                porSedeMap[s].criticos++;
+            }
+            if (t.resueltoEn && t.creadoEn) {
+                const ms = new Date(t.resueltoEn).getTime() - new Date(t.creadoEn).getTime();
+                const dias = ms / (1000 * 60 * 60 * 24);
+                porSedeMap[s].sumaSLADias += dias;
+                porSedeMap[s].resueltosConFechas++;
+            }
+        }
+        const porSede = Object.keys(porSedeMap).map(s => {
+            const item = porSedeMap[s];
+            const promSLADias = item.resueltosConFechas > 0 ? (item.sumaSLADias / item.resueltosConFechas) : 0;
+            return {
+                sede: s,
+                total: item.total,
+                resueltos: item.resueltos,
+                abiertos: item.abiertos,
+                criticos: item.criticos,
+                promedioSLADias: promSLADias,
+                promedioSLAHoras: +(promSLADias * 24).toFixed(1),
+                porcentajeResolucion: item.total > 0 ? Math.round((item.resueltos / item.total) * 100) : 0,
+            };
+        }).sort((a, b) => b.total - a.total);
+        const isFiltrado = Boolean(sedeFiltro && sedeFiltro !== 'TODAS');
+        const tickets = isFiltrado
+            ? allTickets.filter(t => (t.sede || '').trim().toLowerCase() === sedeFiltro.trim().toLowerCase())
+            : allTickets;
         const deptPrioridadMap = {};
         let sumaSLADias = 0;
         let resueltosConFechas = 0;
@@ -130,7 +198,7 @@ let TicketsService = TicketsService_1 = class TicketsService {
                 };
             }
             deptPrioridadMap[dept][prio]++;
-            if (t.estado === EstadoTicket.RESUELTO && t.resueltoEn && t.creadoEn) {
+            if (t.resueltoEn && t.creadoEn) {
                 const ms = new Date(t.resueltoEn).getTime() - new Date(t.creadoEn).getTime();
                 const dias = ms / (1000 * 60 * 60 * 24);
                 sumaSLADias += dias;
@@ -150,7 +218,11 @@ let TicketsService = TicketsService_1 = class TicketsService {
             heatmapDept: trueHeatmap,
             promedioSLADias,
             totalTickets: tickets.length,
-            resueltosCount: resueltosConFechas
+            resueltosCount: tickets.filter(t => t.estado === EstadoTicket.RESUELTO || t.estado === EstadoTicket.CERRADO).length,
+            sedesDisponibles,
+            porSede,
+            sedeActiva: isFiltrado ? sedeFiltro : 'TODAS',
+            totalTicketsGlobal: allTickets.length,
         };
     }
 };
