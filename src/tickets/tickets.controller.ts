@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Patch, Delete, Param, Body, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Patch, Delete, Param, Body, Query, UseGuards } from '@nestjs/common';
 import { TicketsService } from './tickets.service.js';
 import { CreateTicketDto } from './dto/create-ticket.dto.js';
 import { UpdateTicketDto } from './dto/update-ticket.dto.js';
@@ -24,7 +24,7 @@ export class TicketsController {
 
   @UseGuards(JwtAuthGuard)
   @Get('analytics')
-  getAnalytics() { return this.ticketsService.getAnalytics(); }
+  getAnalytics(@Query('sede') sede?: string) { return this.ticketsService.getAnalytics(sede); }
 
   @UseGuards(JwtAuthGuard)
   @Get(':id')

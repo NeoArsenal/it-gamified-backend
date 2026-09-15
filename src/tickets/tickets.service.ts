@@ -127,18 +127,73 @@ export class TicketsService {
   }
 
   /** Analítica Avanzada */
-  async getAnalytics() {
-    const tickets = await this.ticketRepo.find();
+  async getAnalytics(sedeFiltro?: string) {
+    const allTickets = await this.ticketRepo.find();
 
-    // 1. Distribución por departamento vs Prioridad para el verdadero Heatmap
+    // 1. Sedes disponibles únicas detectadas en tickets
+    const sedesSet = new Set<string>();
+    for (const t of allTickets) {
+      if (t.sede && t.sede.trim()) {
+        sedesSet.add(t.sede.trim());
+      }
+    }
+    if (sedesSet.size === 0) {
+      sedesSet.add('Clínica');
+      sedesSet.add('Tower 1');
+    }
+    const sedesDisponibles = Array.from(sedesSet);
+
+    // 2. Benchmark comparativo inter-sedes (para vista global consolidada)
+    const porSedeMap: Record<string, { total: number; resueltos: number; sumaSLADias: number; resueltosConFechas: number; criticos: number; abiertos: number }> = {};
+    for (const t of allTickets) {
+      const s = (t.sede && t.sede.trim()) ? t.sede.trim() : 'Sin Asignar';
+      if (!porSedeMap[s]) {
+        porSedeMap[s] = { total: 0, resueltos: 0, sumaSLADias: 0, resueltosConFechas: 0, criticos: 0, abiertos: 0 };
+      }
+      porSedeMap[s].total++;
+      if (t.estado === EstadoTicket.RESUELTO || t.estado === EstadoTicket.CERRADO) {
+        porSedeMap[s].resueltos++;
+      } else {
+        porSedeMap[s].abiertos++;
+      }
+      if (t.prioridad === PrioridadTicket.CRITICA || t.prioridad === PrioridadTicket.ALTA) {
+        porSedeMap[s].criticos++;
+      }
+      if (t.resueltoEn && t.creadoEn) {
+        const ms = new Date(t.resueltoEn).getTime() - new Date(t.creadoEn).getTime();
+        const dias = ms / (1000 * 60 * 60 * 24);
+        porSedeMap[s].sumaSLADias += dias;
+        porSedeMap[s].resueltosConFechas++;
+      }
+    }
+
+    const porSede = Object.keys(porSedeMap).map(s => {
+      const item = porSedeMap[s];
+      const promSLADias = item.resueltosConFechas > 0 ? (item.sumaSLADias / item.resueltosConFechas) : 0;
+      return {
+        sede: s,
+        total: item.total,
+        resueltos: item.resueltos,
+        abiertos: item.abiertos,
+        criticos: item.criticos,
+        promedioSLADias: promSLADias,
+        promedioSLAHoras: +(promSLADias * 24).toFixed(1),
+        porcentajeResolucion: item.total > 0 ? Math.round((item.resueltos / item.total) * 100) : 0,
+      };
+    }).sort((a, b) => b.total - a.total);
+
+    // 3. Filtrar tickets según la sede seleccionada (o consolidar todas si es 'TODAS')
+    const isFiltrado = Boolean(sedeFiltro && sedeFiltro !== 'TODAS');
+    const tickets = isFiltrado
+      ? allTickets.filter(t => (t.sede || '').trim().toLowerCase() === sedeFiltro!.trim().toLowerCase())
+      : allTickets;
+
+    // 4. Distribución por departamento vs Prioridad (Heatmap adaptativo)
     const deptPrioridadMap: Record<string, Record<PrioridadTicket, number>> = {};
-    
-    // 2. Tiempos de resolución para SLA
     let sumaSLADias = 0;
     let resueltosConFechas = 0;
 
     for (const t of tickets) {
-      // Dept
       const dept = t.departamento || 'General';
       const prio = t.prioridad || PrioridadTicket.MEDIA;
 
@@ -153,7 +208,7 @@ export class TicketsService {
       deptPrioridadMap[dept][prio]++;
 
       // SLA (en minutos / horas)
-      if (t.estado === EstadoTicket.RESUELTO && t.resueltoEn && t.creadoEn) {
+      if (t.resueltoEn && t.creadoEn) {
         const ms = new Date(t.resueltoEn).getTime() - new Date(t.creadoEn).getTime();
         const dias = ms / (1000 * 60 * 60 * 24);
         sumaSLADias += dias;
@@ -171,13 +226,17 @@ export class TicketsService {
       ALTA: deptPrioridadMap[dept][PrioridadTicket.ALTA],
       CRITICA: deptPrioridadMap[dept][PrioridadTicket.CRITICA],
       total: deptPrioridadMap[dept][PrioridadTicket.BAJA] + deptPrioridadMap[dept][PrioridadTicket.MEDIA] + deptPrioridadMap[dept][PrioridadTicket.ALTA] + deptPrioridadMap[dept][PrioridadTicket.CRITICA]
-    })).sort((a, b) => b.total - a.total); // Ordenar por más fallas
+    })).sort((a, b) => b.total - a.total);
 
     return {
       heatmapDept: trueHeatmap,
       promedioSLADias,
       totalTickets: tickets.length,
-      resueltosCount: resueltosConFechas
+      resueltosCount: tickets.filter(t => t.estado === EstadoTicket.RESUELTO || t.estado === EstadoTicket.CERRADO).length,
+      sedesDisponibles,
+      porSede,
+      sedeActiva: isFiltrado ? sedeFiltro : 'TODAS',
+      totalTicketsGlobal: allTickets.length,
     };
   }
 }
