@@ -13,6 +13,25 @@ export declare class TicketsService {
     findAll(): Promise<Ticket[]>;
     findAllPublic(): Promise<Partial<Ticket>[]>;
     findOne(id: string): Promise<Ticket>;
+    getActivePublicTickets(): Promise<{
+        id: string;
+        ticketCode: string;
+        titulo: string;
+        descripcion: string;
+        estado: EstadoTicket;
+        prioridad: PrioridadTicket;
+        sede: string;
+        departamento: string;
+        ubicacionEspecifica: string;
+        solicitanteNombre: string;
+        creadoEn: Date;
+        actualizadoEn: Date;
+        tecnicoAsignado: {
+            nombre: string;
+            avatar: string;
+            rol: import("../usuarios/entities/usuario.entity.js").RolUsuario;
+        };
+    }[]>;
     trackTicket(query: string): Promise<{
         id: string;
         ticketCode: string;
