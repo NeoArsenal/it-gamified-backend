@@ -9,18 +9,15 @@ import { TicketRateLimitGuard } from './guards/ticket-rate-limit.guard.js';
 export class TicketsController {
   constructor(private readonly ticketsService: TicketsService) {}
 
-  // Consulta pública sanitizada (sin datos sensibles) con rate limiting
-  @UseGuards(TicketRateLimitGuard)
+  // Consulta pública sanitizada (sin datos sensibles)
   @Get('public')
   findAllPublic() { return this.ticketsService.findAllPublic(); }
 
   // Acumulado de tickets activos para el portal (ABIERTO y EN_PROGRESO)
-  @UseGuards(TicketRateLimitGuard)
   @Get('public/active')
   getActivePublic() { return this.ticketsService.getActivePublicTickets(); }
 
   // Seguimiento de ticket por código o teléfono para personal asistencial
-  @UseGuards(TicketRateLimitGuard)
   @Get('track')
   trackTicket(@Query('q') query: string) { 
     return this.ticketsService.trackTicket(query); 

@@ -11,8 +11,8 @@ export class TicketRateLimitGuard implements CanActivate {
   // Memoria en caché de IPs y tiempos de solicitud
   private readonly ipRequests = new Map<string, RateLimitRecord>();
 
-  // Configuración: Máximo 5 tickets por ventana de 60 segundos por IP
-  private readonly MAX_REQUESTS = 5;
+  // Configuración: Máximo 30 tickets por ventana de 60 segundos por IP (adecuado para redes hospitalarias/NAT compartidas)
+  private readonly MAX_REQUESTS = 30;
   private readonly WINDOW_MS = 60 * 1000; // 60 segundos
 
   constructor() {
