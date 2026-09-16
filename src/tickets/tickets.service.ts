@@ -46,17 +46,21 @@ export class TicketsService {
     return ticket;
   }
 
-  // Consulta de tickets activos públicos (ABIERTO y EN_PROGRESO) para el acumulado del portal
+  // Consulta de tickets activos públicos (ABIERTO, EN_PROGRESO y RESUELTO recientemente) para el portal
   async getActivePublicTickets() {
-    const tickets = await this.ticketRepo.find({
-      where: [
-        { estado: EstadoTicket.ABIERTO },
-        { estado: EstadoTicket.EN_PROGRESO },
-      ],
-      relations: { asignadoA: true },
-      order: { creadoEn: 'DESC' },
-      take: 50,
-    });
+    const fifteenMinutesAgo = new Date(Date.now() - 15 * 60 * 1000);
+
+    const qb = this.ticketRepo.createQueryBuilder('ticket')
+      .leftJoinAndSelect('ticket.asignadoA', 'asignadoA')
+      .where('ticket.estado IN (:...estados)', { estados: [EstadoTicket.ABIERTO, EstadoTicket.EN_PROGRESO] })
+      .orWhere('(ticket.estado = :resuelto AND ticket.actualizadoEn >= :since)', {
+        resuelto: EstadoTicket.RESUELTO,
+        since: fifteenMinutesAgo,
+      })
+      .orderBy('ticket.creadoEn', 'DESC')
+      .take(50);
+
+    const tickets = await qb.getMany();
 
     return tickets.map(t => ({
       id: t.id,
@@ -71,6 +75,8 @@ export class TicketsService {
       solicitanteNombre: t.solicitanteNombre,
       creadoEn: t.creadoEn,
       actualizadoEn: t.actualizadoEn,
+      resueltoEn: t.resueltoEn,
+      solucion: t.solucion,
       tecnicoAsignado: t.asignadoA ? {
         nombre: t.asignadoA.nombre,
         avatar: t.asignadoA.avatar,

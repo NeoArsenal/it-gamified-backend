@@ -54,15 +54,17 @@ let TicketsService = TicketsService_1 = class TicketsService {
         return ticket;
     }
     async getActivePublicTickets() {
-        const tickets = await this.ticketRepo.find({
-            where: [
-                { estado: EstadoTicket.ABIERTO },
-                { estado: EstadoTicket.EN_PROGRESO },
-            ],
-            relations: { asignadoA: true },
-            order: { creadoEn: 'DESC' },
-            take: 50,
-        });
+        const fifteenMinutesAgo = new Date(Date.now() - 15 * 60 * 1000);
+        const qb = this.ticketRepo.createQueryBuilder('ticket')
+            .leftJoinAndSelect('ticket.asignadoA', 'asignadoA')
+            .where('ticket.estado IN (:...estados)', { estados: [EstadoTicket.ABIERTO, EstadoTicket.EN_PROGRESO] })
+            .orWhere('(ticket.estado = :resuelto AND ticket.actualizadoEn >= :since)', {
+            resuelto: EstadoTicket.RESUELTO,
+            since: fifteenMinutesAgo,
+        })
+            .orderBy('ticket.creadoEn', 'DESC')
+            .take(50);
+        const tickets = await qb.getMany();
         return tickets.map(t => ({
             id: t.id,
             ticketCode: `TK-${t.id.slice(0, 6).toUpperCase()}`,
@@ -76,6 +78,8 @@ let TicketsService = TicketsService_1 = class TicketsService {
             solicitanteNombre: t.solicitanteNombre,
             creadoEn: t.creadoEn,
             actualizadoEn: t.actualizadoEn,
+            resueltoEn: t.resueltoEn,
+            solucion: t.solucion,
             tecnicoAsignado: t.asignadoA ? {
                 nombre: t.asignadoA.nombre,
                 avatar: t.asignadoA.avatar,
