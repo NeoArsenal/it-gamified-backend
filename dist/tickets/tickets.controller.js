@@ -22,6 +22,9 @@ let TicketsController = class TicketsController {
         this.ticketsService = ticketsService;
     }
     findAllPublic() { return this.ticketsService.findAllPublic(); }
+    trackTicket(query) {
+        return this.ticketsService.trackTicket(query);
+    }
     findAll() { return this.ticketsService.findAll(); }
     getStats() { return this.ticketsService.getEstadisticas(); }
     getAnalytics(sede) { return this.ticketsService.getAnalytics(sede); }
@@ -40,6 +43,14 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
 ], TicketsController.prototype, "findAllPublic", null);
+__decorate([
+    UseGuards(TicketRateLimitGuard),
+    Get('track'),
+    __param(0, Query('q')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", void 0)
+], TicketsController.prototype, "trackTicket", null);
 __decorate([
     UseGuards(JwtAuthGuard),
     Get(),

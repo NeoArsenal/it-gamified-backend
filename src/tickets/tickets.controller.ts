@@ -14,6 +14,13 @@ export class TicketsController {
   @Get('public')
   findAllPublic() { return this.ticketsService.findAllPublic(); }
 
+  // Seguimiento de ticket por código o teléfono para personal asistencial
+  @UseGuards(TicketRateLimitGuard)
+  @Get('track')
+  trackTicket(@Query('q') query: string) { 
+    return this.ticketsService.trackTicket(query); 
+  }
+
   @UseGuards(JwtAuthGuard)
   @Get()
   findAll() { return this.ticketsService.findAll(); }
