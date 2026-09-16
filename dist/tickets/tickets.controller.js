@@ -38,21 +38,18 @@ let TicketsController = class TicketsController {
     }
 };
 __decorate([
-    UseGuards(TicketRateLimitGuard),
     Get('public'),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
 ], TicketsController.prototype, "findAllPublic", null);
 __decorate([
-    UseGuards(TicketRateLimitGuard),
     Get('public/active'),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
 ], TicketsController.prototype, "getActivePublic", null);
 __decorate([
-    UseGuards(TicketRateLimitGuard),
     Get('track'),
     __param(0, Query('q')),
     __metadata("design:type", Function),

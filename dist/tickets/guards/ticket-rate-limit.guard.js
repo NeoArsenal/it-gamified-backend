@@ -12,7 +12,7 @@ import { Injectable, HttpException, HttpStatus, Logger } from '@nestjs/common';
 let TicketRateLimitGuard = TicketRateLimitGuard_1 = class TicketRateLimitGuard {
     logger = new Logger(TicketRateLimitGuard_1.name);
     ipRequests = new Map();
-    MAX_REQUESTS = 5;
+    MAX_REQUESTS = 30;
     WINDOW_MS = 60 * 1000;
     constructor() {
         setInterval(() => this.cleanup(), 5 * 60 * 1000);
