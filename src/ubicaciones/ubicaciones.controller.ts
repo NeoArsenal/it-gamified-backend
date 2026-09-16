@@ -37,7 +37,8 @@ export class UbicacionesController {
 
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.ubicacionesService.remove(id);
+  async remove(@Param('id') id: string) {
+    await this.ubicacionesService.remove(id);
+    return { success: true, message: 'Ubicacion eliminada' };
   }
 }

@@ -8,5 +8,8 @@ export declare class UbicacionesController {
     findSedes(): Promise<string[]>;
     findDepartamentos(sede: string): any[] | Promise<string[]>;
     findAreas(sede: string, departamento: string): any[] | Promise<string[]>;
-    remove(id: string): Promise<void>;
+    remove(id: string): Promise<{
+        success: boolean;
+        message: string;
+    }>;
 }

@@ -38,8 +38,9 @@ let UbicacionesController = class UbicacionesController {
             return [];
         return this.ubicacionesService.findAreas(sede, departamento);
     }
-    remove(id) {
-        return this.ubicacionesService.remove(id);
+    async remove(id) {
+        await this.ubicacionesService.remove(id);
+        return { success: true, message: 'Ubicacion eliminada' };
     }
 };
 __decorate([
@@ -84,7 +85,7 @@ __decorate([
     __param(0, Param('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", void 0)
+    __metadata("design:returntype", Promise)
 ], UbicacionesController.prototype, "remove", null);
 UbicacionesController = __decorate([
     Controller('ubicaciones'),
