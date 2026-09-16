@@ -14,6 +14,11 @@ export class TicketsController {
   @Get('public')
   findAllPublic() { return this.ticketsService.findAllPublic(); }
 
+  // Acumulado de tickets activos para el portal (ABIERTO y EN_PROGRESO)
+  @UseGuards(TicketRateLimitGuard)
+  @Get('public/active')
+  getActivePublic() { return this.ticketsService.getActivePublicTickets(); }
+
   // Seguimiento de ticket por código o teléfono para personal asistencial
   @UseGuards(TicketRateLimitGuard)
   @Get('track')

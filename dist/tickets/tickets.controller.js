@@ -22,6 +22,7 @@ let TicketsController = class TicketsController {
         this.ticketsService = ticketsService;
     }
     findAllPublic() { return this.ticketsService.findAllPublic(); }
+    getActivePublic() { return this.ticketsService.getActivePublicTickets(); }
     trackTicket(query) {
         return this.ticketsService.trackTicket(query);
     }
@@ -43,6 +44,13 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
 ], TicketsController.prototype, "findAllPublic", null);
+__decorate([
+    UseGuards(TicketRateLimitGuard),
+    Get('public/active'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", void 0)
+], TicketsController.prototype, "getActivePublic", null);
 __decorate([
     UseGuards(TicketRateLimitGuard),
     Get('track'),

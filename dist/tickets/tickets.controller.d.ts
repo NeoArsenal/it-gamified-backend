@@ -5,6 +5,25 @@ export declare class TicketsController {
     private readonly ticketsService;
     constructor(ticketsService: TicketsService);
     findAllPublic(): Promise<Partial<import("./entities/ticket.entity.js").Ticket>[]>;
+    getActivePublic(): Promise<{
+        id: string;
+        ticketCode: string;
+        titulo: string;
+        descripcion: string;
+        estado: import("./entities/ticket.entity.js").EstadoTicket;
+        prioridad: import("./entities/ticket.entity.js").PrioridadTicket;
+        sede: string;
+        departamento: string;
+        ubicacionEspecifica: string;
+        solicitanteNombre: string;
+        creadoEn: Date;
+        actualizadoEn: Date;
+        tecnicoAsignado: {
+            nombre: string;
+            avatar: string;
+            rol: import("../usuarios/entities/usuario.entity.js").RolUsuario;
+        };
+    }[]>;
     trackTicket(query: string): Promise<{
         id: string;
         ticketCode: string;

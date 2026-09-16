@@ -46,40 +46,17 @@ export class TicketsService {
     return ticket;
   }
 
-  // Consulta pública sanitizada de seguimiento para personal asistencial
-  async trackTicket(query: string) {
-    const raw = (query || '').trim();
-    if (!raw || raw.length < 3) {
-      throw new NotFoundException('Ingresa al menos 3 caracteres del código o teléfono');
-    }
-
-    const cleanCode = raw.replace(/^[#\s]*(TK-?)?/i, '').replace(/\s+/g, '').toLowerCase();
-    const digitsOnly = raw.replace(/\D/g, '');
-
-    const qb = this.ticketRepo.createQueryBuilder('ticket')
-      .leftJoinAndSelect('ticket.asignadoA', 'asignadoA')
-      .orderBy('ticket.creadoEn', 'DESC')
-      .take(10);
-
-    if (digitsOnly.length >= 3 && cleanCode.length >= 3) {
-      qb.where('(LOWER(ticket.id) LIKE :codeLike OR ticket.solicitanteContacto LIKE :phoneLike)', {
-        codeLike: `${cleanCode}%`,
-        phoneLike: `%${digitsOnly}%`,
-      });
-    } else if (digitsOnly.length >= 3) {
-      qb.where('ticket.solicitanteContacto LIKE :phoneLike', {
-        phoneLike: `%${digitsOnly}%`,
-      });
-    } else {
-      qb.where('LOWER(ticket.id) LIKE :codeLike', {
-        codeLike: `${cleanCode}%`,
-      });
-    }
-
-    const tickets = await qb.getMany();
-    if (!tickets || tickets.length === 0) {
-      throw new NotFoundException(`No se encontró ningún ticket con "${raw}"`);
-    }
+  // Consulta de tickets activos públicos (ABIERTO y EN_PROGRESO) para el acumulado del portal
+  async getActivePublicTickets() {
+    const tickets = await this.ticketRepo.find({
+      where: [
+        { estado: EstadoTicket.ABIERTO },
+        { estado: EstadoTicket.EN_PROGRESO },
+      ],
+      relations: { asignadoA: true },
+      order: { creadoEn: 'DESC' },
+      take: 50,
+    });
 
     return tickets.map(t => ({
       id: t.id,
@@ -94,14 +71,77 @@ export class TicketsService {
       solicitanteNombre: t.solicitanteNombre,
       creadoEn: t.creadoEn,
       actualizadoEn: t.actualizadoEn,
-      resueltoEn: t.resueltoEn,
-      solucion: t.solucion,
       tecnicoAsignado: t.asignadoA ? {
         nombre: t.asignadoA.nombre,
         avatar: t.asignadoA.avatar,
         rol: t.asignadoA.rol,
       } : null,
     }));
+  }
+
+  // Consulta pública sanitizada de seguimiento para personal asistencial
+  async trackTicket(query: string) {
+    const raw = (query || '').trim();
+    if (!raw || raw.length < 3) {
+      throw new NotFoundException('Ingresa al menos 3 caracteres del código o teléfono');
+    }
+
+    const cleanCode = raw.replace(/^[#\s]*(TK-?)?/i, '').replace(/\s+/g, '').toLowerCase();
+    const digitsOnly = raw.replace(/\D/g, '');
+
+    try {
+      const qb = this.ticketRepo.createQueryBuilder('ticket')
+        .leftJoinAndSelect('ticket.asignadoA', 'asignadoA')
+        .orderBy('ticket.creadoEn', 'DESC')
+        .take(15);
+
+      // Usar CAST(ticket.id AS text) para evitar error PostgreSQL 'lower(uuid) does not exist'
+      if (digitsOnly.length >= 3 && cleanCode.length >= 3) {
+        qb.where('(CAST(ticket.id AS text) LIKE :codeLike OR ticket.solicitanteContacto LIKE :phoneLike)', {
+          codeLike: `%${cleanCode}%`,
+          phoneLike: `%${digitsOnly}%`,
+        });
+      } else if (digitsOnly.length >= 3) {
+        qb.where('ticket.solicitanteContacto LIKE :phoneLike', {
+          phoneLike: `%${digitsOnly}%`,
+        });
+      } else {
+        qb.where('CAST(ticket.id AS text) LIKE :codeLike', {
+          codeLike: `%${cleanCode}%`,
+        });
+      }
+
+      const tickets = await qb.getMany();
+      if (!tickets || tickets.length === 0) {
+        throw new NotFoundException(`No se encontró ningún ticket con "${raw}"`);
+      }
+
+      return tickets.map(t => ({
+        id: t.id,
+        ticketCode: `TK-${t.id.slice(0, 6).toUpperCase()}`,
+        titulo: t.titulo,
+        descripcion: t.descripcion,
+        estado: t.estado,
+        prioridad: t.prioridad,
+        sede: t.sede,
+        departamento: t.departamento,
+        ubicacionEspecifica: t.ubicacionEspecifica,
+        solicitanteNombre: t.solicitanteNombre,
+        creadoEn: t.creadoEn,
+        actualizadoEn: t.actualizadoEn,
+        resueltoEn: t.resueltoEn,
+        solucion: t.solucion,
+        tecnicoAsignado: t.asignadoA ? {
+          nombre: t.asignadoA.nombre,
+          avatar: t.asignadoA.avatar,
+          rol: t.asignadoA.rol,
+        } : null,
+      }));
+    } catch (err: any) {
+      if (err instanceof NotFoundException) throw err;
+      this.logger.error(`Error buscando ticket con "${raw}": ${err.message}`, err.stack);
+      throw new NotFoundException(`No se encontró ningún ticket con "${raw}"`);
+    }
   }
 
   async create(dto: CreateTicketDto): Promise<Ticket> {
