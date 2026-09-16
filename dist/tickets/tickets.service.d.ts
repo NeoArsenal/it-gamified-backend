@@ -26,6 +26,8 @@ export declare class TicketsService {
         solicitanteNombre: string;
         creadoEn: Date;
         actualizadoEn: Date;
+        resueltoEn: Date;
+        solucion: string;
         tecnicoAsignado: {
             nombre: string;
             avatar: string;

@@ -18,6 +18,8 @@ export declare class TicketsController {
         solicitanteNombre: string;
         creadoEn: Date;
         actualizadoEn: Date;
+        resueltoEn: Date;
+        solucion: string;
         tecnicoAsignado: {
             nombre: string;
             avatar: string;
