@@ -1,5 +1,5 @@
 import { Repository } from 'typeorm';
-import { Ticket } from './entities/ticket.entity.js';
+import { Ticket, EstadoTicket, PrioridadTicket } from './entities/ticket.entity.js';
 import { CreateTicketDto } from './dto/create-ticket.dto.js';
 import { UpdateTicketDto } from './dto/update-ticket.dto.js';
 import { GamificacionService } from '../gamificacion/gamificacion.service.js';
@@ -13,6 +13,27 @@ export declare class TicketsService {
     findAll(): Promise<Ticket[]>;
     findAllPublic(): Promise<Partial<Ticket>[]>;
     findOne(id: string): Promise<Ticket>;
+    trackTicket(query: string): Promise<{
+        id: string;
+        ticketCode: string;
+        titulo: string;
+        descripcion: string;
+        estado: EstadoTicket;
+        prioridad: PrioridadTicket;
+        sede: string;
+        departamento: string;
+        ubicacionEspecifica: string;
+        solicitanteNombre: string;
+        creadoEn: Date;
+        actualizadoEn: Date;
+        resueltoEn: Date;
+        solucion: string;
+        tecnicoAsignado: {
+            nombre: string;
+            avatar: string;
+            rol: import("../usuarios/entities/usuario.entity.js").RolUsuario;
+        };
+    }[]>;
     create(dto: CreateTicketDto): Promise<Ticket>;
     private getXpPorPrioridad;
     update(id: string, dto: UpdateTicketDto): Promise<Ticket>;

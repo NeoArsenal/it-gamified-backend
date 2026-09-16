@@ -53,6 +53,59 @@ let TicketsService = TicketsService_1 = class TicketsService {
             throw new NotFoundException(`Ticket ${id} no encontrado`);
         return ticket;
     }
+    async trackTicket(query) {
+        const raw = (query || '').trim();
+        if (!raw || raw.length < 3) {
+            throw new NotFoundException('Ingresa al menos 3 caracteres del código o teléfono');
+        }
+        const cleanCode = raw.replace(/^[#\s]*(TK-?)?/i, '').replace(/\s+/g, '').toLowerCase();
+        const digitsOnly = raw.replace(/\D/g, '');
+        const qb = this.ticketRepo.createQueryBuilder('ticket')
+            .leftJoinAndSelect('ticket.asignadoA', 'asignadoA')
+            .orderBy('ticket.creadoEn', 'DESC')
+            .take(10);
+        if (digitsOnly.length >= 3 && cleanCode.length >= 3) {
+            qb.where('(LOWER(ticket.id) LIKE :codeLike OR ticket.solicitanteContacto LIKE :phoneLike)', {
+                codeLike: `${cleanCode}%`,
+                phoneLike: `%${digitsOnly}%`,
+            });
+        }
+        else if (digitsOnly.length >= 3) {
+            qb.where('ticket.solicitanteContacto LIKE :phoneLike', {
+                phoneLike: `%${digitsOnly}%`,
+            });
+        }
+        else {
+            qb.where('LOWER(ticket.id) LIKE :codeLike', {
+                codeLike: `${cleanCode}%`,
+            });
+        }
+        const tickets = await qb.getMany();
+        if (!tickets || tickets.length === 0) {
+            throw new NotFoundException(`No se encontró ningún ticket con "${raw}"`);
+        }
+        return tickets.map(t => ({
+            id: t.id,
+            ticketCode: `TK-${t.id.slice(0, 6).toUpperCase()}`,
+            titulo: t.titulo,
+            descripcion: t.descripcion,
+            estado: t.estado,
+            prioridad: t.prioridad,
+            sede: t.sede,
+            departamento: t.departamento,
+            ubicacionEspecifica: t.ubicacionEspecifica,
+            solicitanteNombre: t.solicitanteNombre,
+            creadoEn: t.creadoEn,
+            actualizadoEn: t.actualizadoEn,
+            resueltoEn: t.resueltoEn,
+            solucion: t.solucion,
+            tecnicoAsignado: t.asignadoA ? {
+                nombre: t.asignadoA.nombre,
+                avatar: t.asignadoA.avatar,
+                rol: t.asignadoA.rol,
+            } : null,
+        }));
+    }
     async create(dto) {
         if (dto.website && dto.website.trim().length > 0) {
             this.logger.warn(`🤖 [Honeypot] Bot detectado intentando spamear ticket: "${dto.titulo}"`);
