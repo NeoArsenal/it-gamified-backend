@@ -57,8 +57,8 @@ let TicketsService = TicketsService_1 = class TicketsService {
         const fifteenMinutesAgo = new Date(Date.now() - 15 * 60 * 1000);
         const qb = this.ticketRepo.createQueryBuilder('ticket')
             .leftJoinAndSelect('ticket.asignadoA', 'asignadoA')
-            .where('ticket.estado IN (:...estados)', { estados: [EstadoTicket.ABIERTO, EstadoTicket.EN_PROGRESO] })
-            .orWhere('(ticket.estado = :resuelto AND ticket.actualizadoEn >= :since)', {
+            .where('(ticket.estado IN (:...estados)) OR (ticket.estado = :resuelto AND (ticket.resueltoEn >= :since OR ticket.actualizadoEn >= :since))', {
+            estados: [EstadoTicket.ABIERTO, EstadoTicket.EN_PROGRESO],
             resuelto: EstadoTicket.RESUELTO,
             since: fifteenMinutesAgo,
         })
