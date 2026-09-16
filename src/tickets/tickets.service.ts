@@ -52,11 +52,14 @@ export class TicketsService {
 
     const qb = this.ticketRepo.createQueryBuilder('ticket')
       .leftJoinAndSelect('ticket.asignadoA', 'asignadoA')
-      .where('ticket.estado IN (:...estados)', { estados: [EstadoTicket.ABIERTO, EstadoTicket.EN_PROGRESO] })
-      .orWhere('(ticket.estado = :resuelto AND ticket.actualizadoEn >= :since)', {
-        resuelto: EstadoTicket.RESUELTO,
-        since: fifteenMinutesAgo,
-      })
+      .where(
+        '(ticket.estado IN (:...estados)) OR (ticket.estado = :resuelto AND (ticket.resueltoEn >= :since OR ticket.actualizadoEn >= :since))',
+        {
+          estados: [EstadoTicket.ABIERTO, EstadoTicket.EN_PROGRESO],
+          resuelto: EstadoTicket.RESUELTO,
+          since: fifteenMinutesAgo,
+        },
+      )
       .orderBy('ticket.creadoEn', 'DESC')
       .take(50);
 
