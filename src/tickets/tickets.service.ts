@@ -1,11 +1,9 @@
 import { Injectable, NotFoundException, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Ticket, EstadoTicket, PrioridadTicket, XP_POR_PRIORIDAD } from './entities/ticket.entity.js';
+import { Ticket, EstadoTicket, PrioridadTicket } from './entities/ticket.entity.js';
 import { CreateTicketDto } from './dto/create-ticket.dto.js';
 import { UpdateTicketDto } from './dto/update-ticket.dto.js';
-import { GamificacionService } from '../gamificacion/gamificacion.service.js';
-import { AccionXP } from '../gamificacion/entities/historial-xp.entity.js';
 import { NotificacionesGateway } from '../notificaciones/notificaciones.gateway.js';
 
 @Injectable()
@@ -14,7 +12,6 @@ export class TicketsService {
 
   constructor(
     @InjectRepository(Ticket) private readonly ticketRepo: Repository<Ticket>,
-    private readonly gamificacionService: GamificacionService,
     private readonly notificacionesGateway: NotificacionesGateway,
   ) {}
 
@@ -169,28 +166,14 @@ export class TicketsService {
     }
 
     const prioridad = dto.prioridad || PrioridadTicket.MEDIA;
-    const xpRecompensa = await this.getXpPorPrioridad(prioridad);
     const ticket = this.ticketRepo.create({
       ...dto,
       prioridad,
-      xpRecompensa,
     });
     const saved = await this.ticketRepo.save(ticket);
     this.notificacionesGateway.emitirNuevoTicket(saved);
-    this.logger.log(`🎫 Ticket "${saved.titulo}" creado (${saved.prioridad}) → +${saved.xpRecompensa} XP al resolverlo`);
+    this.logger.log(`🎫 Ticket "${saved.titulo}" creado (${saved.prioridad})`);
     return saved;
-  }
-
-  private async getXpPorPrioridad(prioridad: PrioridadTicket): Promise<number> {
-    try {
-      const reglas = await this.gamificacionService.getReglas();
-      if (prioridad === PrioridadTicket.CRITICA) return reglas.puntosPorArea.ticketCritica;
-      if (prioridad === PrioridadTicket.ALTA) return reglas.puntosPorArea.ticketAlta;
-      if (prioridad === PrioridadTicket.MEDIA) return reglas.puntosPorArea.ticketMedia;
-      return reglas.puntosPorArea.ticketBaja;
-    } catch {
-      return XP_POR_PRIORIDAD[prioridad] || 150;
-    }
   }
 
   async update(id: string, dto: UpdateTicketDto): Promise<Ticket> {
@@ -202,11 +185,6 @@ export class TicketsService {
       if (val !== undefined) {
         (ticket as any)[key] = val;
       }
-    }
-
-    // Recalcular XP si la prioridad cambió
-    if (dto.prioridad) {
-      ticket.xpRecompensa = await this.getXpPorPrioridad(dto.prioridad);
     }
 
     // Si el ticket pasó a RESUELTO, registrar fecha de resolución técnica

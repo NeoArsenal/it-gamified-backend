@@ -5,8 +5,6 @@ import { Activo, EstadoActivo } from './entities/activo.entity.js';
 import { Intervencion } from './entities/intervencion.entity.js';
 import { CreateActivoDto } from './dto/create-activo.dto.js';
 import { UpdateActivoDto } from './dto/update-activo.dto.js';
-import { GamificacionService } from '../gamificacion/gamificacion.service.js';
-import { AccionXP } from '../gamificacion/entities/historial-xp.entity.js';
 
 @Injectable()
 export class ActivosService {
@@ -17,7 +15,6 @@ export class ActivosService {
     private readonly activoRepo: Repository<Activo>,
     @InjectRepository(Intervencion)
     private readonly intervencionRepo: Repository<Intervencion>,
-    private readonly gamificacionService: GamificacionService,
   ) {}
 
   async findAll() {
