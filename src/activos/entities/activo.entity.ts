@@ -28,7 +28,13 @@ export class Activo {
   estado: EstadoActivo;
 
   @Column({ nullable: true })
+  marca: string;
+
+  @Column({ nullable: true })
   modelo: string;
+
+  @Column({ nullable: true })
+  numeroSerie: string;
 
   @Column({ nullable: true })
   sede: string;
