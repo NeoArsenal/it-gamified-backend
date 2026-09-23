@@ -17,7 +17,6 @@ import { Repository } from 'typeorm';
 import { Activo, EstadoActivo } from './entities/activo.entity.js';
 import { Intervencion } from './entities/intervencion.entity.js';
 import { GamificacionService } from '../gamificacion/gamificacion.service.js';
-import { AccionXP } from '../gamificacion/entities/historial-xp.entity.js';
 let ActivosService = ActivosService_1 = class ActivosService {
     activoRepo;
     intervencionRepo;
@@ -66,15 +65,11 @@ let ActivosService = ActivosService_1 = class ActivosService {
             }
         }
         const saved = await this.activoRepo.save(activo);
-        if (dto.estado === EstadoActivo.RESCATADO && estadoAnterior !== EstadoActivo.RESCATADO && dto.tecnicoId) {
-            const xpRecompensa = 1000;
-            await this.gamificacionService.otorgarXP(dto.tecnicoId, xpRecompensa, AccionXP.BONUS_ADMIN, `Rescató el equipo ${activo.codigo} de la chatarra`);
-            this.logger.log(`♻️ +${xpRecompensa} XP a ${dto.tecnicoId} por rescatar equipo ${activo.codigo}`);
+        if (dto.estado === EstadoActivo.RESCATADO && estadoAnterior !== EstadoActivo.RESCATADO) {
+            this.logger.log(`♻️ Equipo ${activo.codigo} reciclado para piezas/repuestos`);
         }
-        if (dto.estado === EstadoActivo.OPERATIVO && estadoAnterior === EstadoActivo.REPARACION && dto.tecnicoId) {
-            const xpRecompensa = 250;
-            await this.gamificacionService.otorgarXP(dto.tecnicoId, xpRecompensa, AccionXP.BONUS_ADMIN, `Reparó con éxito el equipo ${activo.codigo}`);
-            this.logger.log(`🛠️ +${xpRecompensa} XP a ${dto.tecnicoId} por reparar equipo ${activo.codigo}`);
+        if (dto.estado === EstadoActivo.OPERATIVO && estadoAnterior === EstadoActivo.REPARACION) {
+            this.logger.log(`🛠️ Equipo ${activo.codigo} reparado con éxito y operativo`);
         }
         return saved;
     }
