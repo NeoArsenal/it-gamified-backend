@@ -3,15 +3,12 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { DispositivoRed, EstadoDispositivo } from './entities/dispositivo-red.entity.js';
 import { DireccionIP, EstadoIP } from './entities/direccion-ip.entity.js';
-import { GamificacionService } from '../gamificacion/gamificacion.service.js';
-import { AccionXP } from '../gamificacion/entities/historial-xp.entity.js';
 
 @Injectable()
 export class RedService implements OnModuleInit {
   constructor(
     @InjectRepository(DispositivoRed) private readonly dispositivoRepo: Repository<DispositivoRed>,
     @InjectRepository(DireccionIP) private readonly ipRepo: Repository<DireccionIP>,
-    private readonly gamificacionService: GamificacionService,
   ) {}
 
   async onModuleInit() {
@@ -91,16 +88,6 @@ export class RedService implements OnModuleInit {
     d.estado = EstadoDispositivo.ONLINE;
     d.ultimoPing = new Date();
     await this.dispositivoRepo.save(d);
-
-    // Otorgar puntos al técnico que lo restauró! (250 XP)
-    if (tecnicoId) {
-      await this.gamificacionService.otorgarXP(
-        tecnicoId,
-        250,
-        AccionXP.EQUIPO_RESTAURADO,
-        `Restauró el dispositivo ${d.nombre} (${d.tipo})`
-      );
-    }
 
     return d;
   }
