@@ -10,12 +10,11 @@ import { DispositivoRed } from './entities/dispositivo-red.entity.js';
 import { DireccionIP } from './entities/direccion-ip.entity.js';
 import { RedService } from './red.service.js';
 import { RedController } from './red.controller.js';
-import { GamificacionModule } from '../gamificacion/gamificacion.module.js';
 let RedModule = class RedModule {
 };
 RedModule = __decorate([
     Module({
-        imports: [TypeOrmModule.forFeature([DispositivoRed, DireccionIP]), GamificacionModule],
+        imports: [TypeOrmModule.forFeature([DispositivoRed, DireccionIP])],
         controllers: [RedController],
         providers: [RedService],
         exports: [RedService],

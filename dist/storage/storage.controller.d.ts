@@ -6,4 +6,7 @@ export declare class StorageController {
     uploadFile(file: Express.Multer.File): Promise<{
         url: string;
     }>;
+    deleteFile(url: string): Promise<{
+        success: boolean;
+    }>;
 }

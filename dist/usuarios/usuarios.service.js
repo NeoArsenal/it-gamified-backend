@@ -25,12 +25,15 @@ import { Configuracion } from '../configuracion/entities/configuracion.entity.js
 import { UsuarioMedalla } from '../gamificacion/entities/usuario-medalla.entity.js';
 import { HistorialXP } from '../gamificacion/entities/historial-xp.entity.js';
 import { ProgresoUsuario } from '../academia/entities/progreso-usuario.entity.js';
+import { StorageService } from '../storage/storage.service.js';
 let UsuariosService = UsuariosService_1 = class UsuariosService {
     usuarioRepository;
+    storageService;
     dataSource;
     logger = new Logger(UsuariosService_1.name);
-    constructor(usuarioRepository, dataSource) {
+    constructor(usuarioRepository, storageService, dataSource) {
         this.usuarioRepository = usuarioRepository;
+        this.storageService = storageService;
         this.dataSource = dataSource;
     }
     async findAll() {
@@ -72,8 +75,14 @@ let UsuariosService = UsuariosService_1 = class UsuariosService {
     }
     async updatePreferencias(id, data) {
         const usuario = await this.findOne(id);
-        if (data.avatar !== undefined)
+        if (data.avatar !== undefined && data.avatar !== usuario.avatar) {
+            if (usuario.avatar && (usuario.avatar.includes('supabase.co') || usuario.avatar.startsWith('uploads/'))) {
+                await this.storageService.deleteFile(usuario.avatar).catch((err) => {
+                    this.logger.warn(`No se pudo eliminar foto previa de Supabase: ${err.message}`);
+                });
+            }
             usuario.avatar = data.avatar;
+        }
         if (data.tituloRPG !== undefined)
             usuario.tituloRPG = data.tituloRPG;
         if (data.preferencias !== undefined) {
@@ -89,6 +98,9 @@ let UsuariosService = UsuariosService_1 = class UsuariosService {
             throw new BadRequestException('No puedes eliminar tu propia cuenta de administrador en sesión');
         }
         const user = await this.findOne(id);
+        if (user.avatar && (user.avatar.includes('supabase.co') || user.avatar.startsWith('uploads/'))) {
+            await this.storageService.deleteFile(user.avatar).catch(() => null);
+        }
         try {
             await this.dataSource.transaction(async (manager) => {
                 await manager.delete(UsuarioMedalla, { usuarioId: id });
@@ -115,6 +127,7 @@ UsuariosService = UsuariosService_1 = __decorate([
     Injectable(),
     __param(0, InjectRepository(Usuario)),
     __metadata("design:paramtypes", [Repository,
+        StorageService,
         DataSource])
 ], UsuariosService);
 export { UsuariosService };

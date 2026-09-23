@@ -1,4 +1,4 @@
-import { Controller, Post, UseInterceptors, UploadedFile, UseGuards, BadRequestException } from '@nestjs/common';
+import { Controller, Post, Delete, Body, UseInterceptors, UploadedFile, UseGuards, BadRequestException } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import 'multer';
 import { StorageService } from './storage.service.js';
@@ -18,5 +18,14 @@ export class StorageController {
 
     const publicUrl = await this.storageService.uploadFile(file);
     return { url: publicUrl };
+  }
+
+  @Delete('file')
+  async deleteFile(@Body('url') url: string) {
+    if (!url) {
+      throw new BadRequestException('No se ha proporcionado la URL del archivo');
+    }
+    const success = await this.storageService.deleteFile(url);
+    return { success };
   }
 }

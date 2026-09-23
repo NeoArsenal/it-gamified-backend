@@ -14,14 +14,10 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Guia } from './entities/guia.entity.js';
-import { GamificacionService } from '../gamificacion/gamificacion.service.js';
-import { AccionXP } from '../gamificacion/entities/historial-xp.entity.js';
 let GuiasService = class GuiasService {
     guiaRepo;
-    gamificacionService;
-    constructor(guiaRepo, gamificacionService) {
+    constructor(guiaRepo) {
         this.guiaRepo = guiaRepo;
-        this.gamificacionService = gamificacionService;
     }
     async findAll() { return this.guiaRepo.find({ order: { fechaSubida: 'DESC' } }); }
     async search(query) {
@@ -41,11 +37,7 @@ let GuiasService = class GuiasService {
         return g;
     }
     async create(data) {
-        const guia = await this.guiaRepo.save(this.guiaRepo.create(data));
-        if (guia.autorId) {
-            await this.gamificacionService.otorgarXP(guia.autorId, 200, AccionXP.GUIA_SUBIDA, `Subió la guía "${guia.titulo}"`);
-        }
-        return guia;
+        return this.guiaRepo.save(this.guiaRepo.create(data));
     }
     async remove(id) {
         const g = await this.findOne(id);
@@ -55,8 +47,7 @@ let GuiasService = class GuiasService {
 GuiasService = __decorate([
     Injectable(),
     __param(0, InjectRepository(Guia)),
-    __metadata("design:paramtypes", [Repository,
-        GamificacionService])
+    __metadata("design:paramtypes", [Repository])
 ], GuiasService);
 export { GuiasService };
 //# sourceMappingURL=guias.service.js.map

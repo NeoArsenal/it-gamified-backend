@@ -20,7 +20,9 @@ let Activo = class Activo {
     codigo;
     tipo;
     estado;
+    marca;
     modelo;
+    numeroSerie;
     sede;
     departamento;
     ubicacion;
@@ -55,7 +57,15 @@ __decorate([
 __decorate([
     Column({ nullable: true }),
     __metadata("design:type", String)
+], Activo.prototype, "marca", void 0);
+__decorate([
+    Column({ nullable: true }),
+    __metadata("design:type", String)
 ], Activo.prototype, "modelo", void 0);
+__decorate([
+    Column({ nullable: true }),
+    __metadata("design:type", String)
+], Activo.prototype, "numeroSerie", void 0);
 __decorate([
     Column({ nullable: true }),
     __metadata("design:type", String)

@@ -10,7 +10,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-import { Controller, Post, UseInterceptors, UploadedFile, UseGuards, BadRequestException } from '@nestjs/common';
+import { Controller, Post, Delete, Body, UseInterceptors, UploadedFile, UseGuards, BadRequestException } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import 'multer';
 import { StorageService } from './storage.service.js';
@@ -27,6 +27,13 @@ let StorageController = class StorageController {
         const publicUrl = await this.storageService.uploadFile(file);
         return { url: publicUrl };
     }
+    async deleteFile(url) {
+        if (!url) {
+            throw new BadRequestException('No se ha proporcionado la URL del archivo');
+        }
+        const success = await this.storageService.deleteFile(url);
+        return { success };
+    }
 };
 __decorate([
     Post('upload'),
@@ -36,6 +43,13 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], StorageController.prototype, "uploadFile", null);
+__decorate([
+    Delete('file'),
+    __param(0, Body('url')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], StorageController.prototype, "deleteFile", null);
 StorageController = __decorate([
     UseGuards(JwtAuthGuard),
     Controller('storage'),

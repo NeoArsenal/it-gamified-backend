@@ -16,16 +16,13 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Activo, EstadoActivo } from './entities/activo.entity.js';
 import { Intervencion } from './entities/intervencion.entity.js';
-import { GamificacionService } from '../gamificacion/gamificacion.service.js';
 let ActivosService = ActivosService_1 = class ActivosService {
     activoRepo;
     intervencionRepo;
-    gamificacionService;
     logger = new Logger(ActivosService_1.name);
-    constructor(activoRepo, intervencionRepo, gamificacionService) {
+    constructor(activoRepo, intervencionRepo) {
         this.activoRepo = activoRepo;
         this.intervencionRepo = intervencionRepo;
-        this.gamificacionService = gamificacionService;
     }
     async findAll() {
         return this.activoRepo.find({ order: { fechaRegistro: 'DESC' } });
@@ -92,8 +89,7 @@ ActivosService = ActivosService_1 = __decorate([
     __param(0, InjectRepository(Activo)),
     __param(1, InjectRepository(Intervencion)),
     __metadata("design:paramtypes", [Repository,
-        Repository,
-        GamificacionService])
+        Repository])
 ], ActivosService);
 export { ActivosService };
 //# sourceMappingURL=activos.service.js.map

@@ -2,14 +2,12 @@ import { Repository } from 'typeorm';
 import { Ticket, EstadoTicket, PrioridadTicket } from './entities/ticket.entity.js';
 import { CreateTicketDto } from './dto/create-ticket.dto.js';
 import { UpdateTicketDto } from './dto/update-ticket.dto.js';
-import { GamificacionService } from '../gamificacion/gamificacion.service.js';
 import { NotificacionesGateway } from '../notificaciones/notificaciones.gateway.js';
 export declare class TicketsService {
     private readonly ticketRepo;
-    private readonly gamificacionService;
     private readonly notificacionesGateway;
     private readonly logger;
-    constructor(ticketRepo: Repository<Ticket>, gamificacionService: GamificacionService, notificacionesGateway: NotificacionesGateway);
+    constructor(ticketRepo: Repository<Ticket>, notificacionesGateway: NotificacionesGateway);
     findAll(): Promise<Ticket[]>;
     findAllPublic(): Promise<Partial<Ticket>[]>;
     findOne(id: string): Promise<Ticket>;
@@ -56,7 +54,6 @@ export declare class TicketsService {
         };
     }[]>;
     create(dto: CreateTicketDto): Promise<Ticket>;
-    private getXpPorPrioridad;
     update(id: string, dto: UpdateTicketDto): Promise<Ticket>;
     remove(id: string): Promise<void>;
     getEstadisticas(): Promise<{
