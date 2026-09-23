@@ -13,7 +13,15 @@ export class CreateActivoDto {
 
   @IsOptional()
   @IsString()
+  marca?: string;
+
+  @IsOptional()
+  @IsString()
   modelo?: string;
+
+  @IsOptional()
+  @IsString()
+  numeroSerie?: string;
 
   @IsOptional()
   @IsString()
