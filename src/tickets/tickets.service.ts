@@ -209,19 +209,9 @@ export class TicketsService {
       ticket.xpRecompensa = await this.getXpPorPrioridad(dto.prioridad);
     }
 
-    // Si el ticket pasó a RESUELTO, otorgar XP al técnico asignado
+    // Si el ticket pasó a RESUELTO, registrar fecha de resolución técnica
     if (dto.estado === EstadoTicket.RESUELTO && estadoAnterior !== EstadoTicket.RESUELTO) {
       ticket.resueltoEn = new Date();
-
-      if (ticket.asignadoAId) {
-        const resultado = await this.gamificacionService.otorgarXP(
-          ticket.asignadoAId,
-          ticket.xpRecompensa,
-          AccionXP.TICKET_RESUELTO,
-          `Resolvió ticket "${ticket.titulo}" (${ticket.prioridad})`,
-        );
-        this.logger.log(`⚡ +${resultado.xpOtorgado} XP → Técnico ahora tiene ${resultado.nuevoXP} XP (Nivel ${resultado.nivel})`);
-      }
     }
 
     await this.ticketRepo.save(ticket);

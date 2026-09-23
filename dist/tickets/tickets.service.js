@@ -16,7 +16,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Ticket, EstadoTicket, PrioridadTicket, XP_POR_PRIORIDAD } from './entities/ticket.entity.js';
 import { GamificacionService } from '../gamificacion/gamificacion.service.js';
-import { AccionXP } from '../gamificacion/entities/historial-xp.entity.js';
 import { NotificacionesGateway } from '../notificaciones/notificaciones.gateway.js';
 let TicketsService = TicketsService_1 = class TicketsService {
     ticketRepo;
@@ -201,10 +200,6 @@ let TicketsService = TicketsService_1 = class TicketsService {
         }
         if (dto.estado === EstadoTicket.RESUELTO && estadoAnterior !== EstadoTicket.RESUELTO) {
             ticket.resueltoEn = new Date();
-            if (ticket.asignadoAId) {
-                const resultado = await this.gamificacionService.otorgarXP(ticket.asignadoAId, ticket.xpRecompensa, AccionXP.TICKET_RESUELTO, `Resolvió ticket "${ticket.titulo}" (${ticket.prioridad})`);
-                this.logger.log(`⚡ +${resultado.xpOtorgado} XP → Técnico ahora tiene ${resultado.nuevoXP} XP (Nivel ${resultado.nivel})`);
-            }
         }
         await this.ticketRepo.save(ticket);
         const updated = await this.findOne(id);
