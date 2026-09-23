@@ -53,7 +53,7 @@ import { NotificacionesModule } from './notificaciones/notificaciones.module.js'
             type: 'postgres',
             url: dbUrl,
             entities: [Usuario, Ticket, HistorialXP, Medalla, UsuarioMedalla, DispositivoRed, DireccionIP, Guia, Activo, Intervencion, Curso, NivelAcademia, Pregunta, ProgresoUsuario, Ubicacion, Configuracion],
-            synchronize: !isProd, // En producción se usan migraciones
+            synchronize: true, // Sincroniza automáticamente nuevas columnas y entidades
             ssl: isProd ? { rejectUnauthorized: false } : false,
           };
         }
