@@ -13,6 +13,8 @@ import { UsuarioMedalla } from '../gamificacion/entities/usuario-medalla.entity.
 import { HistorialXP } from '../gamificacion/entities/historial-xp.entity.js';
 import { ProgresoUsuario } from '../academia/entities/progreso-usuario.entity.js';
 
+import { StorageService } from '../storage/storage.service.js';
+
 @Injectable()
 export class UsuariosService {
   private readonly logger = new Logger(UsuariosService.name);
@@ -20,6 +22,7 @@ export class UsuariosService {
   constructor(
     @InjectRepository(Usuario)
     private readonly usuarioRepository: Repository<Usuario>,
+    private readonly storageService: StorageService,
     private readonly dataSource: DataSource,
   ) {}
 
@@ -63,7 +66,16 @@ export class UsuariosService {
   async updatePreferencias(id: string, data: { avatar?: string; tituloRPG?: string; preferencias?: any }): Promise<Usuario> {
     const usuario = await this.findOne(id);
     
-    if (data.avatar !== undefined) usuario.avatar = data.avatar;
+    if (data.avatar !== undefined && data.avatar !== usuario.avatar) {
+      // Si el usuario tenía una foto previa en Supabase Storage, eliminarla físicamente del bucket
+      if (usuario.avatar && (usuario.avatar.includes('supabase.co') || usuario.avatar.startsWith('uploads/'))) {
+        await this.storageService.deleteFile(usuario.avatar).catch((err) => {
+          this.logger.warn(`No se pudo eliminar foto previa de Supabase: ${err.message}`);
+        });
+      }
+      usuario.avatar = data.avatar;
+    }
+
     if (data.tituloRPG !== undefined) usuario.tituloRPG = data.tituloRPG;
     if (data.preferencias !== undefined) {
       usuario.preferencias = {
@@ -81,6 +93,11 @@ export class UsuariosService {
     }
 
     const user = await this.findOne(id);
+
+    // Si el usuario tenía foto en Supabase, borrarla del bucket
+    if (user.avatar && (user.avatar.includes('supabase.co') || user.avatar.startsWith('uploads/'))) {
+      await this.storageService.deleteFile(user.avatar).catch(() => null);
+    }
 
     try {
       await this.dataSource.transaction(async (manager) => {

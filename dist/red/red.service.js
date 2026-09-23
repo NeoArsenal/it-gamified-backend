@@ -15,16 +15,12 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { DispositivoRed, EstadoDispositivo } from './entities/dispositivo-red.entity.js';
 import { DireccionIP, EstadoIP } from './entities/direccion-ip.entity.js';
-import { GamificacionService } from '../gamificacion/gamificacion.service.js';
-import { AccionXP } from '../gamificacion/entities/historial-xp.entity.js';
 let RedService = class RedService {
     dispositivoRepo;
     ipRepo;
-    gamificacionService;
-    constructor(dispositivoRepo, ipRepo, gamificacionService) {
+    constructor(dispositivoRepo, ipRepo) {
         this.dispositivoRepo = dispositivoRepo;
         this.ipRepo = ipRepo;
-        this.gamificacionService = gamificacionService;
     }
     async onModuleInit() {
         const ips = await this.ipRepo.find();
@@ -95,9 +91,6 @@ let RedService = class RedService {
         d.estado = EstadoDispositivo.ONLINE;
         d.ultimoPing = new Date();
         await this.dispositivoRepo.save(d);
-        if (tecnicoId) {
-            await this.gamificacionService.otorgarXP(tecnicoId, 250, AccionXP.EQUIPO_RESTAURADO, `Restauró el dispositivo ${d.nombre} (${d.tipo})`);
-        }
         return d;
     }
     async findAllIPs() { return this.ipRepo.find({ relations: { dispositivo: true }, order: { ip: 'ASC' } }); }
@@ -129,8 +122,7 @@ RedService = __decorate([
     __param(0, InjectRepository(DispositivoRed)),
     __param(1, InjectRepository(DireccionIP)),
     __metadata("design:paramtypes", [Repository,
-        Repository,
-        GamificacionService])
+        Repository])
 ], RedService);
 export { RedService };
 //# sourceMappingURL=red.service.js.map

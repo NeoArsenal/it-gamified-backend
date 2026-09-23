@@ -11,7 +11,9 @@ export declare class Activo {
     codigo: string;
     tipo: string;
     estado: EstadoActivo;
+    marca: string;
     modelo: string;
+    numeroSerie: string;
     sede: string;
     departamento: string;
     ubicacion: string;

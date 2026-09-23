@@ -12,7 +12,8 @@ let StorageModule = class StorageModule {
 StorageModule = __decorate([
     Module({
         providers: [StorageService],
-        controllers: [StorageController]
+        controllers: [StorageController],
+        exports: [StorageService],
     })
 ], StorageModule);
 export { StorageModule };

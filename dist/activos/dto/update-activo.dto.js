@@ -12,7 +12,9 @@ export class UpdateActivoDto {
     codigo;
     tipo;
     estado;
+    marca;
     modelo;
+    numeroSerie;
     sede;
     departamento;
     ubicacion;
@@ -39,7 +41,17 @@ __decorate([
     IsOptional(),
     IsString(),
     __metadata("design:type", String)
+], UpdateActivoDto.prototype, "marca", void 0);
+__decorate([
+    IsOptional(),
+    IsString(),
+    __metadata("design:type", String)
 ], UpdateActivoDto.prototype, "modelo", void 0);
+__decorate([
+    IsOptional(),
+    IsString(),
+    __metadata("design:type", String)
+], UpdateActivoDto.prototype, "numeroSerie", void 0);
 __decorate([
     IsOptional(),
     IsString(),

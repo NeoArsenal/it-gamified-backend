@@ -55,7 +55,7 @@ AppModule = __decorate([
                             type: 'postgres',
                             url: dbUrl,
                             entities: [Usuario, Ticket, HistorialXP, Medalla, UsuarioMedalla, DispositivoRed, DireccionIP, Guia, Activo, Intervencion, Curso, NivelAcademia, Pregunta, ProgresoUsuario, Ubicacion, Configuracion],
-                            synchronize: !isProd,
+                            synchronize: true,
                             ssl: isProd ? { rejectUnauthorized: false } : false,
                         };
                     }

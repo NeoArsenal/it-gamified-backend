@@ -14,17 +14,14 @@ var TicketsService_1;
 import { Injectable, NotFoundException, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Ticket, EstadoTicket, PrioridadTicket, XP_POR_PRIORIDAD } from './entities/ticket.entity.js';
-import { GamificacionService } from '../gamificacion/gamificacion.service.js';
+import { Ticket, EstadoTicket, PrioridadTicket } from './entities/ticket.entity.js';
 import { NotificacionesGateway } from '../notificaciones/notificaciones.gateway.js';
 let TicketsService = TicketsService_1 = class TicketsService {
     ticketRepo;
-    gamificacionService;
     notificacionesGateway;
     logger = new Logger(TicketsService_1.name);
-    constructor(ticketRepo, gamificacionService, notificacionesGateway) {
+    constructor(ticketRepo, notificacionesGateway) {
         this.ticketRepo = ticketRepo;
-        this.gamificacionService = gamificacionService;
         this.notificacionesGateway = notificacionesGateway;
     }
     async findAll() {
@@ -161,31 +158,14 @@ let TicketsService = TicketsService_1 = class TicketsService {
             };
         }
         const prioridad = dto.prioridad || PrioridadTicket.MEDIA;
-        const xpRecompensa = await this.getXpPorPrioridad(prioridad);
         const ticket = this.ticketRepo.create({
             ...dto,
             prioridad,
-            xpRecompensa,
         });
         const saved = await this.ticketRepo.save(ticket);
         this.notificacionesGateway.emitirNuevoTicket(saved);
-        this.logger.log(`🎫 Ticket "${saved.titulo}" creado (${saved.prioridad}) → +${saved.xpRecompensa} XP al resolverlo`);
+        this.logger.log(`🎫 Ticket "${saved.titulo}" creado (${saved.prioridad})`);
         return saved;
-    }
-    async getXpPorPrioridad(prioridad) {
-        try {
-            const reglas = await this.gamificacionService.getReglas();
-            if (prioridad === PrioridadTicket.CRITICA)
-                return reglas.puntosPorArea.ticketCritica;
-            if (prioridad === PrioridadTicket.ALTA)
-                return reglas.puntosPorArea.ticketAlta;
-            if (prioridad === PrioridadTicket.MEDIA)
-                return reglas.puntosPorArea.ticketMedia;
-            return reglas.puntosPorArea.ticketBaja;
-        }
-        catch {
-            return XP_POR_PRIORIDAD[prioridad] || 150;
-        }
     }
     async update(id, dto) {
         const ticket = await this.findOne(id);
@@ -194,9 +174,6 @@ let TicketsService = TicketsService_1 = class TicketsService {
             if (val !== undefined) {
                 ticket[key] = val;
             }
-        }
-        if (dto.prioridad) {
-            ticket.xpRecompensa = await this.getXpPorPrioridad(dto.prioridad);
         }
         if (dto.estado === EstadoTicket.RESUELTO && estadoAnterior !== EstadoTicket.RESUELTO) {
             ticket.resueltoEn = new Date();
@@ -320,7 +297,6 @@ TicketsService = TicketsService_1 = __decorate([
     Injectable(),
     __param(0, InjectRepository(Ticket)),
     __metadata("design:paramtypes", [Repository,
-        GamificacionService,
         NotificacionesGateway])
 ], TicketsService);
 export { TicketsService };

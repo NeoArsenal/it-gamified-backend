@@ -83,4 +83,38 @@ export class StorageService {
 
     return publicUrlData.publicUrl;
   }
+
+  extractPathFromUrl(fileUrlOrPath: string): string | null {
+    if (!fileUrlOrPath) return null;
+    const marker = `/${this.bucket}/`;
+    const index = fileUrlOrPath.indexOf(marker);
+    if (index !== -1) {
+      return decodeURIComponent(fileUrlOrPath.substring(index + marker.length));
+    }
+    if (fileUrlOrPath.startsWith('uploads/')) {
+      return fileUrlOrPath;
+    }
+    return null;
+  }
+
+  async deleteFile(fileUrlOrPath: string): Promise<boolean> {
+    if (!this.supabase || !fileUrlOrPath) return false;
+    const path = this.extractPathFromUrl(fileUrlOrPath);
+    if (!path) return false;
+
+    try {
+      const { data, error } = await this.supabase.storage
+        .from(this.bucket)
+        .remove([path]);
+
+      if (error) {
+        console.error('Error al eliminar archivo de Supabase Storage:', error);
+        return false;
+      }
+      return true;
+    } catch (e) {
+      console.error('Excepción al eliminar archivo de Supabase Storage:', e);
+      return false;
+    }
+  }
 }
