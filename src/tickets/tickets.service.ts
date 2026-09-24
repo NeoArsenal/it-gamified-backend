@@ -5,6 +5,7 @@ import { Ticket, EstadoTicket, PrioridadTicket } from './entities/ticket.entity.
 import { CreateTicketDto } from './dto/create-ticket.dto.js';
 import { UpdateTicketDto } from './dto/update-ticket.dto.js';
 import { NotificacionesGateway } from '../notificaciones/notificaciones.gateway.js';
+import { PushNotificationService } from '../notificaciones/push-notification.service.js';
 import { StorageService } from '../storage/storage.service.js';
 
 @Injectable()
@@ -14,6 +15,7 @@ export class TicketsService {
   constructor(
     @InjectRepository(Ticket) private readonly ticketRepo: Repository<Ticket>,
     private readonly notificacionesGateway: NotificacionesGateway,
+    private readonly pushNotificationService: PushNotificationService,
     private readonly storageService: StorageService,
   ) {}
 
@@ -177,6 +179,9 @@ export class TicketsService {
     });
     const saved = await this.ticketRepo.save(ticket);
     this.notificacionesGateway.emitirNuevoTicket(saved);
+    this.pushNotificationService.sendNewTicketAlert(saved).catch((err) => {
+      this.logger.error('Error enviando notificación Push para nuevo ticket:', err?.message || err);
+    });
     this.logger.log(`🎫 Ticket "${saved.titulo}" creado (${saved.prioridad})`);
     return saved;
   }

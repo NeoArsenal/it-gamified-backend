@@ -21,6 +21,7 @@ import { Pregunta } from './academia/entities/pregunta.entity.js';
 import { ProgresoUsuario } from './academia/entities/progreso-usuario.entity.js';
 import { Ubicacion } from './ubicaciones/entities/ubicacion.entity.js';
 import { Configuracion } from './configuracion/entities/configuracion.entity.js';
+import { PushSubscription } from './notificaciones/entities/push-subscription.entity.js';
 
 // Módulos
 import { AuthModule } from './auth/auth.module.js';
@@ -52,7 +53,7 @@ import { NotificacionesModule } from './notificaciones/notificaciones.module.js'
           return {
             type: 'postgres',
             url: dbUrl,
-            entities: [Usuario, Ticket, HistorialXP, Medalla, UsuarioMedalla, DispositivoRed, DireccionIP, Guia, Activo, Intervencion, Curso, NivelAcademia, Pregunta, ProgresoUsuario, Ubicacion, Configuracion],
+            entities: [Usuario, Ticket, HistorialXP, Medalla, UsuarioMedalla, DispositivoRed, DireccionIP, Guia, Activo, Intervencion, Curso, NivelAcademia, Pregunta, ProgresoUsuario, Ubicacion, Configuracion, PushSubscription],
             synchronize: true, // Sincroniza automáticamente nuevas columnas y entidades
             ssl: isProd ? { rejectUnauthorized: false } : false,
           };
@@ -62,7 +63,7 @@ import { NotificacionesModule } from './notificaciones/notificaciones.module.js'
         return {
           type: 'better-sqlite3',
           database: 'data/it-helpdesk.db',
-          entities: [Usuario, Ticket, HistorialXP, Medalla, UsuarioMedalla, DispositivoRed, DireccionIP, Guia, Activo, Intervencion, Curso, NivelAcademia, Pregunta, ProgresoUsuario, Ubicacion, Configuracion],
+          entities: [Usuario, Ticket, HistorialXP, Medalla, UsuarioMedalla, DispositivoRed, DireccionIP, Guia, Activo, Intervencion, Curso, NivelAcademia, Pregunta, ProgresoUsuario, Ubicacion, Configuracion, PushSubscription],
           synchronize: true,
         };
       }
