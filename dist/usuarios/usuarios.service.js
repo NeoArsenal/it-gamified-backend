@@ -25,6 +25,7 @@ import { Configuracion } from '../configuracion/entities/configuracion.entity.js
 import { UsuarioMedalla } from '../gamificacion/entities/usuario-medalla.entity.js';
 import { HistorialXP } from '../gamificacion/entities/historial-xp.entity.js';
 import { ProgresoUsuario } from '../academia/entities/progreso-usuario.entity.js';
+import { PushSubscription } from '../notificaciones/entities/push-subscription.entity.js';
 import { StorageService } from '../storage/storage.service.js';
 let UsuariosService = UsuariosService_1 = class UsuariosService {
     usuarioRepository;
@@ -106,6 +107,7 @@ let UsuariosService = UsuariosService_1 = class UsuariosService {
                 await manager.delete(UsuarioMedalla, { usuarioId: id });
                 await manager.delete(HistorialXP, { usuarioId: id });
                 await manager.delete(ProgresoUsuario, { usuarioId: id });
+                await manager.delete(PushSubscription, { userId: id });
                 await manager.update(Ticket, { asignadoAId: id }, { asignadoAId: null });
                 await manager.update(Guia, { autorId: id }, { autorId: null });
                 await manager.update(Ubicacion, { creadoPorId: id }, { creadoPorId: null });

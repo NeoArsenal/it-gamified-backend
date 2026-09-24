@@ -12,6 +12,7 @@ import { Configuracion } from '../configuracion/entities/configuracion.entity.js
 import { UsuarioMedalla } from '../gamificacion/entities/usuario-medalla.entity.js';
 import { HistorialXP } from '../gamificacion/entities/historial-xp.entity.js';
 import { ProgresoUsuario } from '../academia/entities/progreso-usuario.entity.js';
+import { PushSubscription } from '../notificaciones/entities/push-subscription.entity.js';
 
 import { StorageService } from '../storage/storage.service.js';
 
@@ -101,10 +102,11 @@ export class UsuariosService {
 
     try {
       await this.dataSource.transaction(async (manager) => {
-        // 1. Eliminar gamificación y progreso asociados al usuario
+        // 1. Eliminar gamificación, progreso y suscripciones push asociadas al usuario
         await manager.delete(UsuarioMedalla, { usuarioId: id });
         await manager.delete(HistorialXP, { usuarioId: id });
         await manager.delete(ProgresoUsuario, { usuarioId: id });
+        await manager.delete(PushSubscription, { userId: id });
 
         // 2. Desvincular relaciones laborales/históricas (preservar tickets, guías y registros)
         await manager.update(Ticket, { asignadoAId: id }, { asignadoAId: null });
