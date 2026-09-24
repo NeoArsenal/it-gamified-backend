@@ -16,15 +16,18 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Ticket, EstadoTicket, PrioridadTicket } from './entities/ticket.entity.js';
 import { NotificacionesGateway } from '../notificaciones/notificaciones.gateway.js';
+import { PushNotificationService } from '../notificaciones/push-notification.service.js';
 import { StorageService } from '../storage/storage.service.js';
 let TicketsService = TicketsService_1 = class TicketsService {
     ticketRepo;
     notificacionesGateway;
+    pushNotificationService;
     storageService;
     logger = new Logger(TicketsService_1.name);
-    constructor(ticketRepo, notificacionesGateway, storageService) {
+    constructor(ticketRepo, notificacionesGateway, pushNotificationService, storageService) {
         this.ticketRepo = ticketRepo;
         this.notificacionesGateway = notificacionesGateway;
+        this.pushNotificationService = pushNotificationService;
         this.storageService = storageService;
     }
     async findAll() {
@@ -170,6 +173,9 @@ let TicketsService = TicketsService_1 = class TicketsService {
         });
         const saved = await this.ticketRepo.save(ticket);
         this.notificacionesGateway.emitirNuevoTicket(saved);
+        this.pushNotificationService.sendNewTicketAlert(saved).catch((err) => {
+            this.logger.error('Error enviando notificación Push para nuevo ticket:', err?.message || err);
+        });
         this.logger.log(`🎫 Ticket "${saved.titulo}" creado (${saved.prioridad})`);
         return saved;
     }
@@ -312,6 +318,7 @@ TicketsService = TicketsService_1 = __decorate([
     __param(0, InjectRepository(Ticket)),
     __metadata("design:paramtypes", [Repository,
         NotificacionesGateway,
+        PushNotificationService,
         StorageService])
 ], TicketsService);
 export { TicketsService };

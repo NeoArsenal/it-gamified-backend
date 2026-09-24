@@ -17,6 +17,10 @@ export interface PushNotificationPayload {
   data?: any;
 }
 
+const DEFAULT_VAPID_PUBLIC_KEY = 'BEBWWjLDPLE1DJaY7MHN6Y63viz5QCP7YmKa0j7JLOjQcuhuNGP9r_y2Bm1RyxfZ140bzIIgbBWyAjCp9eo95bs';
+const DEFAULT_VAPID_PRIVATE_KEY = 'SQdZm13gJ8h_R4X6r-g3c6mOdLqaL1aMCZqEusU7VKE';
+const DEFAULT_VAPID_SUBJECT = 'mailto:soporte@clinicalimatambo.com';
+
 @Injectable()
 export class PushNotificationService implements OnModuleInit {
   private readonly logger = new Logger(PushNotificationService.name);
@@ -35,9 +39,9 @@ export class PushNotificationService implements OnModuleInit {
   }
 
   private initVapid() {
-    const publicKey = this.configService.get<string>('VAPID_PUBLIC_KEY');
-    const privateKey = this.configService.get<string>('VAPID_PRIVATE_KEY');
-    const subject = this.configService.get<string>('VAPID_SUBJECT') || 'mailto:soporte@clinicalimatambo.com';
+    const publicKey = this.configService.get<string>('VAPID_PUBLIC_KEY') || DEFAULT_VAPID_PUBLIC_KEY;
+    const privateKey = this.configService.get<string>('VAPID_PRIVATE_KEY') || DEFAULT_VAPID_PRIVATE_KEY;
+    const subject = this.configService.get<string>('VAPID_SUBJECT') || DEFAULT_VAPID_SUBJECT;
 
     if (publicKey && privateKey) {
       try {
@@ -53,7 +57,7 @@ export class PushNotificationService implements OnModuleInit {
   }
 
   getPublicKey(): string | null {
-    return this.configService.get<string>('VAPID_PUBLIC_KEY') || null;
+    return this.configService.get<string>('VAPID_PUBLIC_KEY') || DEFAULT_VAPID_PUBLIC_KEY;
   }
 
   async saveSubscription(userId: string, dto: CreatePushSubscriptionDto): Promise<PushSubscription> {
