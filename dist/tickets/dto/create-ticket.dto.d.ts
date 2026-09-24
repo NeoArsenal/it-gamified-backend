@@ -10,5 +10,6 @@ export declare class CreateTicketDto {
     ubicacionEspecifica?: string;
     solicitanteNombre?: string;
     solicitanteContacto?: string;
+    fotoUrl?: string;
     website?: string;
 }

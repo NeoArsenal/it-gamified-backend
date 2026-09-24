@@ -79,6 +79,9 @@ export class Ticket {
   @Column({ type: 'text', nullable: true })
   solucion: string;
 
+  @Column({ type: 'text', nullable: true })
+  fotoUrl: string;
+
   @UpdateDateColumn()
   actualizadoEn: Date;
 }

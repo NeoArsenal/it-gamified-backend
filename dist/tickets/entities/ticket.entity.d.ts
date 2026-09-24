@@ -31,5 +31,6 @@ export declare class Ticket {
     creadoEn: Date;
     resueltoEn: Date;
     solucion: string;
+    fotoUrl: string;
     actualizadoEn: Date;
 }

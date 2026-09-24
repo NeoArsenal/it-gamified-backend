@@ -5,6 +5,7 @@ import { Ticket, EstadoTicket, PrioridadTicket } from './entities/ticket.entity.
 import { CreateTicketDto } from './dto/create-ticket.dto.js';
 import { UpdateTicketDto } from './dto/update-ticket.dto.js';
 import { NotificacionesGateway } from '../notificaciones/notificaciones.gateway.js';
+import { StorageService } from '../storage/storage.service.js';
 
 @Injectable()
 export class TicketsService {
@@ -13,6 +14,7 @@ export class TicketsService {
   constructor(
     @InjectRepository(Ticket) private readonly ticketRepo: Repository<Ticket>,
     private readonly notificacionesGateway: NotificacionesGateway,
+    private readonly storageService: StorageService,
   ) {}
 
   async findAll(): Promise<Ticket[]> {
@@ -32,6 +34,7 @@ export class TicketsService {
         ubicacionEspecifica: true,
         creadoEn: true,
         xpRecompensa: true,
+        fotoUrl: true,
       },
       order: { creadoEn: 'DESC' },
     });
@@ -77,6 +80,7 @@ export class TicketsService {
       actualizadoEn: t.actualizadoEn,
       resueltoEn: t.resueltoEn,
       solucion: t.solucion,
+      fotoUrl: t.fotoUrl,
       tecnicoAsignado: t.asignadoA ? {
         nombre: t.asignadoA.nombre,
         avatar: t.asignadoA.avatar,
@@ -137,6 +141,7 @@ export class TicketsService {
         actualizadoEn: t.actualizadoEn,
         resueltoEn: t.resueltoEn,
         solucion: t.solucion,
+        fotoUrl: t.fotoUrl,
         tecnicoAsignado: t.asignadoA ? {
           nombre: t.asignadoA.nombre,
           avatar: t.asignadoA.avatar,
@@ -200,6 +205,13 @@ export class TicketsService {
 
   async remove(id: string): Promise<void> {
     const ticket = await this.findOne(id);
+    if (ticket.fotoUrl) {
+      try {
+        await this.storageService.deleteFile(ticket.fotoUrl);
+      } catch (e: any) {
+        this.logger.warn(`No se pudo eliminar la imagen de Storage para ticket ${id}: ${e?.message}`);
+      }
+    }
     await this.ticketRepo.remove(ticket);
     this.notificacionesGateway.emitirTicketEliminado(id);
     this.logger.log(`🗑️ Ticket "${ticket.titulo}" eliminado`);

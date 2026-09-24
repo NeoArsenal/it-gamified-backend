@@ -16,13 +16,16 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Ticket, EstadoTicket, PrioridadTicket } from './entities/ticket.entity.js';
 import { NotificacionesGateway } from '../notificaciones/notificaciones.gateway.js';
+import { StorageService } from '../storage/storage.service.js';
 let TicketsService = TicketsService_1 = class TicketsService {
     ticketRepo;
     notificacionesGateway;
+    storageService;
     logger = new Logger(TicketsService_1.name);
-    constructor(ticketRepo, notificacionesGateway) {
+    constructor(ticketRepo, notificacionesGateway, storageService) {
         this.ticketRepo = ticketRepo;
         this.notificacionesGateway = notificacionesGateway;
+        this.storageService = storageService;
     }
     async findAll() {
         return this.ticketRepo.find({ order: { creadoEn: 'DESC' } });
@@ -39,6 +42,7 @@ let TicketsService = TicketsService_1 = class TicketsService {
                 ubicacionEspecifica: true,
                 creadoEn: true,
                 xpRecompensa: true,
+                fotoUrl: true,
             },
             order: { creadoEn: 'DESC' },
         });
@@ -76,6 +80,7 @@ let TicketsService = TicketsService_1 = class TicketsService {
             actualizadoEn: t.actualizadoEn,
             resueltoEn: t.resueltoEn,
             solucion: t.solucion,
+            fotoUrl: t.fotoUrl,
             tecnicoAsignado: t.asignadoA ? {
                 nombre: t.asignadoA.nombre,
                 avatar: t.asignadoA.avatar,
@@ -130,6 +135,7 @@ let TicketsService = TicketsService_1 = class TicketsService {
                 actualizadoEn: t.actualizadoEn,
                 resueltoEn: t.resueltoEn,
                 solucion: t.solucion,
+                fotoUrl: t.fotoUrl,
                 tecnicoAsignado: t.asignadoA ? {
                     nombre: t.asignadoA.nombre,
                     avatar: t.asignadoA.avatar,
@@ -185,6 +191,14 @@ let TicketsService = TicketsService_1 = class TicketsService {
     }
     async remove(id) {
         const ticket = await this.findOne(id);
+        if (ticket.fotoUrl) {
+            try {
+                await this.storageService.deleteFile(ticket.fotoUrl);
+            }
+            catch (e) {
+                this.logger.warn(`No se pudo eliminar la imagen de Storage para ticket ${id}: ${e?.message}`);
+            }
+        }
         await this.ticketRepo.remove(ticket);
         this.notificacionesGateway.emitirTicketEliminado(id);
         this.logger.log(`🗑️ Ticket "${ticket.titulo}" eliminado`);
@@ -297,7 +311,8 @@ TicketsService = TicketsService_1 = __decorate([
     Injectable(),
     __param(0, InjectRepository(Ticket)),
     __metadata("design:paramtypes", [Repository,
-        NotificacionesGateway])
+        NotificacionesGateway,
+        StorageService])
 ], TicketsService);
 export { TicketsService };
 //# sourceMappingURL=tickets.service.js.map

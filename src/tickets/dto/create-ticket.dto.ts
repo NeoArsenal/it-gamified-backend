@@ -46,6 +46,10 @@ export class CreateTicketDto {
   @MaxLength(20, { message: 'El teléfono o anexo no puede superar los 20 caracteres' })
   solicitanteContacto?: string;
 
+  @IsString()
+  @IsOptional()
+  fotoUrl?: string;
+
   // Campo Honeypot anti-bots (si un bot automatizado lo llena, se descarta el ticket)
   @IsString()
   @IsOptional()
