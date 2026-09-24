@@ -10,6 +10,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, OneToMany, ManyToOne, JoinColumn } from 'typeorm';
 export var EstadoActivo;
 (function (EstadoActivo) {
+    EstadoActivo["DISPONIBLE"] = "DISPONIBLE";
     EstadoActivo["OPERATIVO"] = "OPERATIVO";
     EstadoActivo["REPARACION"] = "REPARACION";
     EstadoActivo["BAJA"] = "BAJA";
@@ -23,6 +24,7 @@ let Activo = class Activo {
     marca;
     modelo;
     numeroSerie;
+    codigoFactura;
     sede;
     departamento;
     ubicacion;
@@ -50,7 +52,7 @@ __decorate([
     Column({
         type: 'varchar',
         enum: EstadoActivo,
-        default: EstadoActivo.OPERATIVO
+        default: EstadoActivo.DISPONIBLE
     }),
     __metadata("design:type", String)
 ], Activo.prototype, "estado", void 0);
@@ -66,6 +68,10 @@ __decorate([
     Column({ nullable: true }),
     __metadata("design:type", String)
 ], Activo.prototype, "numeroSerie", void 0);
+__decorate([
+    Column({ nullable: true }),
+    __metadata("design:type", String)
+], Activo.prototype, "codigoFactura", void 0);
 __decorate([
     Column({ nullable: true }),
     __metadata("design:type", String)

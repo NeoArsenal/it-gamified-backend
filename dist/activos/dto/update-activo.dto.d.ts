@@ -5,6 +5,7 @@ export declare class UpdateActivoDto {
     marca?: string;
     modelo?: string;
     numeroSerie?: string;
+    codigoFactura?: string;
     sede?: string;
     departamento?: string;
     ubicacion?: string;

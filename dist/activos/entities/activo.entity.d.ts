@@ -1,6 +1,7 @@
 import type { Intervencion } from './intervencion.entity.js';
 import type { Relation } from 'typeorm';
 export declare enum EstadoActivo {
+    DISPONIBLE = "DISPONIBLE",
     OPERATIVO = "OPERATIVO",
     REPARACION = "REPARACION",
     BAJA = "BAJA",
@@ -14,6 +15,7 @@ export declare class Activo {
     marca: string;
     modelo: string;
     numeroSerie: string;
+    codigoFactura: string;
     sede: string;
     departamento: string;
     ubicacion: string;

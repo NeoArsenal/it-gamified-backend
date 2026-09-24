@@ -15,6 +15,7 @@ export class UpdateActivoDto {
     marca;
     modelo;
     numeroSerie;
+    codigoFactura;
     sede;
     departamento;
     ubicacion;
@@ -52,6 +53,11 @@ __decorate([
     IsString(),
     __metadata("design:type", String)
 ], UpdateActivoDto.prototype, "numeroSerie", void 0);
+__decorate([
+    IsOptional(),
+    IsString(),
+    __metadata("design:type", String)
+], UpdateActivoDto.prototype, "codigoFactura", void 0);
 __decorate([
     IsOptional(),
     IsString(),

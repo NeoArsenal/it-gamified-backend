@@ -3,6 +3,7 @@ import type { Intervencion } from './intervencion.entity.js';
 import type { Relation } from 'typeorm';
 
 export enum EstadoActivo {
+  DISPONIBLE = 'DISPONIBLE',
   OPERATIVO = 'OPERATIVO',
   REPARACION = 'REPARACION',
   BAJA = 'BAJA',
@@ -23,7 +24,7 @@ export class Activo {
   @Column({
     type: 'varchar',
     enum: EstadoActivo,
-    default: EstadoActivo.OPERATIVO
+    default: EstadoActivo.DISPONIBLE
   })
   estado: EstadoActivo;
 
@@ -35,6 +36,9 @@ export class Activo {
 
   @Column({ nullable: true })
   numeroSerie: string;
+
+  @Column({ nullable: true })
+  codigoFactura: string;
 
   @Column({ nullable: true })
   sede: string;

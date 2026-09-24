@@ -27,6 +27,10 @@ export class UpdateActivoDto {
 
   @IsOptional()
   @IsString()
+  codigoFactura?: string;
+
+  @IsOptional()
+  @IsString()
   sede?: string;
 
   @IsOptional()

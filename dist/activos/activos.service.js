@@ -47,21 +47,58 @@ let ActivosService = ActivosService_1 = class ActivosService {
         return activo;
     }
     async create(dto) {
+        const estadoInicial = dto.estado || EstadoActivo.DISPONIBLE;
         const activo = this.activoRepo.create({
             ...dto,
-            estado: dto.estado || EstadoActivo.REPARACION
+            estado: estadoInicial,
         });
-        return this.activoRepo.save(activo);
+        const saved = await this.activoRepo.save(activo);
+        const detalleAlta = dto.codigoFactura
+            ? `Alta e ingreso a Almacén Central TI · Factura: ${dto.codigoFactura.trim().toUpperCase()}`
+            : 'Alta e ingreso a Almacén Central TI (Sin asignar)';
+        await this.addIntervencion(saved.id, detalleAlta);
+        this.logger.log(`📦 Activo "${saved.codigo}" registrado exitosamente (${saved.estado})`);
+        return saved;
     }
     async update(id, dto) {
         const activo = await this.findOne(id);
         const estadoAnterior = activo.estado;
+        const sedeAnterior = activo.sede;
+        const deptoAnterior = activo.departamento;
+        const responsableAnterior = activo.responsable;
         for (const [key, val] of Object.entries(dto)) {
             if (val !== undefined) {
                 activo[key] = val;
             }
         }
         const saved = await this.activoRepo.save(activo);
+        const huboCambioUbicacion = (dto.sede !== undefined && dto.sede !== sedeAnterior) ||
+            (dto.departamento !== undefined && dto.departamento !== deptoAnterior) ||
+            (dto.responsable !== undefined && dto.responsable !== responsableAnterior);
+        if (huboCambioUbicacion) {
+            const destino = `${saved.sede || 'Sede General'}${saved.departamento ? ` · ${saved.departamento}` : ''}${saved.ubicacion ? ` (${saved.ubicacion})` : ''}`;
+            const resp = saved.responsable ? ` · Responsable: ${saved.responsable}` : '';
+            await this.addIntervencion(saved.id, `📍 Asignación / Traslado operativo a ${destino}${resp}`, dto.tecnicoId);
+        }
+        if (dto.estado && dto.estado !== estadoAnterior) {
+            let detalleEstado = `Cambio de estado: [${estadoAnterior}] ➔ [${dto.estado}]`;
+            if (dto.estado === EstadoActivo.REPARACION) {
+                detalleEstado = `🛠️ Ingreso a Taller por desperfecto/falla: ${dto.observaciones || 'Revisión técnica general'}`;
+            }
+            else if (dto.estado === EstadoActivo.OPERATIVO && estadoAnterior === EstadoActivo.REPARACION) {
+                detalleEstado = `✅ Reparación concluida en Taller: ${dto.observaciones || 'Equipo operativo y devuelto a servicio'}`;
+            }
+            else if (dto.estado === EstadoActivo.BAJA) {
+                detalleEstado = `🛑 Declarado de Baja / Chatarra: ${dto.observaciones || 'Baja patrimonial definitiva'}`;
+            }
+            else if (dto.estado === EstadoActivo.DISPONIBLE) {
+                detalleEstado = `📦 Retornado a Almacén Central TI: ${dto.observaciones || 'Disponible para nueva asignación'}`;
+            }
+            else if (dto.observaciones) {
+                detalleEstado += ` · Diagnóstico: ${dto.observaciones}`;
+            }
+            await this.addIntervencion(saved.id, detalleEstado, dto.tecnicoId);
+        }
         if (dto.estado === EstadoActivo.RESCATADO && estadoAnterior !== EstadoActivo.RESCATADO) {
             this.logger.log(`♻️ Equipo ${activo.codigo} reciclado para piezas/repuestos`);
         }
