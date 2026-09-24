@@ -3,11 +3,13 @@ import { Ticket, EstadoTicket, PrioridadTicket } from './entities/ticket.entity.
 import { CreateTicketDto } from './dto/create-ticket.dto.js';
 import { UpdateTicketDto } from './dto/update-ticket.dto.js';
 import { NotificacionesGateway } from '../notificaciones/notificaciones.gateway.js';
+import { StorageService } from '../storage/storage.service.js';
 export declare class TicketsService {
     private readonly ticketRepo;
     private readonly notificacionesGateway;
+    private readonly storageService;
     private readonly logger;
-    constructor(ticketRepo: Repository<Ticket>, notificacionesGateway: NotificacionesGateway);
+    constructor(ticketRepo: Repository<Ticket>, notificacionesGateway: NotificacionesGateway, storageService: StorageService);
     findAll(): Promise<Ticket[]>;
     findAllPublic(): Promise<Partial<Ticket>[]>;
     findOne(id: string): Promise<Ticket>;
@@ -26,6 +28,7 @@ export declare class TicketsService {
         actualizadoEn: Date;
         resueltoEn: Date;
         solucion: string;
+        fotoUrl: string;
         tecnicoAsignado: {
             nombre: string;
             avatar: string;
@@ -47,6 +50,7 @@ export declare class TicketsService {
         actualizadoEn: Date;
         resueltoEn: Date;
         solucion: string;
+        fotoUrl: string;
         tecnicoAsignado: {
             nombre: string;
             avatar: string;

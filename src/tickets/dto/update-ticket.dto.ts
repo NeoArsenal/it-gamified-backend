@@ -25,4 +25,8 @@ export class UpdateTicketDto {
   @IsString()
   @IsOptional()
   solucion?: string;
+
+  @IsString()
+  @IsOptional()
+  fotoUrl?: string;
 }

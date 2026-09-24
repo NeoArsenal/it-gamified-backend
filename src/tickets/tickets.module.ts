@@ -5,8 +5,10 @@ import { TicketsService } from './tickets.service.js';
 import { TicketsController } from './tickets.controller.js';
 import { TicketRateLimitGuard } from './guards/ticket-rate-limit.guard.js';
 
+import { StorageModule } from '../storage/storage.module.js';
+
 @Module({
-  imports: [TypeOrmModule.forFeature([Ticket])],
+  imports: [TypeOrmModule.forFeature([Ticket]), StorageModule],
   controllers: [TicketsController],
   providers: [TicketsService, TicketRateLimitGuard],
   exports: [TicketsService],

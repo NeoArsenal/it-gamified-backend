@@ -10,16 +10,21 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-import { Controller, Get, Post, Patch, Delete, Param, Body, Query, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Patch, Delete, Param, Body, Query, UseGuards, UseInterceptors, UploadedFile, BadRequestException } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
+import 'multer';
 import { TicketsService } from './tickets.service.js';
+import { StorageService } from '../storage/storage.service.js';
 import { CreateTicketDto } from './dto/create-ticket.dto.js';
 import { UpdateTicketDto } from './dto/update-ticket.dto.js';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard.js';
 import { TicketRateLimitGuard } from './guards/ticket-rate-limit.guard.js';
 let TicketsController = class TicketsController {
     ticketsService;
-    constructor(ticketsService) {
+    storageService;
+    constructor(ticketsService, storageService) {
         this.ticketsService = ticketsService;
+        this.storageService = storageService;
     }
     findAllPublic() { return this.ticketsService.findAllPublic(); }
     getActivePublic() { return this.ticketsService.getActivePublicTickets(); }
@@ -30,6 +35,20 @@ let TicketsController = class TicketsController {
     getStats() { return this.ticketsService.getEstadisticas(); }
     getAnalytics(sede) { return this.ticketsService.getAnalytics(sede); }
     findOne(id) { return this.ticketsService.findOne(id); }
+    async uploadFoto(file) {
+        if (!file) {
+            throw new BadRequestException('No se ha proporcionado ninguna imagen');
+        }
+        const allowedMimes = ['image/jpeg', 'image/png', 'image/webp', 'image/jpg', 'image/heic', 'image/heif'];
+        if (!allowedMimes.includes(file.mimetype)) {
+            throw new BadRequestException('Formato de imagen no permitido. Solo se aceptan fotos (JPEG, PNG, WEBP).');
+        }
+        if (file.size > 5 * 1024 * 1024) {
+            throw new BadRequestException('La foto no debe superar los 5 MB');
+        }
+        const publicUrl = await this.storageService.uploadFile(file, 'incidencias');
+        return { url: publicUrl };
+    }
     create(dto) { return this.ticketsService.create(dto); }
     update(id, dto) { return this.ticketsService.update(id, dto); }
     remove(id) {
@@ -88,6 +107,15 @@ __decorate([
 ], TicketsController.prototype, "findOne", null);
 __decorate([
     UseGuards(TicketRateLimitGuard),
+    Post('upload-foto'),
+    UseInterceptors(FileInterceptor('file')),
+    __param(0, UploadedFile()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], TicketsController.prototype, "uploadFoto", null);
+__decorate([
+    UseGuards(TicketRateLimitGuard),
     Post(),
     __param(0, Body()),
     __metadata("design:type", Function),
@@ -113,7 +141,8 @@ __decorate([
 ], TicketsController.prototype, "remove", null);
 TicketsController = __decorate([
     Controller('tickets'),
-    __metadata("design:paramtypes", [TicketsService])
+    __metadata("design:paramtypes", [TicketsService,
+        StorageService])
 ], TicketsController);
 export { TicketsController };
 //# sourceMappingURL=tickets.controller.js.map

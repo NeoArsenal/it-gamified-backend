@@ -20,6 +20,7 @@ export class CreateTicketDto {
     ubicacionEspecifica;
     solicitanteNombre;
     solicitanteContacto;
+    fotoUrl;
     website;
 }
 __decorate([
@@ -76,6 +77,11 @@ __decorate([
     MaxLength(20, { message: 'El teléfono o anexo no puede superar los 20 caracteres' }),
     __metadata("design:type", String)
 ], CreateTicketDto.prototype, "solicitanteContacto", void 0);
+__decorate([
+    IsString(),
+    IsOptional(),
+    __metadata("design:type", String)
+], CreateTicketDto.prototype, "fotoUrl", void 0);
 __decorate([
     IsString(),
     IsOptional(),

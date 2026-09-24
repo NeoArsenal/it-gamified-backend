@@ -1,9 +1,12 @@
+import 'multer';
 import { TicketsService } from './tickets.service.js';
+import { StorageService } from '../storage/storage.service.js';
 import { CreateTicketDto } from './dto/create-ticket.dto.js';
 import { UpdateTicketDto } from './dto/update-ticket.dto.js';
 export declare class TicketsController {
     private readonly ticketsService;
-    constructor(ticketsService: TicketsService);
+    private readonly storageService;
+    constructor(ticketsService: TicketsService, storageService: StorageService);
     findAllPublic(): Promise<Partial<import("./entities/ticket.entity.js").Ticket>[]>;
     getActivePublic(): Promise<{
         id: string;
@@ -20,6 +23,7 @@ export declare class TicketsController {
         actualizadoEn: Date;
         resueltoEn: Date;
         solucion: string;
+        fotoUrl: string;
         tecnicoAsignado: {
             nombre: string;
             avatar: string;
@@ -41,6 +45,7 @@ export declare class TicketsController {
         actualizadoEn: Date;
         resueltoEn: Date;
         solucion: string;
+        fotoUrl: string;
         tecnicoAsignado: {
             nombre: string;
             avatar: string;
@@ -81,6 +86,9 @@ export declare class TicketsController {
         totalTicketsGlobal: number;
     }>;
     findOne(id: string): Promise<import("./entities/ticket.entity.js").Ticket>;
+    uploadFoto(file: Express.Multer.File): Promise<{
+        url: string;
+    }>;
     create(dto: CreateTicketDto): Promise<import("./entities/ticket.entity.js").Ticket>;
     update(id: string, dto: UpdateTicketDto): Promise<import("./entities/ticket.entity.js").Ticket>;
     remove(id: string): Promise<void>;
