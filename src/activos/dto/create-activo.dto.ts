@@ -25,6 +25,10 @@ export class CreateActivoDto {
 
   @IsOptional()
   @IsString()
+  codigoFactura?: string;
+
+  @IsOptional()
+  @IsString()
   sede?: string;
 
   @IsOptional()

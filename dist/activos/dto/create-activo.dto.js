@@ -15,6 +15,7 @@ export class CreateActivoDto {
     marca;
     modelo;
     numeroSerie;
+    codigoFactura;
     sede;
     departamento;
     ubicacion;
@@ -49,6 +50,11 @@ __decorate([
     IsString(),
     __metadata("design:type", String)
 ], CreateActivoDto.prototype, "numeroSerie", void 0);
+__decorate([
+    IsOptional(),
+    IsString(),
+    __metadata("design:type", String)
+], CreateActivoDto.prototype, "codigoFactura", void 0);
 __decorate([
     IsOptional(),
     IsString(),
