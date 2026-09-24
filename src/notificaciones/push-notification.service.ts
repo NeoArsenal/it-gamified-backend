@@ -21,6 +21,16 @@ const DEFAULT_VAPID_PUBLIC_KEY = 'BEBWWjLDPLE1DJaY7MHN6Y63viz5QCP7YmKa0j7JLOjQcu
 const DEFAULT_VAPID_PRIVATE_KEY = 'SQdZm13gJ8h_R4X6r-g3c6mOdLqaL1aMCZqEusU7VKE';
 const DEFAULT_VAPID_SUBJECT = 'mailto:soporte@clinicalimatambo.com';
 
+function sanitizeVapidKey(key?: string | null): string {
+  if (!key) return '';
+  return key.replace(/["'\r\n\s]/g, '').trim();
+}
+
+function sanitizeSubject(subject?: string | null): string {
+  if (!subject) return 'mailto:soporte@clinicalimatambo.com';
+  return subject.replace(/["'\r\n]/g, '').trim();
+}
+
 @Injectable()
 export class PushNotificationService implements OnModuleInit {
   private readonly logger = new Logger(PushNotificationService.name);
@@ -39,17 +49,21 @@ export class PushNotificationService implements OnModuleInit {
   }
 
   private initVapid() {
-    const publicKey = this.configService.get<string>('VAPID_PUBLIC_KEY') || DEFAULT_VAPID_PUBLIC_KEY;
-    const privateKey = this.configService.get<string>('VAPID_PRIVATE_KEY') || DEFAULT_VAPID_PRIVATE_KEY;
-    const subject = this.configService.get<string>('VAPID_SUBJECT') || DEFAULT_VAPID_SUBJECT;
+    const rawPublic = this.configService.get<string>('VAPID_PUBLIC_KEY') || DEFAULT_VAPID_PUBLIC_KEY;
+    const rawPrivate = this.configService.get<string>('VAPID_PRIVATE_KEY') || DEFAULT_VAPID_PRIVATE_KEY;
+    const rawSubject = this.configService.get<string>('VAPID_SUBJECT') || DEFAULT_VAPID_SUBJECT;
+
+    const publicKey = sanitizeVapidKey(rawPublic);
+    const privateKey = sanitizeVapidKey(rawPrivate);
+    const subject = sanitizeSubject(rawSubject);
 
     if (publicKey && privateKey) {
       try {
         webpush.setVapidDetails(subject, publicKey, privateKey);
         this.vapidConfigured = true;
         this.logger.log('Web Push VAPID inicializado correctamente.');
-      } catch (error) {
-        this.logger.error('Error al configurar VAPID details:', error);
+      } catch (error: any) {
+        this.logger.error('Error al configurar VAPID details:', error?.message || error);
       }
     } else {
       this.logger.warn('Claves VAPID no encontradas en el entorno. Notificaciones Push deshabilitadas.');
@@ -57,7 +71,8 @@ export class PushNotificationService implements OnModuleInit {
   }
 
   getPublicKey(): string | null {
-    return this.configService.get<string>('VAPID_PUBLIC_KEY') || DEFAULT_VAPID_PUBLIC_KEY;
+    const raw = this.configService.get<string>('VAPID_PUBLIC_KEY') || DEFAULT_VAPID_PUBLIC_KEY;
+    return sanitizeVapidKey(raw);
   }
 
   async saveSubscription(userId: string, dto: CreatePushSubscriptionDto): Promise<PushSubscription> {
