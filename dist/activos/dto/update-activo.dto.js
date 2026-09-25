@@ -7,7 +7,8 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-import { IsString, IsOptional } from 'class-validator';
+import { IsString, IsOptional, MaxLength, IsEnum } from 'class-validator';
+import { EstadoActivo } from '../entities/activo.entity.js';
 export class UpdateActivoDto {
     codigo;
     tipo;
@@ -26,61 +27,72 @@ export class UpdateActivoDto {
 __decorate([
     IsOptional(),
     IsString(),
+    MaxLength(50, { message: 'El código no puede superar los 50 caracteres' }),
     __metadata("design:type", String)
 ], UpdateActivoDto.prototype, "codigo", void 0);
 __decorate([
     IsOptional(),
     IsString(),
+    MaxLength(50, { message: 'El tipo no puede superar los 50 caracteres' }),
     __metadata("design:type", String)
 ], UpdateActivoDto.prototype, "tipo", void 0);
 __decorate([
     IsOptional(),
-    IsString(),
+    IsEnum(EstadoActivo, { message: 'El estado del activo no es válido' }),
     __metadata("design:type", String)
 ], UpdateActivoDto.prototype, "estado", void 0);
 __decorate([
     IsOptional(),
     IsString(),
+    MaxLength(60, { message: 'La marca no puede superar los 60 caracteres' }),
     __metadata("design:type", String)
 ], UpdateActivoDto.prototype, "marca", void 0);
 __decorate([
     IsOptional(),
     IsString(),
+    MaxLength(80, { message: 'El modelo no puede superar los 80 caracteres' }),
     __metadata("design:type", String)
 ], UpdateActivoDto.prototype, "modelo", void 0);
 __decorate([
     IsOptional(),
     IsString(),
+    MaxLength(80, { message: 'El número de serie no puede superar los 80 caracteres' }),
     __metadata("design:type", String)
 ], UpdateActivoDto.prototype, "numeroSerie", void 0);
 __decorate([
     IsOptional(),
     IsString(),
+    MaxLength(60, { message: 'El código de factura no puede superar los 60 caracteres' }),
     __metadata("design:type", String)
 ], UpdateActivoDto.prototype, "codigoFactura", void 0);
 __decorate([
     IsOptional(),
     IsString(),
+    MaxLength(60, { message: 'La sede no puede superar los 60 caracteres' }),
     __metadata("design:type", String)
 ], UpdateActivoDto.prototype, "sede", void 0);
 __decorate([
     IsOptional(),
     IsString(),
+    MaxLength(80, { message: 'El departamento no puede superar los 80 caracteres' }),
     __metadata("design:type", String)
 ], UpdateActivoDto.prototype, "departamento", void 0);
 __decorate([
     IsOptional(),
     IsString(),
+    MaxLength(120, { message: 'La ubicación no puede superar los 120 caracteres' }),
     __metadata("design:type", String)
 ], UpdateActivoDto.prototype, "ubicacion", void 0);
 __decorate([
     IsOptional(),
     IsString(),
+    MaxLength(100, { message: 'El responsable no puede superar los 100 caracteres' }),
     __metadata("design:type", String)
 ], UpdateActivoDto.prototype, "responsable", void 0);
 __decorate([
     IsOptional(),
     IsString(),
+    MaxLength(1000, { message: 'Las observaciones no pueden superar los 1000 caracteres' }),
     __metadata("design:type", String)
 ], UpdateActivoDto.prototype, "observaciones", void 0);
 __decorate([

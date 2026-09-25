@@ -2,6 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@n
 import { ActivosService } from './activos.service.js';
 import { CreateActivoDto } from './dto/create-activo.dto.js';
 import { UpdateActivoDto } from './dto/update-activo.dto.js';
+import { CreateIntervencionDto } from './dto/create-intervencion.dto.js';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard.js';
 
 @UseGuards(JwtAuthGuard)
@@ -32,9 +33,9 @@ export class ActivosController {
   @Post(':id/intervenciones')
   addIntervencion(
     @Param('id') id: string,
-    @Body() body: { descripcion: string; tecnicoId?: string }
+    @Body() dto: CreateIntervencionDto
   ) {
-    return this.activosService.addIntervencion(id, body.descripcion, body.tecnicoId);
+    return this.activosService.addIntervencion(id, dto.descripcion, dto.tecnicoId);
   }
 
   @Delete(':id')
