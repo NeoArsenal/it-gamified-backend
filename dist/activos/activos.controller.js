@@ -14,6 +14,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@n
 import { ActivosService } from './activos.service.js';
 import { CreateActivoDto } from './dto/create-activo.dto.js';
 import { UpdateActivoDto } from './dto/update-activo.dto.js';
+import { CreateIntervencionDto } from './dto/create-intervencion.dto.js';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard.js';
 let ActivosController = class ActivosController {
     activosService;
@@ -32,8 +33,8 @@ let ActivosController = class ActivosController {
     update(id, updateActivoDto) {
         return this.activosService.update(id, updateActivoDto);
     }
-    addIntervencion(id, body) {
-        return this.activosService.addIntervencion(id, body.descripcion, body.tecnicoId);
+    addIntervencion(id, dto) {
+        return this.activosService.addIntervencion(id, dto.descripcion, dto.tecnicoId);
     }
     remove(id) {
         return this.activosService.remove(id);
@@ -72,7 +73,7 @@ __decorate([
     __param(0, Param('id')),
     __param(1, Body()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:paramtypes", [String, CreateIntervencionDto]),
     __metadata("design:returntype", void 0)
 ], ActivosController.prototype, "addIntervencion", null);
 __decorate([

@@ -1,6 +1,7 @@
 import { ActivosService } from './activos.service.js';
 import { CreateActivoDto } from './dto/create-activo.dto.js';
 import { UpdateActivoDto } from './dto/update-activo.dto.js';
+import { CreateIntervencionDto } from './dto/create-intervencion.dto.js';
 export declare class ActivosController {
     private readonly activosService;
     constructor(activosService: ActivosService);
@@ -8,9 +9,6 @@ export declare class ActivosController {
     findAll(): Promise<import("./entities/activo.entity.js").Activo[]>;
     findOne(id: string): Promise<any>;
     update(id: string, updateActivoDto: UpdateActivoDto): Promise<any>;
-    addIntervencion(id: string, body: {
-        descripcion: string;
-        tecnicoId?: string;
-    }): Promise<import("./entities/intervencion.entity.js").Intervencion>;
+    addIntervencion(id: string, dto: CreateIntervencionDto): Promise<import("./entities/intervencion.entity.js").Intervencion>;
     remove(id: string): Promise<void>;
 }

@@ -1,7 +1,8 @@
+import { EstadoActivo } from '../entities/activo.entity.js';
 export declare class UpdateActivoDto {
     codigo?: string;
     tipo?: string;
-    estado?: string;
+    estado?: EstadoActivo;
     marca?: string;
     modelo?: string;
     numeroSerie?: string;
