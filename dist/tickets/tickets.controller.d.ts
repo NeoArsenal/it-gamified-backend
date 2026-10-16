@@ -90,6 +90,7 @@ export declare class TicketsController {
         url: string;
     }>;
     create(dto: CreateTicketDto): Promise<import("./entities/ticket.entity.js").Ticket>;
-    update(id: string, dto: UpdateTicketDto): Promise<import("./entities/ticket.entity.js").Ticket>;
+    getHistorial(id: string): Promise<import("./entities/ticket-historial.entity.js").TicketHistorial[]>;
+    update(id: string, dto: UpdateTicketDto, req: any): Promise<import("./entities/ticket.entity.js").Ticket>;
     remove(id: string): Promise<void>;
 }

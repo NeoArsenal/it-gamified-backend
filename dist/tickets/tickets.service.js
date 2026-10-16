@@ -15,17 +15,20 @@ import { Injectable, NotFoundException, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Ticket, EstadoTicket, PrioridadTicket } from './entities/ticket.entity.js';
+import { TicketHistorial, TipoAccionHistorial } from './entities/ticket-historial.entity.js';
 import { NotificacionesGateway } from '../notificaciones/notificaciones.gateway.js';
 import { PushNotificationService } from '../notificaciones/push-notification.service.js';
 import { StorageService } from '../storage/storage.service.js';
 let TicketsService = TicketsService_1 = class TicketsService {
     ticketRepo;
+    historialRepo;
     notificacionesGateway;
     pushNotificationService;
     storageService;
     logger = new Logger(TicketsService_1.name);
-    constructor(ticketRepo, notificacionesGateway, pushNotificationService, storageService) {
+    constructor(ticketRepo, historialRepo, notificacionesGateway, pushNotificationService, storageService) {
         this.ticketRepo = ticketRepo;
+        this.historialRepo = historialRepo;
         this.notificacionesGateway = notificacionesGateway;
         this.pushNotificationService = pushNotificationService;
         this.storageService = storageService;
@@ -172,6 +175,18 @@ let TicketsService = TicketsService_1 = class TicketsService {
             prioridad,
         });
         const saved = await this.ticketRepo.save(ticket);
+        try {
+            await this.historialRepo.save(this.historialRepo.create({
+                ticketId: saved.id,
+                usuarioNombre: dto.solicitanteNombre || 'Portal de Auto-servicio',
+                tipoAccion: TipoAccionHistorial.CREADO,
+                descripcion: `Ticket creado con urgencia ${saved.prioridad}${saved.departamento ? ` para el área de ${saved.departamento}` : ''}${saved.sede ? ` en ${saved.sede}` : ''}.`,
+                detalles: JSON.stringify({ prioridad: saved.prioridad, sede: saved.sede, departamento: saved.departamento }),
+            }));
+        }
+        catch (err) {
+            this.logger.warn(`Error registrando auditoría inicial para ticket ${saved.id}: ${err?.message}`);
+        }
         this.notificacionesGateway.emitirNuevoTicket(saved);
         this.pushNotificationService.sendNewTicketAlert(saved).catch((err) => {
             this.logger.error('Error enviando notificación Push para nuevo ticket:', err?.message || err);
@@ -179,9 +194,15 @@ let TicketsService = TicketsService_1 = class TicketsService {
         this.logger.log(`🎫 Ticket "${saved.titulo}" creado (${saved.prioridad})`);
         return saved;
     }
-    async update(id, dto) {
+    async update(id, dto, usuario) {
         const ticket = await this.findOne(id);
         const estadoAnterior = ticket.estado;
+        const prioridadAnterior = ticket.prioridad;
+        const solucionAnterior = ticket.solucion;
+        const asignadoAnteriorId = ticket.asignadoAId;
+        const usuarioNombre = usuario?.nombre || 'Técnico TI';
+        const usuarioId = usuario?.id || undefined;
+        const auditorias = [];
         for (const [key, val] of Object.entries(dto)) {
             if (val !== undefined) {
                 ticket[key] = val;
@@ -190,10 +211,67 @@ let TicketsService = TicketsService_1 = class TicketsService {
         if (dto.estado === EstadoTicket.RESUELTO && estadoAnterior !== EstadoTicket.RESUELTO) {
             ticket.resueltoEn = new Date();
         }
+        if (dto.estado && dto.estado !== estadoAnterior) {
+            auditorias.push({
+                ticketId: ticket.id,
+                usuarioId,
+                usuarioNombre,
+                tipoAccion: dto.estado === EstadoTicket.CERRADO ? TipoAccionHistorial.CERRADO : TipoAccionHistorial.CAMBIO_ESTADO,
+                descripcion: `Estado actualizado de ${estadoAnterior.replace('_', ' ')} a ${dto.estado.replace('_', ' ')} por ${usuarioNombre}.`,
+                detalles: JSON.stringify({ anterior: estadoAnterior, nuevo: dto.estado }),
+            });
+        }
+        if (dto.prioridad && dto.prioridad !== prioridadAnterior) {
+            auditorias.push({
+                ticketId: ticket.id,
+                usuarioId,
+                usuarioNombre,
+                tipoAccion: TipoAccionHistorial.CAMBIO_PRIORIDAD,
+                descripcion: `Nivel de urgencia reclasificado de ${prioridadAnterior} a ${dto.prioridad} por ${usuarioNombre}.`,
+                detalles: JSON.stringify({ anterior: prioridadAnterior, nuevo: dto.prioridad }),
+            });
+        }
+        if (dto.asignadoAId && dto.asignadoAId !== asignadoAnteriorId) {
+            auditorias.push({
+                ticketId: ticket.id,
+                usuarioId,
+                usuarioNombre,
+                tipoAccion: TipoAccionHistorial.ASIGNADO,
+                descripcion: `Ticket asignado a técnico por ${usuarioNombre}.`,
+                detalles: JSON.stringify({ asignadoAId: dto.asignadoAId }),
+            });
+        }
+        if (dto.solucion && dto.solucion !== solucionAnterior) {
+            auditorias.push({
+                ticketId: ticket.id,
+                usuarioId,
+                usuarioNombre,
+                tipoAccion: TipoAccionHistorial.SOLUCION_REGISTRADA,
+                descripcion: `Solución técnica documentada por ${usuarioNombre}: "${dto.solucion.substring(0, 70)}${dto.solucion.length > 70 ? '...' : ''}"`,
+                detalles: JSON.stringify({ solucion: dto.solucion }),
+            });
+        }
         await this.ticketRepo.save(ticket);
+        for (const item of auditorias) {
+            try {
+                await this.historialRepo.save(this.historialRepo.create(item));
+            }
+            catch (err) {
+                this.logger.warn(`Error guardando auditoría de ticket: ${err?.message}`);
+            }
+        }
         const updated = await this.findOne(id);
-        this.notificacionesGateway.emitirTicketActualizado(updated);
+        this.notificacionesGateway.emitirTicketActualizado(updated, {
+            actualizadoPor: usuario ? { id: usuario.id, nombre: usuario.nombre } : undefined,
+        });
         return updated;
+    }
+    async getHistorial(ticketId) {
+        return this.historialRepo.find({
+            where: { ticketId },
+            order: { creadoEn: 'DESC' },
+            relations: { usuario: true },
+        });
     }
     async remove(id) {
         const ticket = await this.findOne(id);
@@ -316,7 +394,9 @@ let TicketsService = TicketsService_1 = class TicketsService {
 TicketsService = TicketsService_1 = __decorate([
     Injectable(),
     __param(0, InjectRepository(Ticket)),
+    __param(1, InjectRepository(TicketHistorial)),
     __metadata("design:paramtypes", [Repository,
+        Repository,
         NotificacionesGateway,
         PushNotificationService,
         StorageService])

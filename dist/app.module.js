@@ -11,6 +11,7 @@ import { AppController } from './app.controller.js';
 import { AppService } from './app.service.js';
 import { Usuario } from './usuarios/entities/usuario.entity.js';
 import { Ticket } from './tickets/entities/ticket.entity.js';
+import { TicketHistorial } from './tickets/entities/ticket-historial.entity.js';
 import { HistorialXP } from './gamificacion/entities/historial-xp.entity.js';
 import { Medalla } from './gamificacion/entities/medalla.entity.js';
 import { UsuarioMedalla } from './gamificacion/entities/usuario-medalla.entity.js';
@@ -55,7 +56,7 @@ AppModule = __decorate([
                         return {
                             type: 'postgres',
                             url: dbUrl,
-                            entities: [Usuario, Ticket, HistorialXP, Medalla, UsuarioMedalla, DispositivoRed, DireccionIP, Guia, Activo, Intervencion, Curso, NivelAcademia, Pregunta, ProgresoUsuario, Ubicacion, Configuracion, PushSubscription],
+                            entities: [Usuario, Ticket, TicketHistorial, HistorialXP, Medalla, UsuarioMedalla, DispositivoRed, DireccionIP, Guia, Activo, Intervencion, Curso, NivelAcademia, Pregunta, ProgresoUsuario, Ubicacion, Configuracion, PushSubscription],
                             synchronize: true,
                             ssl: isProd ? { rejectUnauthorized: false } : false,
                         };
@@ -63,7 +64,7 @@ AppModule = __decorate([
                     return {
                         type: 'better-sqlite3',
                         database: 'data/it-helpdesk.db',
-                        entities: [Usuario, Ticket, HistorialXP, Medalla, UsuarioMedalla, DispositivoRed, DireccionIP, Guia, Activo, Intervencion, Curso, NivelAcademia, Pregunta, ProgresoUsuario, Ubicacion, Configuracion, PushSubscription],
+                        entities: [Usuario, Ticket, TicketHistorial, HistorialXP, Medalla, UsuarioMedalla, DispositivoRed, DireccionIP, Guia, Activo, Intervencion, Curso, NivelAcademia, Pregunta, ProgresoUsuario, Ubicacion, Configuracion, PushSubscription],
                         synchronize: true,
                     };
                 }

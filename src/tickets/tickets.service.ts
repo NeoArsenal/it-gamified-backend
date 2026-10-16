@@ -2,6 +2,7 @@ import { Injectable, NotFoundException, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Ticket, EstadoTicket, PrioridadTicket } from './entities/ticket.entity.js';
+import { TicketHistorial, TipoAccionHistorial } from './entities/ticket-historial.entity.js';
 import { CreateTicketDto } from './dto/create-ticket.dto.js';
 import { UpdateTicketDto } from './dto/update-ticket.dto.js';
 import { NotificacionesGateway } from '../notificaciones/notificaciones.gateway.js';
@@ -14,6 +15,7 @@ export class TicketsService {
 
   constructor(
     @InjectRepository(Ticket) private readonly ticketRepo: Repository<Ticket>,
+    @InjectRepository(TicketHistorial) private readonly historialRepo: Repository<TicketHistorial>,
     private readonly notificacionesGateway: NotificacionesGateway,
     private readonly pushNotificationService: PushNotificationService,
     private readonly storageService: StorageService,
@@ -178,6 +180,22 @@ export class TicketsService {
       prioridad,
     });
     const saved = await this.ticketRepo.save(ticket);
+
+    // Registro inicial en la Línea de Tiempo / Auditoría
+    try {
+      await this.historialRepo.save(
+        this.historialRepo.create({
+          ticketId: saved.id,
+          usuarioNombre: dto.solicitanteNombre || 'Portal de Auto-servicio',
+          tipoAccion: TipoAccionHistorial.CREADO,
+          descripcion: `Ticket creado con urgencia ${saved.prioridad}${saved.departamento ? ` para el área de ${saved.departamento}` : ''}${saved.sede ? ` en ${saved.sede}` : ''}.`,
+          detalles: JSON.stringify({ prioridad: saved.prioridad, sede: saved.sede, departamento: saved.departamento }),
+        })
+      );
+    } catch (err: any) {
+      this.logger.warn(`Error registrando auditoría inicial para ticket ${saved.id}: ${err?.message}`);
+    }
+
     this.notificacionesGateway.emitirNuevoTicket(saved);
     this.pushNotificationService.sendNewTicketAlert(saved).catch((err) => {
       this.logger.error('Error enviando notificación Push para nuevo ticket:', err?.message || err);
@@ -186,9 +204,17 @@ export class TicketsService {
     return saved;
   }
 
-  async update(id: string, dto: UpdateTicketDto): Promise<Ticket> {
+  async update(id: string, dto: UpdateTicketDto, usuario?: any): Promise<Ticket> {
     const ticket = await this.findOne(id);
     const estadoAnterior = ticket.estado;
+    const prioridadAnterior = ticket.prioridad;
+    const solucionAnterior = ticket.solucion;
+    const asignadoAnteriorId = ticket.asignadoAId;
+
+    const usuarioNombre = usuario?.nombre || 'Técnico TI';
+    const usuarioId = usuario?.id || undefined;
+
+    const auditorias: any[] = [];
 
     // Solo asignar campos definidos para evitar sobreescribir con undefined
     for (const [key, val] of Object.entries(dto)) {
@@ -202,10 +228,75 @@ export class TicketsService {
       ticket.resueltoEn = new Date();
     }
 
+    // Detectar cambios relevantes para la línea de tiempo de auditoría
+    if (dto.estado && dto.estado !== estadoAnterior) {
+      auditorias.push({
+        ticketId: ticket.id,
+        usuarioId,
+        usuarioNombre,
+        tipoAccion: dto.estado === EstadoTicket.CERRADO ? TipoAccionHistorial.CERRADO : TipoAccionHistorial.CAMBIO_ESTADO,
+        descripcion: `Estado actualizado de ${estadoAnterior.replace('_', ' ')} a ${dto.estado.replace('_', ' ')} por ${usuarioNombre}.`,
+        detalles: JSON.stringify({ anterior: estadoAnterior, nuevo: dto.estado }),
+      });
+    }
+
+    if (dto.prioridad && dto.prioridad !== prioridadAnterior) {
+      auditorias.push({
+        ticketId: ticket.id,
+        usuarioId,
+        usuarioNombre,
+        tipoAccion: TipoAccionHistorial.CAMBIO_PRIORIDAD,
+        descripcion: `Nivel de urgencia reclasificado de ${prioridadAnterior} a ${dto.prioridad} por ${usuarioNombre}.`,
+        detalles: JSON.stringify({ anterior: prioridadAnterior, nuevo: dto.prioridad }),
+      });
+    }
+
+    if (dto.asignadoAId && dto.asignadoAId !== asignadoAnteriorId) {
+      auditorias.push({
+        ticketId: ticket.id,
+        usuarioId,
+        usuarioNombre,
+        tipoAccion: TipoAccionHistorial.ASIGNADO,
+        descripcion: `Ticket asignado a técnico por ${usuarioNombre}.`,
+        detalles: JSON.stringify({ asignadoAId: dto.asignadoAId }),
+      });
+    }
+
+    if (dto.solucion && dto.solucion !== solucionAnterior) {
+      auditorias.push({
+        ticketId: ticket.id,
+        usuarioId,
+        usuarioNombre,
+        tipoAccion: TipoAccionHistorial.SOLUCION_REGISTRADA,
+        descripcion: `Solución técnica documentada por ${usuarioNombre}: "${dto.solucion.substring(0, 70)}${dto.solucion.length > 70 ? '...' : ''}"`,
+        detalles: JSON.stringify({ solucion: dto.solucion }),
+      });
+    }
+
     await this.ticketRepo.save(ticket);
+
+    // Guardar registros de auditoría
+    for (const item of auditorias) {
+      try {
+        await this.historialRepo.save(this.historialRepo.create(item));
+      } catch (err: any) {
+        this.logger.warn(`Error guardando auditoría de ticket: ${err?.message}`);
+      }
+    }
+
     const updated = await this.findOne(id);
-    this.notificacionesGateway.emitirTicketActualizado(updated);
+    this.notificacionesGateway.emitirTicketActualizado(updated, {
+      actualizadoPor: usuario ? { id: usuario.id, nombre: usuario.nombre } : undefined,
+    });
     return updated;
+  }
+
+  async getHistorial(ticketId: string): Promise<TicketHistorial[]> {
+    return this.historialRepo.find({
+      where: { ticketId },
+      order: { creadoEn: 'DESC' },
+      relations: { usuario: true },
+    });
   }
 
   async remove(id: string): Promise<void> {

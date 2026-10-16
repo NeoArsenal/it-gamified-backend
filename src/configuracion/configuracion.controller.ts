@@ -1,24 +1,28 @@
 import { Controller, Post, Body, Get, Put, Param, UseGuards, Request } from '@nestjs/common';
 import { ConfiguracionService } from './configuracion.service.js';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard.js';
+import { PinRateLimitGuard } from './guards/pin-rate-limit.guard.js';
 
 @Controller('configuracion')
 export class ConfiguracionController {
   constructor(private readonly configuracionService: ConfiguracionService) {}
 
+  @UseGuards(PinRateLimitGuard)
   @Post('verify-access')
   async verifyAccess(@Body('pin') pin?: string, @Body('token') token?: string) {
     const isValid = await this.configuracionService.verifyAccess(pin, token);
     return { valid: isValid };
   }
 
+  @UseGuards(PinRateLimitGuard)
   @Post('verify-pin')
   async verifyPin(@Body('pin') pin: string) {
     const isValid = await this.configuracionService.verifyPin(pin);
     return { valid: isValid };
   }
 
-  // Consulta de configuración del portal (PIN y Token seguro)
+  // Consulta de configuración del portal (PIN y Token seguro) - Solo personal autenticado
+  @UseGuards(JwtAuthGuard)
   @Get('portal-config')
   async getPortalConfig() {
     const pin = await this.configuracionService.getValue('PORTAL_PIN', '2026');
@@ -26,7 +30,8 @@ export class ConfiguracionController {
     return { pin, token };
   }
 
-  // Consulta del PIN actual
+  // Consulta del PIN actual - Solo personal autenticado
+  @UseGuards(JwtAuthGuard)
   @Get('portal-pin')
   async getPortalPin() {
     const pin = await this.configuracionService.getValue('PORTAL_PIN', '2026');

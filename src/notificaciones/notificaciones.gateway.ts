@@ -51,14 +51,23 @@ export class NotificacionesGateway implements OnGatewayConnection, OnGatewayDisc
 
   // Métodos que otros servicios pueden llamar para emitir eventos
   emitirNuevoTicket(ticket: any) {
-    this.server.emit('nuevoTicket', ticket);
+    if (this.server) {
+      this.server.emit('nuevoTicket', ticket);
+    }
   }
 
-  emitirTicketActualizado(ticket: any) {
-    this.server.emit('ticketActualizado', ticket);
+  emitirTicketActualizado(ticket: any, meta?: any) {
+    if (this.server) {
+      this.server.emit('ticketActualizado', ticket);
+      if (meta) {
+        this.server.emit('ticketEvento', { ticket, ...meta });
+      }
+    }
   }
 
   emitirTicketEliminado(id: string) {
-    this.server.emit('ticketEliminado', id);
+    if (this.server) {
+      this.server.emit('ticketEliminado', id);
+    }
   }
 }

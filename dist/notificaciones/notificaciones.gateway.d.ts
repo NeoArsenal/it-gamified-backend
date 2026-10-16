@@ -9,6 +9,6 @@ export declare class NotificacionesGateway implements OnGatewayConnection, OnGat
     handleConnection(client: Socket): Promise<void>;
     handleDisconnect(client: Socket): void;
     emitirNuevoTicket(ticket: any): void;
-    emitirTicketActualizado(ticket: any): void;
+    emitirTicketActualizado(ticket: any, meta?: any): void;
     emitirTicketEliminado(id: string): void;
 }

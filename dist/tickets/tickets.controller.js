@@ -10,7 +10,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-import { Controller, Get, Post, Patch, Delete, Param, Body, Query, UseGuards, UseInterceptors, UploadedFile, BadRequestException } from '@nestjs/common';
+import { Controller, Get, Post, Patch, Delete, Param, Body, Query, UseGuards, UseInterceptors, UploadedFile, BadRequestException, Request } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import 'multer';
 import { TicketsService } from './tickets.service.js';
@@ -50,7 +50,12 @@ let TicketsController = class TicketsController {
         return { url: publicUrl };
     }
     create(dto) { return this.ticketsService.create(dto); }
-    update(id, dto) { return this.ticketsService.update(id, dto); }
+    getHistorial(id) {
+        return this.ticketsService.getHistorial(id);
+    }
+    update(id, dto, req) {
+        return this.ticketsService.update(id, dto, req.user);
+    }
     remove(id) {
         console.log(`[TicketsController] Attempting to delete ticket: ${id}`);
         return this.ticketsService.remove(id);
@@ -124,11 +129,20 @@ __decorate([
 ], TicketsController.prototype, "create", null);
 __decorate([
     UseGuards(JwtAuthGuard),
+    Get(':id/historial'),
+    __param(0, Param('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", void 0)
+], TicketsController.prototype, "getHistorial", null);
+__decorate([
+    UseGuards(JwtAuthGuard),
     Patch(':id'),
     __param(0, Param('id')),
     __param(1, Body()),
+    __param(2, Request()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, UpdateTicketDto]),
+    __metadata("design:paramtypes", [String, UpdateTicketDto, Object]),
     __metadata("design:returntype", void 0)
 ], TicketsController.prototype, "update", null);
 __decorate([

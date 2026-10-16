@@ -1,5 +1,6 @@
 import { Repository } from 'typeorm';
 import { Ticket, EstadoTicket, PrioridadTicket } from './entities/ticket.entity.js';
+import { TicketHistorial } from './entities/ticket-historial.entity.js';
 import { CreateTicketDto } from './dto/create-ticket.dto.js';
 import { UpdateTicketDto } from './dto/update-ticket.dto.js';
 import { NotificacionesGateway } from '../notificaciones/notificaciones.gateway.js';
@@ -7,11 +8,12 @@ import { PushNotificationService } from '../notificaciones/push-notification.ser
 import { StorageService } from '../storage/storage.service.js';
 export declare class TicketsService {
     private readonly ticketRepo;
+    private readonly historialRepo;
     private readonly notificacionesGateway;
     private readonly pushNotificationService;
     private readonly storageService;
     private readonly logger;
-    constructor(ticketRepo: Repository<Ticket>, notificacionesGateway: NotificacionesGateway, pushNotificationService: PushNotificationService, storageService: StorageService);
+    constructor(ticketRepo: Repository<Ticket>, historialRepo: Repository<TicketHistorial>, notificacionesGateway: NotificacionesGateway, pushNotificationService: PushNotificationService, storageService: StorageService);
     findAll(): Promise<Ticket[]>;
     findAllPublic(): Promise<Partial<Ticket>[]>;
     findOne(id: string): Promise<Ticket>;
@@ -60,7 +62,8 @@ export declare class TicketsService {
         };
     }[]>;
     create(dto: CreateTicketDto): Promise<Ticket>;
-    update(id: string, dto: UpdateTicketDto): Promise<Ticket>;
+    update(id: string, dto: UpdateTicketDto, usuario?: any): Promise<Ticket>;
+    getHistorial(ticketId: string): Promise<TicketHistorial[]>;
     remove(id: string): Promise<void>;
     getEstadisticas(): Promise<{
         total: number;

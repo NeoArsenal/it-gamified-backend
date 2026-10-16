@@ -13,6 +13,7 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 import { Controller, Post, Body, Get, Put, Param, UseGuards, Request } from '@nestjs/common';
 import { ConfiguracionService } from './configuracion.service.js';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard.js';
+import { PinRateLimitGuard } from './guards/pin-rate-limit.guard.js';
 let ConfiguracionController = class ConfiguracionController {
     configuracionService;
     constructor(configuracionService) {
@@ -57,6 +58,7 @@ let ConfiguracionController = class ConfiguracionController {
     }
 };
 __decorate([
+    UseGuards(PinRateLimitGuard),
     Post('verify-access'),
     __param(0, Body('pin')),
     __param(1, Body('token')),
@@ -65,6 +67,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], ConfiguracionController.prototype, "verifyAccess", null);
 __decorate([
+    UseGuards(PinRateLimitGuard),
     Post('verify-pin'),
     __param(0, Body('pin')),
     __metadata("design:type", Function),
@@ -72,12 +75,14 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], ConfiguracionController.prototype, "verifyPin", null);
 __decorate([
+    UseGuards(JwtAuthGuard),
     Get('portal-config'),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], ConfiguracionController.prototype, "getPortalConfig", null);
 __decorate([
+    UseGuards(JwtAuthGuard),
     Get('portal-pin'),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),

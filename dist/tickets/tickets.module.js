@@ -7,6 +7,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Ticket } from './entities/ticket.entity.js';
+import { TicketHistorial } from './entities/ticket-historial.entity.js';
 import { TicketsService } from './tickets.service.js';
 import { TicketsController } from './tickets.controller.js';
 import { TicketRateLimitGuard } from './guards/ticket-rate-limit.guard.js';
@@ -15,7 +16,7 @@ let TicketsModule = class TicketsModule {
 };
 TicketsModule = __decorate([
     Module({
-        imports: [TypeOrmModule.forFeature([Ticket]), StorageModule],
+        imports: [TypeOrmModule.forFeature([Ticket, TicketHistorial]), StorageModule],
         controllers: [TicketsController],
         providers: [TicketsService, TicketRateLimitGuard],
         exports: [TicketsService],

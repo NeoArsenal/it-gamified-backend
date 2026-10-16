@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Patch, Delete, Param, Body, Query, UseGuards, UseInterceptors, UploadedFile, BadRequestException } from '@nestjs/common';
+import { Controller, Get, Post, Patch, Delete, Param, Body, Query, UseGuards, UseInterceptors, UploadedFile, BadRequestException, Request } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import 'multer';
 import { TicketsService } from './tickets.service.js';
@@ -73,8 +73,16 @@ export class TicketsController {
   create(@Body() dto: CreateTicketDto) { return this.ticketsService.create(dto); }
 
   @UseGuards(JwtAuthGuard)
+  @Get(':id/historial')
+  getHistorial(@Param('id') id: string) {
+    return this.ticketsService.getHistorial(id);
+  }
+
+  @UseGuards(JwtAuthGuard)
   @Patch(':id')
-  update(@Param('id') id: string, @Body() dto: UpdateTicketDto) { return this.ticketsService.update(id, dto); }
+  update(@Param('id') id: string, @Body() dto: UpdateTicketDto, @Request() req: any) { 
+    return this.ticketsService.update(id, dto, req.user); 
+  }
 
   @UseGuards(JwtAuthGuard)
   @Delete(':id')

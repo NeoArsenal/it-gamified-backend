@@ -43,13 +43,22 @@ let NotificacionesGateway = class NotificacionesGateway {
         this.logger.log(`Client disconnected: ${client.id}`);
     }
     emitirNuevoTicket(ticket) {
-        this.server.emit('nuevoTicket', ticket);
+        if (this.server) {
+            this.server.emit('nuevoTicket', ticket);
+        }
     }
-    emitirTicketActualizado(ticket) {
-        this.server.emit('ticketActualizado', ticket);
+    emitirTicketActualizado(ticket, meta) {
+        if (this.server) {
+            this.server.emit('ticketActualizado', ticket);
+            if (meta) {
+                this.server.emit('ticketEvento', { ticket, ...meta });
+            }
+        }
     }
     emitirTicketEliminado(id) {
-        this.server.emit('ticketEliminado', id);
+        if (this.server) {
+            this.server.emit('ticketEliminado', id);
+        }
     }
 };
 __decorate([
